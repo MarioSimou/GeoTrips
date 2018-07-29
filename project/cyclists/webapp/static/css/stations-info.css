@@ -1,0 +1,40 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+#page-heading,#slide-bar {
+    padding: 0;
+}
+#page-heading h1{
+    text-align: center;
+    padding: 6px;
+    border-bottom: black solid 4px;
+    margin-bottom: 8px;
+    background: #e9ecef;
+    width: 100%;
+    min-height: 10vh;
+}
+#page-heading h4 {
+    text-decoration: underline;
+    margin-left: 40px;
+}
+
+.pagination {
+    margin-bottom: 0px;
+}
+.main-content {
+    margin: 10px;
+}
+
+#map, #info-table{
+    padding: 0;
+    margin: 0;
+    min-height: 80vh;
+    max-height: 80vh;
+    width: 100%;
+    margin-bottom: 6px;
+}
+a:hover{
+    color: red;
+}

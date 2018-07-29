@@ -1,0 +1,33 @@
+ <table class="table table-hover table-sm">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Station Id</th>
+                <th scope="col">Station Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for station in stations %}
+            <tr>
+                <th scope="row">{{forloop.counter}}</th>
+                <td>{{station.station_id}}</td>
+                <td><a href="{% url 'webapp:station-info' station.station_id %}">{{station.station_name}}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if stations.has_previous %}
+            <li class="Page-item"><a class="page-link" href="?page=1">&laquo; first</a></li>
+            <li class="Page-item"><a class="page-link" href="?page{{ stations.previous_page_number }}">previous</a></li>
+            {% endif %}
+            <li class="Page-item"><a class="page-link" href="#">Page {{stations.number}} of {{stations.paginator.num_pages}}</a></li>
+            {% if stations.has_next %}
+            <li class="Page-item"><a class="page-link" href="?page={{ stations.next_page_number }}">next</a></li>
+            <li class="Page-item"><a class="page-link" href="?page={{ stations.paginator.num_pages }}">last &raquo;</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endblock %}

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load leaflet_tags %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tfl Bicycle Info Dashboard</title>
+    <!-- Bootstrap CSN-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}" />
+    {% leaflet_js plugins="ajax-plugin,leaflet-provider,markercluster,defaultExtent,heatmap,makimarkers" %}
+    {% leaflet_css plugins="markercluster,defaultExtent" %}
+
+    <!-- Font awesome JS-->
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <!-- Leaflet Map -->
+        <div class="wrapper">
+            <nav id="sidebar" clas="sidebar-nav">
+                <div class="sidebar-header">
+                        <h3>Sharemap DashBoard</h3>
+                </div>
+                <ul class="list-unstyled components">
+                    <p>Dummy Heading</p>
+                    <li>
+                        <a href="#mainSubMenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Home</a>
+                        <ul id="mainSubMenu" class="collapse list-unstyled">
+                            <li>
+                                <a href="#">Home</a>
+                            </li>
+                            <li>
+                                <a href="#">Stats</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#tablesSubMenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Data</a>
+                        <ul class="collapse list-unstyled" id="tablesSubMenu">
+                            <li>
+                                <a href="{% url 'webapp:stations-info' %}">Stations Info</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#layersSubMenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Layers</a>
+                        <ul class="collapse list-unstyled" id="layersSubMenu">
+                            <li>
+                                <a href="#" class="activate-layer">Stations Layer - (ON)</a>
+                            </li>
+                            <li>
+                                <a href="#" class="activate-layer">Boroughs Layer - (ON)</a>
+                            </li>
+
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#basemapsSubMenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Basemaps</a>
+                        <ul class="collapse list-unstyled" id="basemapsSubMenu">
+                            <a href="#cartoDB" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">CartoDB</a>
+                            <ul class="collapse list-unstyled" id="cartoDB">
+                                <li>
+                                    <a href="#https://cartodb-basemaps-{s}.global.ssl.fastly.net/{rastertiles/voyager_labels_under}/{z}/{x}/{y}{r}.png" class="activate-layer">Vouager Labels</a>
+                                </li>
+                                <li>
+                                    <a href="#https://cartodb-basemaps-{s}.global.ssl.fastly.net/{light_all}/{z}/{x}/{y}{r}.png">Positron</a>
+                                </li>
+                                <li>
+                                    <a href="#https://cartodb-basemaps-{s}.global.ssl.fastly.net/{dark_all}/{z}/{x}/{y}{r}.png">Dark Matter</a>
+                                </li>
+                            </ul>
+                            <a href="#osm" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Open Street Map</a>
+                            <ul class="collapse list-unstyled" id="osm">
+                                <li><a href="#https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">Mapnik</a></li>
+                                <li><a href="#http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png">Black and White</a></li>
+                                <li><a href="#https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png">Open Topo Map</a></li>
+                            </ul>
+                            <a href="#esri" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Esri</a>
+                            <ul class="collapse list-unstyled" id="esri">
+                                <li><a href="#https://server.arcgisonline.com/ArcGIS/rest/services/{World_Street_Map}/MapServer/tile/{z}/{y}/{x}">World Street Map</a></li>
+                                <li><a href="#https://server.arcgisonline.com/ArcGIS/rest/services/{World_Topo_Map}/MapServer/tile/{z}/{y}/{x}">World Topo Map</a></li>
+                                <li><a href="#https://server.arcgisonline.com/ArcGIS/rest/services/{World_Imagery}/MapServer/tile/{z}/{y}/{x}">World Imagery</a></li>
+                            </ul>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#heatmaps" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Heatmaps</a>
+                        <ul class="collapse list-unstyled" id="heatmaps">
+                            <li><a href="#">Stations Heatmap</a></li>
+                            <li><a href="#">Boroughs Heatmap</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            <div id="content" class="container-fluid">
+                {% leaflet_map 'map' %}
+            </div>
+        </div>
+        <div id="loader"></div>
+    <div class="none-visible-links">
+        <a id="unique-station" href="{% url 'webapp:station-unique' '0' %}"></a>
+        <a id='stations' href="{% url 'webapp:stations' %}"></a>
+        <a id="boroughs" href="{% url 'webapp:boroughs' %}"></a>
+        <a id="heatmapStations" href="{% url 'webapp:heatmap' 'stations' %}"></a>
+        <a id="heatmapBoroughs" href="{% url 'webapp:heatmap' 'boroughs' %}"></a>
+        <a id="freq" href="{% url 'webapp:frequencies' '0' %}"></a>
+        <a id="ref-routes" href="{% url 'webapp:ref-routes' '1' %}"></a>
+        <a id="stations-pairs-routes" href="{% url 'webapp:stations_pairs_routes' '2018' '0' %}"></a>
+    </div>
+
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- jQuery CDN - Slim version (=without AJAX) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <!-- Popper.JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
