@@ -277,6 +277,7 @@ const appendTemporalGraph = (sid,graphContainer) => {
 		routes=response;
 	});
 
+	graphContainer.html('');
 	$('<h1>Hello World</h1>').appendTo(graphContainer);
 
 	console.log(Object.keys(routes).length);
@@ -286,6 +287,7 @@ const appendSpatialDataFilter = (sliderContainer,refRoutes,groupLayer,refRoutesU
 	const nRefRoutes = refRoutesArr.length; // length
 
 	// append the following content
+	sliderContainer.html('');
 	$(`<div class="row" id="ref-routes-slider-content">
 					<div class="col-2"><strong>1</strong></div>
 					<div class="col-8"><strong><em>Top N Routes</em></strong></div>
