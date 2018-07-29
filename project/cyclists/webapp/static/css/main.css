@@ -344,3 +344,8 @@ div.leaflet-control-defaultextent.leaflet-control{
   from{ bottom:-100px; opacity:0 }
   to{ bottom:0; opacity:1 }
 }
+
+rect.drag.nsewdrag {
+    width: 100%;
+    height: 100%;
+}

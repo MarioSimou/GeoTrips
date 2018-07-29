@@ -265,8 +265,33 @@ const callSpatialData = (map,refRoutesUrl,sid,freqUrl,mainContainer) =>{
 		refRoutes.on('data:loaded', ()=>
 			{
         		appendSpatialDataFilter($('#ref-routes-slider-container'), refRoutes, groupLayer, refRoutesUrl);
+        		appendDistributionGraph($('#distances-distribution-graph-container'));
         		loader.hide();
 			});
+};
+const appendDistributionGraph = (disGraphContainer) => {
+	var distances = refRoutes.toGeoJSON().features.map((f)=>{return f.properties.balanced_ref_dist});
+
+	$(`<div class="col-12"></div>`).appendTo(disGraphContainer);
+
+	$(`<div class="col-12" id="distribution-container" style="height: 300px"></div>`).appendTo(disGraphContainer.find('div'));
+	var trace = {x : distances, type: 'histogram'};
+	var data = [trace];
+	console.log(data);
+	var layout = {
+		margin : {
+			l:0,
+			r:0,
+			b:0,
+			t:0,
+			pad:4
+		},
+		autosize: false,
+		width: 150,
+		height: 150
+	};
+	Plotly.newPlot('distribution-container',data, layout);
+
 };
 const appendTemporalGraph = (sid,graphContainer) => {
 	// adjust the routes layer
@@ -277,10 +302,13 @@ const appendTemporalGraph = (sid,graphContainer) => {
 		routes=response;
 	});
 
-	graphContainer.html('');
-	$('<h1>Hello World</h1>').appendTo(graphContainer);
-
-	console.log(Object.keys(routes).length);
+	graphContainer.html(''); // removes the previous content
+	/*$("<div id='tester'></div>").appendTo(graphContainer);
+	Plotly.plot(document.getElementById('tester'), [{
+	x: [1, 2, 3, 4, 5],
+	y: [1, 2, 4, 8, 16] }], {
+	margin: { t: 0 } } );*/
+	//console.log(Object.keys(routes).length);
 };
 const appendSpatialDataFilter = (sliderContainer,refRoutes,groupLayer,refRoutesUrl)  =>{
 	const refRoutesArr = refRoutes.toGeoJSON().features; // gets an array of the reference routes
@@ -332,8 +360,6 @@ const updateStaRoutesList = (map,refRoutesUrl,e, freqUrl)=> {
 	if ($(e.currentTarget).attr('disabled') == undefined) {
         // local variables
         var sid = $(e.currentTarget).val();
-        //var mainContainer= $('#main-container');
-		//mainContainer.html(''); // empty the content
 
         // adds the spatial structure
         callSpatialData(map, refRoutesUrl, sid,freqUrl,$('#ref-routes-slider-container'));
@@ -371,9 +397,10 @@ const infoStatsUpdate = (el) =>{
             html = html.concat(`<option value="${station.properties.pk}">${station.properties.station_name}</option>`.toString());
         }
         html = html.concat(`</select></div></div>
-								<div id="main-container">
-									<div id="ref-routes-slider-container" class="col-12"></div>
-									<div id="temp-graph-container" class="col-12"></div>
+								<div id="main-container">	
+									<div id="ref-routes-slider-container"></div>
+									<div id="distances-distribution-graph-container" class="row"></div>
+									<div id="temp-graph-container"></div>
 								</div>
 							</div>`);
     }catch (e) {

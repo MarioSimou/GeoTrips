@@ -55,6 +55,7 @@ def load_reference_routes(request,sid):
         raise Http404('Reference Routes could not be loaded...')
     return HttpResponse(ref_routes, content_type='json')
 
+
 def load_routes_of_station(request,year,sid):
     routes_of_sid = models.Routes.objects.filter(start_date__gte = f'{year}-01-01 00:00').filter(station_pairs_id__start_station_id=sid)
     routes = dict([(route.rental_id, {'start_date': route.start_date,'end_date':route.end_date,'duration':route.duration,'bike_id': route.bike_id.bike_id}) for route in routes_of_sid])
