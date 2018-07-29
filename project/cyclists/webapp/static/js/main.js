@@ -186,7 +186,7 @@ const getCoords = (e) =>
 
 const freezeMap = (el) =>
 {
-	el.focus(()=>{
+	el.mouseover(()=>{
 		map.dragging.disable();
 		map.touchZoom.disable();
 		map.doubleClickZoom.disable();
@@ -273,22 +273,20 @@ const appendDistributionGraph = (disGraphContainer) => {
 	var distances = refRoutes.toGeoJSON().features.map((f)=>{return f.properties.balanced_ref_dist});
 
 	$(`<div class="col-12"></div>`).appendTo(disGraphContainer);
-
-	$(`<div class="col-12" id="distribution-container" style="height: 300px"></div>`).appendTo(disGraphContainer.find('div'));
+	$(`<div class="col-11" id="distribution-container"></div>`).appendTo(disGraphContainer.find('div'));
 	var trace = {x : distances, type: 'histogram'};
 	var data = [trace];
 	console.log(data);
 	var layout = {
 		margin : {
-			l:0,
-			r:0,
-			b:0,
-			t:0,
+			l:20,
+			r:20,
+			b:20,
+			t:15,
 			pad:4
 		},
-		autosize: false,
-		width: 150,
-		height: 150
+		autosize: true,
+
 	};
 	Plotly.newPlot('distribution-container',data, layout);
 
@@ -316,14 +314,14 @@ const appendSpatialDataFilter = (sliderContainer,refRoutes,groupLayer,refRoutesU
 
 	// append the following content
 	sliderContainer.html('');
-	$(`<div class="row" id="ref-routes-slider-content">
+	$(`<hr><div class="row" id="ref-routes-slider-content">
 					<div class="col-2"><strong>1</strong></div>
 					<div class="col-8"><strong><em>Top N Routes</em></strong></div>
 					<div class="col-2"><strong>${nRefRoutes}</strong></div>
 			   </div>
 			   <div class="row">
 			   		<div class="col-12"><input id="slider-ref-routes" type="range" min="1" max="${nRefRoutes}" value="${nRefRoutes}" class="slider"></div>
-			   </div>`).appendTo(sliderContainer);
+			   </div><hr>`).appendTo(sliderContainer);
 
 	var slider = $('#slider-ref-routes');
 	freezeMap(slider); // freeze the map when the slider is on the focus
@@ -370,7 +368,7 @@ const updateStaRoutesList = (map,refRoutesUrl,e, freqUrl)=> {
 
 //----------------------------------------------------------------------------------------------------------------------
 // Panels
-statsInfo.onAdd = function(map) {return createDivElement(this,'info info-stats col-10');};
+statsInfo.onAdd = function(map) {return createDivElement(this,'info info-stats');};
 statsInfo.update  = function(targetedStationProps) {};
 
 const infoStatsDate = (el) => {
@@ -533,6 +531,8 @@ $(window).on("map:init", function(event) {
     		console.log('stations are loaded..');
     		// updates the info stats all
 			infoStatsUpdate($('.info-stats'));
+			freezeMap($('.info-stats'));
+
 			// adds an event on the dropdown list of .info-stats
 			$('#station-routes').on('change', (e) =>{
 				updateStaRoutesList(map,refRoutesUrl, e, freqUrl);
