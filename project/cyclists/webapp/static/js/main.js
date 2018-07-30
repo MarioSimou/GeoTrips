@@ -33,7 +33,25 @@ var graphLayout = {
 		},
 		autosize: true,
 };
-
+var scatterLayout = {
+	  	font: {
+          family: 'Poppins, sans-serif',
+          size: 14,
+          color: '#7f7f7f'
+      	},
+		paper_bgcolor: 'rgba(0,0,0,0)',
+		plot_bgcolor: 'rgba(0,0,0,0)',
+		margin : {
+			l:0,
+			r:0,
+			b:0,
+			t:0,
+			pad:20
+		},
+		autosize: false,
+		width: 220,
+		height: 200,
+};
 // number of classes during the classification of the cloropleth maps
 const nClasses = 6;
 // makimarkers token
@@ -465,6 +483,7 @@ basicInfoTab.update = function(props,coords){
 legend.onAdd = function(map)
 {
 	var div = L.DomUtil.create('div', 'info legend');
+	var el = $('div.info.legend');
 	var cBoroughs = equalIntervals(nClasses,freqUrl, 'boroughs');
 	var cStations = equalIntervals(nClasses,freqUrl,'stations');
 
@@ -472,32 +491,76 @@ legend.onAdd = function(map)
 	cStations.unshift(0);
 
 	// content of BOROUGHS
-	div.innerHTML = '<h4>Boroughs Color</h4><p>**the color corresponds to the number of stations within a borough</p>';
-
+	$(div).append(`<div class="container-fluid">
+						<div class="row">
+							<div class="col-5">
+								<h4>Boroughs Color</h4>
+								<p>**the color corresponds to the number of stations within a borough</p>
+								<div></div>
+							</div>
+							<div class="col-7"><div id="3d-scatter-boroughs"></div></div>	
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-5">
+								<h4>Stations Color</h4>
+								<p>**the color corresponds to the number of routes that either they have started or ended in a station</p>							
+								<div></div>
+							</div>		
+							<div class="col-7"><div id="3d-scatter-stations"></div></div>
+						</div>
+					  </div>`);
 	// legend
 	for(var i=0; i < cBoroughs.length-1;i++)
 	{
-		div.innerHTML += `<i class="boroughs" style="background: ${getColor(cBoroughs[i],colRampGlo.boroughs, eqIntBoroughs, nClasses)}"></i> ${cBoroughs[i].toFixed(2) + (cBoroughs[i+1] ? ' &ndash; ' + cBoroughs[i+1].toFixed(2) + '<br>' : '')}`;
+		$(`<i class="boroughs" style="background: ${getColor(cBoroughs[i],colRampGlo.boroughs, eqIntBoroughs, nClasses)}"></i> ${cBoroughs[i].toFixed(2) + (cBoroughs[i+1] ? ' &ndash; ' + cBoroughs[i+1].toFixed(2) + '<br>' : '')}`).appendTo($(div).find('.col-5').eq(0).find('div'));
 	};
 	// dropdown list
-	div.innerHTML += `<select id='color-ramp-boroughs' class="color-ramp"><option value="YlGnBu">YlGnBu</option><option value="Reds">Reds</option><option value="YlGn">YlGn</option><option value="Paired" selected>Paired</option><option value="Pastel2">Pastel2</option><option value="Set3">Set3</option><option value="Accent">Accent</option></select>`;
+	$(`<select id='color-ramp-boroughs' class="color-ramp">
+							<option value="YlGnBu">YlGnBu</option>
+							<option value="Reds">Reds</option>
+							<option value="YlGn">YlGn</option>
+							<option value="Paired" selected>Paired</option>
+							<option value="Pastel2">Pastel2</option><option value="Set3">Set3</option>
+							<option value="Accent">Accent</option>
+						</select>`).appendTo($(div).find('.col-6').eq(0));
 
 	// content of STATIONS
-	div.innerHTML += '<hr><h4>Stations Color</h4><p>**the color corresponds to the number of routes that either they have started or ended in a station</p>';
-	// legend
 	for(var i=0; i < cStations.length-1; i++)
 	{
-		div.innerHTML += `<i class="stations" style="background: ${getColor(cStations[i],colRampGlo.stations, eqIntStations, nClasses)}"></i> ${cStations[i].toFixed(0) + (cStations[i+1] ? ' &ndash; ' + cStations[i+1].toFixed(0) + '<br>' : '')}`;
+		$(`<i class="stations" style="background: ${getColor(cStations[i],colRampGlo.stations, eqIntStations, nClasses)}"></i> ${cStations[i].toFixed(0) + (cStations[i+1] ? ' &ndash; ' + cStations[i+1].toFixed(0) + '<br>' : '')}`).appendTo($(div).find('.col-5').eq(1).find('div'));
 	};
 	// color-ramp of stations
-	div.innerHTML += `<select id='color-ramp-stations' class="color-ramp"><option value="YlGnBu" selected>YlGnBu</option><option value="Reds">Reds</option><option value="YlGn">YlGn</option><option value="Paired">Paired</option><option value="Pastel2">Pastel2</option><option value="Set3">Set3</option><option value="Accent">Accent</option></select>`;
+	$(`<select id='color-ramp-stations' class="color-ramp">
+						<option value="YlGnBu" selected>YlGnBu</option>
+						<option value="Reds">Reds</option>
+						<option value="YlGn">YlGn</option>
+						<option value="Paired">Paired</option>
+						<option value="Pastel2">Pastel2</option>
+						<option value="Set3">Set3</option>
+						<option value="Accent">Accent</option>
+					</select>
+				</div>
+			</div>
+		</div>`).appendTo($(div).find('.col-6').eq(1));
 
 	return div;
+};
+// adds the 3d-scatterplot
+append3dScatterPlot = (elName, scatterLayout)=>{
+	var trace = {
+		x: [1,2,3,4,5], y: [1,2,3,4,5], z:[1,2,3,4,5],
+		mode: 'markers',
+		marker: {size: 12, symbol: 'circle'},
+		type: 'scatter3d'
+	};
+	var data = [trace];
+	Plotly.newPlot(elName, data,scatterLayout);
 };
 
 // triggers whenever a user changes a coloramp
 legend.update = function(option, colorRamp, nClasses){
-	var iElements = $(`div i.${option}`);
+	var iElements = $(`div.info.legend i.${option}`);
 	for(var i=0; i < iElements.length; i++)
 	{
 		iElements.eq(i).css('background', colors[colorRamp][nClasses][i]);
@@ -663,9 +726,15 @@ $(window).on('load', ()=>
 	menuCommand.addTo(map);
 	// adds a legend on the map
 	legend.addTo(map);
+	// adds the 3d scatter plot
+	append3dScatterPlot('3d-scatter-boroughs',scatterLayout);
+	append3dScatterPlot('3d-scatter-stations',scatterLayout);
+	// freeze the the map whenever the legend panel is enabled
+	freezeMap($('div.info.legend.leaflet-control'));
+
 	// add the defaultExtent command
 	L.control.defaultExtent()
-		.setCenter([51.49720,0.018539])
+		.setCenter([51.537366, -0.298690])
 		.setZoom(10)
 		.addTo(map);
 
@@ -678,7 +747,7 @@ $(window).on('load', ()=>
 	map.addLayer(cluster);
 	map.addLayer(boroughs);
 	//
-    map.flyToBounds(L.latLngBounds(L.latLng(51.19548,-0.35654),L.latLng(51.79624,0.39437)));
+    map.flyToBounds(L.latLngBounds(L.latLng(51.19548,-0.65654),L.latLng(51.79624,0.09437)));
 
 
 	// adds a slider bar in the legend
