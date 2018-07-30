@@ -1,7 +1,7 @@
 // Variables Declaration
 var loader = $('#loader');
 var basemaps,colors,nStations,refRoutesFreqUrl,eqIntBoroughs,eqIntStations,eqIntRefRoutesGlo,latestSelectedBorough, latestSelectedStation,heatmapStationsLayer,heatmapBoroughsLayer,sortedFreqArr = [], paneTop,paneIntermediate,paneBottom,groupLayer;
-var map = null, stations = null, boroughs = null, routes = null;
+var map, stations,stationsArr, boroughs, boroughsArr, routes;
 const days = ['Monday', 'Tuesday', 'Wednesday','Thursday','Friday','Saturday','Sunday'];
 var colRampGlo = {
 	'stations' : 'YlGnBu',
@@ -547,15 +547,39 @@ legend.onAdd = function(map)
 	return div;
 };
 // adds the 3d-scatterplot
-append3dScatterPlot = (elName, scatterLayout)=>{
-	var trace = {
-		x: [1,2,3,4,5], y: [1,2,3,4,5], z:[1,2,3,4,5],
+get3dScatter = (x,y,z, elName,scatterLayout)=>{
+	var data = [{
+		x: x, y: y, z: z,
 		mode: 'markers',
-		marker: {size: 12, symbol: 'circle'},
+		marker: {color: 'rgb(23, 190, 207)', size: 2},
 		type: 'scatter3d'
-	};
-	var data = [trace];
+	},{
+        alphahull: 7,
+        opacity: 0.1,
+        type: 'mesh3d',
+        x: x,
+        y: y,
+        z: z
+	}];
 	Plotly.newPlot(elName, data,scatterLayout);
+};
+append3dScatterPlotPolygon = (elName,scatterLayout, geoJson) =>{
+	var lat = new Array(); var lng = new Array(); var freq = new Array();
+	Object.keys(geoJson._layers).map((key,index)=>{
+		lat.push(geoJson._layers[key]._bounds.getCenter().lat);
+		lng.push(geoJson._layers[key]._bounds.getCenter().lng);
+		freq.push(geoJson.toGeoJSON().features[index].properties.freq);
+	});
+	get3dScatter(lng,lat,freq,elName,scatterLayout);
+};
+append3dScatterPlotPoint = (elName, scatterLayout, arr)=>{
+	var lat = new Array(); var lng = new Array(); var freq= new Array();
+	arr.map((feature)=>{
+		lat.push(feature.geometry.coordinates[0][1]);
+		lng.push(feature.geometry.coordinates[0][0]);
+		freq.push(feature.properties.freq);
+	});
+	get3dScatter(lng,lat,freq,elName,scatterLayout);
 };
 
 // triggers whenever a user changes a coloramp
@@ -618,6 +642,11 @@ $(window).on("map:init", function(event) {
 
 	stations.on('data:loaded', function(){
     		console.log('stations are loaded..');
+
+    		// adds the 3d scatter plot on the legend panel
+			stationsArr = stations.toGeoJSON().features;
+			append3dScatterPlotPoint('3d-scatter-stations',scatterLayout, stationsArr);
+
     		// updates the info stats all
 			infoStatsUpdate($('.info-stats'));
 			freezeMap($('.info-stats'));
@@ -699,6 +728,11 @@ $(window).on("map:init", function(event) {
 			pane : 'paneBottom'
 		});
 
+	boroughs.on('data:loaded',function(){
+		// adds the 3d scatter plot on the legend panel
+		append3dScatterPlotPolygon('3d-scatter-boroughs',scatterLayout, boroughs);
+	}.bind(this));
+
 	// equal-intervals of boroughs
 	eqIntBoroughs = equalIntervals(nClasses,freqUrl, 'boroughs');
 
@@ -726,9 +760,7 @@ $(window).on('load', ()=>
 	menuCommand.addTo(map);
 	// adds a legend on the map
 	legend.addTo(map);
-	// adds the 3d scatter plot
-	append3dScatterPlot('3d-scatter-boroughs',scatterLayout);
-	append3dScatterPlot('3d-scatter-stations',scatterLayout);
+
 	// freeze the the map whenever the legend panel is enabled
 	freezeMap($('div.info.legend.leaflet-control'));
 
