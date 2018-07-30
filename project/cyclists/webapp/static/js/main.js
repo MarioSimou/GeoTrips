@@ -8,6 +8,26 @@ var colRampGlo = {
 	'boroughs' : 'Paired'
 };
 const freqUrl = $('#freq').attr('href');
+var graphLayout = {
+		yaxis: '',
+		xaxis: '',
+		showlegend:true,
+		legend: {
+   			 x: 0,
+			 y: 50,
+			 "orientation": 'h' ,
+  		},
+		paper_bgcolor: 'rgba(0,0,0,0)',
+		plot_bgcolor: 'rgba(0,0,0,0)',
+		margin : {
+			l:45,
+			r:20,
+			b:40,
+			t:25,
+			pad:4
+		},
+		autosize: true,
+};
 
 // number of classes during the classification of the cloropleth maps
 const nClasses = 6;
@@ -274,21 +294,12 @@ const appendDistributionGraph = (disGraphContainer) => {
 
 	$(`<div class="col-12"></div>`).appendTo(disGraphContainer);
 	$(`<div class="col-11" id="distribution-container"></div>`).appendTo(disGraphContainer.find('div'));
-	var trace = {x : distances, type: 'histogram'};
-	var data = [trace];
+	var reference = {x : distances,name: 'Reference',type: 'histogram',opacity:0.5, marker: {color: 'red'} };
+	var data = [reference];
 	console.log(data);
-	var layout = {
-		margin : {
-			l:20,
-			r:20,
-			b:20,
-			t:15,
-			pad:4
-		},
-		autosize: true,
+	graphLayout.yaxis = {'title' : '$P(X=d)$'}, graphLayout.xaxis = {'title': '$d (m)$'};
 
-	};
-	Plotly.newPlot('distribution-container',data, layout);
+	Plotly.newPlot('distribution-container',data, graphLayout, {staticPlot: true, displayModeBar: true});
 
 };
 const appendTemporalGraph = (sid,graphContainer) => {
