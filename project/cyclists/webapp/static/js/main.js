@@ -9,18 +9,23 @@ var colRampGlo = {
 };
 const freqUrl = $('#freq').attr('href');
 var graphLayout = {
+	  	font: {
+          family: 'Poppins, sans-serif',
+          size: 14,
+          color: '#7f7f7f'
+      	},
 		yaxis: '',
-		xaxis: '',
+		xaxis: {range: [0,20]},
 		showlegend:true,
 		legend: {
-   			 x: 0,
-			 y: 50,
-			 "orientation": 'h' ,
+   			 x: 0.5,
+			 y: 0.5,
+			 "orientation": 'v' ,
   		},
 		paper_bgcolor: 'rgba(0,0,0,0)',
 		plot_bgcolor: 'rgba(0,0,0,0)',
 		margin : {
-			l:45,
+			l:55,
 			r:20,
 			b:40,
 			t:25,
@@ -45,7 +50,7 @@ const legend = L.control({position : 'bottomleft'});
 const basicInfoTab = L.control({position : 'topleft'});
 const boundariesRangeSlider = L.control({position: 'bottomright'});
 const menuCommand = L.control({position : 'topleft'});
-
+const velocity = 15/3600 ;
 const cluster = L.markerClusterGroup(
 	{
 		showCoverageOnHover : false, // When you mouse over a cluster it shows the bounds of its markers
@@ -256,7 +261,7 @@ const getAdjustedUrl = (url,id) =>{
 	return url
 };
 var refRoutes;
-const callSpatialData = (map,refRoutesUrl,sid,freqUrl,mainContainer) =>{
+const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
 		// if the map has staRoutes layer removes it
 		(map.hasLayer(groupLayer) ? map.removeLayer(groupLayer.clearLayers()) : false);
 
@@ -285,31 +290,34 @@ const callSpatialData = (map,refRoutesUrl,sid,freqUrl,mainContainer) =>{
 		refRoutes.on('data:loaded', ()=>
 			{
         		appendSpatialDataFilter($('#ref-routes-slider-container'), refRoutes, groupLayer, refRoutesUrl);
-        		appendDistributionGraph($('#distances-distribution-graph-container'));
+        		appendDistributionGraph($('#distances-distribution-graph-container'),cusRoutes);
         		loader.hide();
 			});
 };
-const appendDistributionGraph = (disGraphContainer) => {
-	var distances = refRoutes.toGeoJSON().features.map((f)=>{return f.properties.balanced_ref_dist});
+const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
+	var refDistances = refRoutes.toGeoJSON().features.map((f)=>{return f.properties.balanced_ref_dist/1000}); // expressed in km
+	var cusDistances = new Array();
+	Object.keys(cusRoutes).map((key)=>{cusDistances.push(cusRoutes[key].duration*velocity)});
 
 	$(`<div class="col-12"></div>`).appendTo(disGraphContainer);
 	$(`<div class="col-11" id="distribution-container"></div>`).appendTo(disGraphContainer.find('div'));
-	var reference = {x : distances,name: 'Reference',type: 'histogram',opacity:0.5, marker: {color: 'red'} };
-	var data = [reference];
-	console.log(data);
-	graphLayout.yaxis = {'title' : '$P(X=d)$'}, graphLayout.xaxis = {'title': '$d (m)$'};
+	var refHist = {x : refDistances,name: 'Reference',type: 'histogram',histfunc : 'count',histnorm:'probability density',autobinx:true,opacity:0.5, marker: {color: 'red'} };
+	var cusHist = {x : cusDistances,name: 'Predicted', type: 'histogram',histfunc : 'count',histnorm:'probability density',autobinx:true,opacity: 0.5, marker: {color: 'green'}};
+	var data = [refHist,cusHist];
+
+	graphLayout.yaxis = {'title' : 'P( X = d )'}, graphLayout.xaxis['title'] = 'd (km)', graphLayout['barmode'] = "overlay";
 
 	Plotly.newPlot('distribution-container',data, graphLayout, {staticPlot: true, displayModeBar: true});
-
 };
 const appendTemporalGraph = (sid,graphContainer) => {
 	// adjust the routes layer
+	/*
 	cusRoutesUrl = getAdjustedUrl(stationsPairsRoutesUrl,sid);
 	// request the layer
 	var routes;
 	$.ajax({url: cusRoutesUrl, async: false}).done((response)=>{
 		routes=response;
-	});
+	});*/
 
 	graphContainer.html(''); // removes the previous content
 	/*$("<div id='tester'></div>").appendTo(graphContainer);
@@ -369,9 +377,16 @@ const updateStaRoutesList = (map,refRoutesUrl,e, freqUrl)=> {
 	if ($(e.currentTarget).attr('disabled') == undefined) {
         // local variables
         var sid = $(e.currentTarget).val();
+        // Request the routes of the selected station(sid)
+        var cusRoutesUrl = getAdjustedUrl(stationsPairsRoutesUrl,sid);
+		// request the layer
+		var cusRoutes;
+		$.ajax({url: cusRoutesUrl, async: false}).done((response)=>{
+			cusRoutes=response;
+		});
 
         // adds the spatial structure
-        callSpatialData(map, refRoutesUrl, sid,freqUrl,$('#ref-routes-slider-container'));
+        callSpatialData(map, refRoutesUrl, sid,freqUrl, cusRoutes);
         // analyse the routes and returns a temporal graph
         appendTemporalGraph(sid,$('#temp-graph-container'));
     }
