@@ -24,6 +24,42 @@ var graphLayout = {
   		},
 		paper_bgcolor: 'rgba(0,0,0,0)',
 		plot_bgcolor: 'rgba(0,0,0,0)',
+		scene: {
+            aspectratio: {
+                x: 1,
+                y: 1,
+                z: 1
+            },
+            camera: {
+                center: {
+                    x: 0,
+                    y: 0,
+                    z: 0
+                },
+                eye: {
+                    x: 1.25,
+                    y: 1.25,
+                    z: 1.25
+                },
+                up: {
+                    x: 0,
+                    y: 0,
+                    z: 1
+                }
+            },
+            xaxis: {
+                type: 'linear',
+                zeroline: false
+            },
+            yaxis: {
+                type: 'linear',
+                zeroline: false
+            },
+            zaxis: {
+                type: 'linear',
+                zeroline: false
+            }
+        },
 		margin : {
 			l:55,
 			r:20,
@@ -34,23 +70,71 @@ var graphLayout = {
 		autosize: true,
 };
 var scatterLayout = {
-	  	font: {
+		font: {
           family: 'Poppins, sans-serif',
           size: 14,
           color: '#7f7f7f'
       	},
-		paper_bgcolor: 'rgba(0,0,0,0)',
-		plot_bgcolor: 'rgba(0,0,0,0)',
 		margin : {
 			l:0,
 			r:0,
 			b:0,
-			t:0,
-			pad:20
+			t:20,
+			pad:10
 		},
+		paper_bgcolor: 'rgba(0,0,0,0)',
+		plot_bgcolor: 'rgba(0,0,0,0)',
+		showlegend: false,
 		autosize: false,
 		width: 220,
 		height: 200,
+		scene: {
+            aspectratio: {
+                x: 1,
+                y: 1,
+                z: 1
+            },
+            camera: {
+                center: {
+                    x: 0,
+                    y: 0,
+                    z: 0
+                },
+                eye: {
+                    x: 1.25,
+                    y: 1.25,
+                    z: 1.25
+                },
+                up: {
+                    x: 0,
+                    y: 0,
+                    z: 1
+                }
+            },
+            xaxis: {
+                type: 'linear',
+				gridcolor: 'rgb(255, 255, 255)',
+            	zerolinecolor: 'rgb(255, 255, 255)',
+            	showbackground: true,
+            	backgroundcolor: 'rgb(230, 230,230)'
+            },
+            yaxis: {
+                type: 'linear',
+            	gridcolor:'rgb(255, 255, 255)',
+            	zerolinecolor:'rgb(255, 255, 255)',
+            	showbackground:true,
+            	backgroundcolor:'rgb(230, 230,230)'
+            },
+            zaxis: {
+                type: 'linear',
+				gridcolor:'rgb(255, 255, 255)',
+            	zerolinecolor:'rgb(255, 255, 255)',
+            	showbackground:true,
+            	backgroundcolor:'rgb(230, 230,230)'
+            },
+            aspectratio : { x:1, y:1, z:0.7 },
+        	aspectmode : 'manual',
+        }
 };
 // number of classes during the classification of the cloropleth maps
 const nClasses = 6;
@@ -61,6 +145,7 @@ const refRoutesUrl =  $('#ref-routes').attr('href');// Assignment
 const boroughsUrl = $('#boroughs').attr('href');
 const stationsUrl = $('#stations').attr('href');
 const stationsPairsRoutesUrl = $('#stations-pairs-routes').attr('href');
+const kMeansUrl = $('#kmeans').attr('href');
 
 // Panels
 const statsInfo = L.control({position: 'topright'});
@@ -547,15 +632,15 @@ legend.onAdd = function(map)
 	return div;
 };
 // adds the 3d-scatterplot
-get3dScatter = (x,y,z, elName,scatterLayout)=>{
+get3dScatter = (x,y,z, elName,scatterLayout, alphahull)=>{
 	var data = [{
 		x: x, y: y, z: z,
 		mode: 'markers',
 		marker: {color: 'rgb(23, 190, 207)', size: 2},
 		type: 'scatter3d'
 	},{
-        alphahull: 7,
-        opacity: 0.1,
+        alphahull: alphahull, // Delaunay triangulation or an alpha set
+        opacity: 0.3,
         type: 'mesh3d',
         x: x,
         y: y,
@@ -563,23 +648,34 @@ get3dScatter = (x,y,z, elName,scatterLayout)=>{
 	}];
 	Plotly.newPlot(elName, data,scatterLayout);
 };
-append3dScatterPlotPolygon = (elName,scatterLayout, geoJson) =>{
-	var lat = new Array(); var lng = new Array(); var freq = new Array();
-	Object.keys(geoJson._layers).map((key,index)=>{
-		lat.push(geoJson._layers[key]._bounds.getCenter().lat);
-		lng.push(geoJson._layers[key]._bounds.getCenter().lng);
-		freq.push(geoJson.toGeoJSON().features[index].properties.freq);
+var layer;
+append3dScatterPlotPoint = (elName, scatterLayout,requestUrl,coloRamp = colors)=>{
+	console.log(requestUrl);
+	//var layer;
+	$.ajax({url : requestUrl, async: false}).done((response)=>{
+		layer = response;
 	});
-	get3dScatter(lng,lat,freq,elName,scatterLayout);
-};
-append3dScatterPlotPoint = (elName, scatterLayout, arr)=>{
-	var lat = new Array(); var lng = new Array(); var freq= new Array();
-	arr.map((feature)=>{
-		lat.push(feature.geometry.coordinates[0][1]);
-		lng.push(feature.geometry.coordinates[0][0]);
-		freq.push(feature.properties.freq);
-	});
-	get3dScatter(lng,lat,freq,elName,scatterLayout);
+	var data = [];
+	layer.map((cluster,i)=>{
+		data.push({
+            x: cluster[0], y: cluster[1], z: cluster[2],
+            mode: 'markers',
+            marker: {color: coloRamp.Set1[cluster.length][i], size: 2},
+            type: 'scatter3d',
+			name: `cluster ${i}`,
+        }, {
+        alphahull: 0, // creates a convex hull of the cluster
+        color: coloRamp.Set1[cluster.length][i],
+		opacity: 0.3,
+        type: 'mesh3d',
+        x: cluster[0],
+        y: cluster[1],
+        z: cluster[2],
+    	})
+    });
+
+	Plotly.newPlot(elName, data,scatterLayout);
+
 };
 
 // triggers whenever a user changes a coloramp
@@ -645,7 +741,8 @@ $(window).on("map:init", function(event) {
 
     		// adds the 3d scatter plot on the legend panel
 			stationsArr = stations.toGeoJSON().features;
-			append3dScatterPlotPoint('3d-scatter-stations',scatterLayout, stationsArr);
+
+			append3dScatterPlotPoint('3d-scatter-stations',scatterLayout,getAdjustedUrl(kMeansUrl.replace(new RegExp('none'),'stations'),5), colors);
 
     		// updates the info stats all
 			infoStatsUpdate($('.info-stats'));
@@ -730,13 +827,11 @@ $(window).on("map:init", function(event) {
 
 	boroughs.on('data:loaded',function(){
 		// adds the 3d scatter plot on the legend panel
-		append3dScatterPlotPolygon('3d-scatter-boroughs',scatterLayout, boroughs);
+		append3dScatterPlotPoint('3d-scatter-boroughs',scatterLayout,getAdjustedUrl(kMeansUrl.replace('none','boroughs'),3),colors);
 	}.bind(this));
 
 	// equal-intervals of boroughs
 	eqIntBoroughs = equalIntervals(nClasses,freqUrl, 'boroughs');
-
-
 });
 
 // While the window is loaded, all commands, buttons and labels are added

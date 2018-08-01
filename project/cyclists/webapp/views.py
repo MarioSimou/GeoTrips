@@ -4,6 +4,9 @@ from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.core.serializers import serialize
 from django.core.paginator import Paginator
 from . import models
+from sklearn.cluster import KMeans
+import numpy as np
+from matplotlib import pyplot as plt
 from functools import reduce
 from datetime import datetime
 import json
@@ -33,6 +36,29 @@ def load_stations(request):
     except:
         raise Http404('Stations could not be found')
     return HttpResponse(stations, content_type='json')
+
+def load_kmeans(request, layer,n_cluster):
+    mat = []
+    if layer == 'stations':
+        stations = get_list_or_404(models.Stations.objects.all())
+        for station in stations:
+            coords = station.location.coords[0]
+            mat.append([coords[0],coords[1],station.freq])
+    elif layer == 'boroughs':
+        boroughs = get_list_or_404(models.Boroughs.objects.all())
+        for borough in boroughs:
+            coords = borough.geom.centroid.coords
+            mat.append([coords[0],coords[1],borough.freq])
+    else:
+        raise Http404('Call not found')
+
+    clusters = [[[],[],[]] for i in range(int(n_cluster))]
+    for i,j in np.ndenumerate(KMeans(n_clusters=int(n_cluster)).fit_predict(mat)):
+        index = i[0]
+        clusters[j][0].append(mat[index][0]) # longitude
+        clusters[j][1].append(mat[index][1]) # latitude
+        clusters[j][2].append(mat[index][2]) # frequency
+    return JsonResponse(clusters,safe=False)
 
 def load_frequencies(request,sid):
     boroughs_freq = [borough.freq for borough in models.Boroughs.objects.all()]

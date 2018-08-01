@@ -16,6 +16,8 @@ urlpatterns = [
     re_path(r'^stations/(?P<pk>\d+)$', views.load_unique_station, name= 'station-unique'),
     # home/stations/
     re_path(r'^stations/', views.load_stations, name = 'stations'),
+    # home/kmeans/layer/n_cluster
+    re_path(r'^kmeans/(?P<layer>\w+)/(?P<n_cluster>\d+)$',views.load_kmeans, name = 'kmeans'),
     #home/boroughs/
     re_path(r'^boroughs/', views.load_boroughs, name = 'boroughs'),
     # home/stations-info/station_id
