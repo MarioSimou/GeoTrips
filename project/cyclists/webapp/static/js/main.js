@@ -363,6 +363,48 @@ const getAdjustedUrl = (url,id) =>{
 	url = url.replace(rexp, id);
 	return url
 };
+const refRoutesPanel = (e)=>{
+	var feature = e.target.feature.properties;
+	e.target.setStyle({
+		weight: 5,
+		color: '#666',
+		dashArray: '',
+		fillOpacity: 0.7,
+	});
+	// creates a div (panel) if it does not exists
+	var leafletControlContainer = $('#map div.leaflet-control-container');
+	leafletControlContainer.append('<div class="info ref-routes-panel"></div>');
+	var refRoutesPanel = leafletControlContainer.find('div.ref-routes-panel');
+	refRoutesPanel.css({
+		'top': e.containerPoint.y,
+		'left': e.containerPoint.x,
+	});
+	console.log(feature);
+	refRoutesPanel.html(`<div>
+							<h4>Heading</h4>
+						 	<hr>
+						 	<p><b>Start Station Id:</b> ${feature.start_station_id}</p>
+						 	<p><b>End Station Id:</b> ${feature.end_station_id}</p>
+						 	<p><b>Reference Dist:</b> ${feature.balanced_ref_dist} m</p>
+						 	<p><b>Reference Time:</b> ${feature.balanced_ref_time} s</p>
+						 	<p><b>Starting Station Frequency:</b> ${feature.freq}</p>
+						 </div>
+`);
+
+
+	console.log('end of works');
+};
+const resetHighlightRefRoutes = (e)=>{
+	refRoutes.resetStyle(e.target);
+	$('div.ref-routes-panel').remove();
+};
+const refRoutesOnEachFeature = (feature,layer) =>{
+	layer.on({
+		 'mouseover': refRoutesPanel,
+		 'mouseout': resetHighlightRefRoutes,
+	})  ;
+};
+
 var refRoutes;
 const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
 		// if the map has staRoutes layer removes it
@@ -378,6 +420,7 @@ const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
 
         refRoutes = new L.GeoJSON.AJAX(refRoutesUrl ,{
         	style : setRefRoutesStyle,
+			onEachFeature: refRoutesOnEachFeature,
         });
 
         // loads a POI of the station location
