@@ -19,9 +19,11 @@ import pdb
 from tqdm import tqdm
 
 # Create your views here.
+# request -> an HttpRequest object that can be accessed.
+# views -> functions that process an HttpRequest and return an HttpResponse
 def index(request):
     stations = get_list_or_404(models.Stations)
-    return render(request, 'webapp/index.html', {'stations' :stations })
+    return render(request, 'webapp/index.html', {'stations' : stations })
 
 def load_unique_station(request,pk):
     try:

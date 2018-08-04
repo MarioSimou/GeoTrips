@@ -18,9 +18,8 @@ body{
 }
 #sidebar.active {
     width: 0;
-    /*transform: rotateY(100deg);  Rotate sidebar vertically by 100 degrees. */
 }
- #sidebarCollapse {
+ #sidebarCollapse{
      width: 34px;
      height: 34px;
      border-radius: 4px;
@@ -31,10 +30,24 @@ body{
      border: 2px solid rgba(0,0,0,0.2);
     cursor: pointer;
  }
+#animation-btn {
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    position: relative;
+    left: -30px;
+    top: 5px;
+    background-color: rgba(255,255,255,0);
+    border: none;
+}
+#animation-btn-container{
+    padding-right: 7px;
+}
+
 #sidebarCollapse:hover {
     opacity: 0.7;
 }
-#sidebarCollapse span {
+#sidebarCollapse span, #animation-btn span {
     width: 80%;
     height: 2px;
     margin: 0 auto;
@@ -42,20 +55,20 @@ body{
     background: #555;
     transition: all 0.8s cubic-bezier(0.810, -0.330, 0.345, 1.375);
 }
-#sidebarCollapse span:first-of-type {
+#sidebarCollapse span:first-of-type, #animation-btn span:first-of-type {
     /* rotate first one */
     transform: rotate(45deg) translate(2px, 2px);
 }
-#sidebarCollapse span:nth-of-type(2) {
+#sidebarCollapse span:nth-of-type(2), #animation-btn span:nth-of-type(2) {
     /* second one is not visible */
     opacity: 0;
 }
-#sidebarCollapse span:last-of-type {
+#sidebarCollapse span:last-of-type, #animation-btn span:last-of-type {
     /* rotate third one */
     transform: rotate(-45deg) translate(1px, -1px);
 }
 
-#sidebarCollapse.active span {
+#sidebarCollapse.active span, #animation-btn.active span {
     /* no rotation */
     transform: none;
     /* all bars are visible */
@@ -149,7 +162,7 @@ ul ul a {
     background: #2b8cbe;
 }
 /*Leaflet labels css code*/
-.info {
+.info{
     padding: 6px 8px;
     font: 14px/16px Poppins,sans-serif, sans-serif;
     background: white;
@@ -166,8 +179,12 @@ ul ul a {
     top: -72px;
     left: 50px;
 }
+div.info.legend.active{
+    width: 250px;
+}
+
 .legend {
-    min-width: 400px;
+    min-width: 200px;
     max-width: 400px;
     line-height: 18px;
     color: #555;
@@ -349,4 +366,10 @@ div.leaflet-control-defaultextent.leaflet-control{
 #distribution-container{
     height: 200px;
     width: 400px;
+}
+.left-legend-panel{
+    padding-right: 0px;
+}
+.right-legend-panel{
+    padding-left: 0px;
 }

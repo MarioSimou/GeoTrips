@@ -578,27 +578,42 @@ legend.onAdd = function(map)
 	// content of BOROUGHS
 	$(div).append(`<div class="container-fluid">
 						<div class="row">
-							<div class="col-5">
-								<h4>Boroughs Color</h4>
-								<p>**the color corresponds to the number of stations within a borough</p>
-								<div></div>
-							</div>
-							<div class="col-7"><div id="3d-scatter-boroughs"></div></div>	
+							<div class="col-11" id="legend-container">
+								<div class="row">
+									<div class="col-6 left-legend-panel">
+										<h4>Boroughs Color</h4>
+										<p>**the color corresponds to the number of stations within a borough</p>
+										<div></div>
+									</div>
+									<div class="col-5 right-legend-panel">
+										<div id="3d-scatter-boroughs"></div>
+									</div>	
+								</div>
+								<hr>
+								<div class="row">
+									<div class="col-6 left-legend-panel">
+										<h4>Stations Color</h4>
+										<p>**the color corresponds to the number of routes that either they have started or ended in a station</p>							
+										<div></div>
+									</div>		
+									<div class="col-5 right-legend-panel">
+										<div id="3d-scatter-stations"></div>
+									</div>
+								</div>
+					  		</div>
+					  	<div class="col-1" id="animation-btn-container">
+					  		<button id="animation-btn">
+					  			<span></span>
+					  			<span></span>
+					  			<span></span>
+							</button>
 						</div>
-						<hr>
-						<div class="row">
-							<div class="col-5">
-								<h4>Stations Color</h4>
-								<p>**the color corresponds to the number of routes that either they have started or ended in a station</p>							
-								<div></div>
-							</div>		
-							<div class="col-7"><div id="3d-scatter-stations"></div></div>
-						</div>
-					  </div>`);
+					</div>
+				</div>`);
 	// legend
 	for(var i=0; i < cBoroughs.length-1;i++)
 	{
-		$(`<i class="boroughs" style="background: ${getColor(cBoroughs[i],colRampGlo.boroughs, eqIntBoroughs, nClasses)}"></i> ${cBoroughs[i].toFixed(2) + (cBoroughs[i+1] ? ' &ndash; ' + cBoroughs[i+1].toFixed(2) + '<br>' : '')}`).appendTo($(div).find('.col-5').eq(0).find('div'));
+		$(`<i class="boroughs" style="background: ${getColor(cBoroughs[i],colRampGlo.boroughs, eqIntBoroughs, nClasses)}"></i> ${cBoroughs[i].toFixed(2) + (cBoroughs[i+1] ? ' &ndash; ' + cBoroughs[i+1].toFixed(2) + '<br>' : '')}`).appendTo($(div).find('.left-legend-panel').eq(0).find('div'));
 	};
 	// dropdown list
 	$(`<select id='color-ramp-boroughs' class="color-ramp">
@@ -608,12 +623,12 @@ legend.onAdd = function(map)
 							<option value="Paired" selected>Paired</option>
 							<option value="Pastel2">Pastel2</option><option value="Set3">Set3</option>
 							<option value="Accent">Accent</option>
-						</select>`).appendTo($(div).find('.col-6').eq(0));
+						</select>`).appendTo($(div).find('.left-legend-panel').eq(0));
 
 	// content of STATIONS
 	for(var i=0; i < cStations.length-1; i++)
 	{
-		$(`<i class="stations" style="background: ${getColor(cStations[i],colRampGlo.stations, eqIntStations, nClasses)}"></i> ${cStations[i].toFixed(0) + (cStations[i+1] ? ' &ndash; ' + cStations[i+1].toFixed(0) + '<br>' : '')}`).appendTo($(div).find('.col-5').eq(1).find('div'));
+		$(`<i class="stations" style="background: ${getColor(cStations[i],colRampGlo.stations, eqIntStations, nClasses)}"></i> ${cStations[i].toFixed(0) + (cStations[i+1] ? ' &ndash; ' + cStations[i+1].toFixed(0) + '<br>' : '')}`).appendTo($(div).find('.left-legend-panel').eq(1).find('div'));
 	};
 	// color-ramp of stations
 	$(`<select id='color-ramp-stations' class="color-ramp">
@@ -627,27 +642,11 @@ legend.onAdd = function(map)
 					</select>
 				</div>
 			</div>
-		</div>`).appendTo($(div).find('.col-6').eq(1));
+		</div>`).appendTo($(div).find('.left-legend-panel').eq(1));
 
 	return div;
 };
 // adds the 3d-scatterplot
-get3dScatter = (x,y,z, elName,scatterLayout, alphahull)=>{
-	var data = [{
-		x: x, y: y, z: z,
-		mode: 'markers',
-		marker: {color: 'rgb(23, 190, 207)', size: 2},
-		type: 'scatter3d'
-	},{
-        alphahull: alphahull, // Delaunay triangulation or an alpha set
-        opacity: 0.3,
-        type: 'mesh3d',
-        x: x,
-        y: y,
-        z: z
-	}];
-	Plotly.newPlot(elName, data,scatterLayout);
-};
 var layer;
 append3dScatterPlotPoint = (elName, scatterLayout,requestUrl,coloRamp = colors)=>{
 	console.log(requestUrl);
@@ -674,7 +673,7 @@ append3dScatterPlotPoint = (elName, scatterLayout,requestUrl,coloRamp = colors)=
     	})
     });
 
-	Plotly.newPlot(elName, data,scatterLayout);
+	Plotly.newPlot(elName, data,scatterLayout, {displayModeBar: false});
 
 };
 
@@ -772,18 +771,19 @@ $(window).on("map:init", function(event) {
 			nStations = stations.toGeoJSON().features.length;
 
 			// adds a slider bar in the legend
-			$('div.legend.info').append( `
-					<br>
-					<br>
-					<table id="table-sFilterSlider">
-						<tr>
-							<th>1</th>
-							<th><em>Top N stations</em></th>
-							<th>${nStations}</th>
-						</tr>
-					</table>
-					<input type="range" class="slider" value="${nStations}" min="1" max="${nStations}" id="sFilterSlider">
-			`);
+			$('#legend-container div.row').eq(1).append( `
+					<div class="col-12">
+						<br>
+						<br>
+						<table id="table-sFilterSlider">
+							<tr>
+								<th>1</th>
+								<th><em>Top N stations</em></th>
+								<th>${nStations}</th>
+							</tr>
+						</table>
+						<input type="range" class="slider" value="${nStations}" min="1" max="${nStations}" id="sFilterSlider">
+					</div>`);
 
 			// add onfocus and on mouseLeave events on the sFilterSlider;
 			freezeMap($('#sFilterSlider'));
@@ -858,7 +858,20 @@ $(window).on('load', ()=>
 
 	// freeze the the map whenever the legend panel is enabled
 	freezeMap($('div.info.legend.leaflet-control'));
-
+	// adds interaction on the legend button
+	 $('#animation-btn').on('click',(e)=>{
+	 	var rightPanel = $('div.right-legend-panel');
+		// fades the right panels of the legend
+	 	rightPanel.fadeToggle(800);
+	 	// sets the button to active
+        $(e.currentTarget).toggleClass('active');
+        // determines the delay-time of the following process execution
+		var time = ($(e.currentTarget).hasClass('active') ? 800 : 0);
+		setTimeout(()=> {
+            $('div.info.legend').toggleClass('active'); // set legend to active
+            $('div.left-legend-panel').toggleClass('col-12');  // changes the width of the left panels
+        },time);
+	 });
 	// add the defaultExtent command
 	L.control.defaultExtent()
 		.setCenter([51.537366, -0.298690])
