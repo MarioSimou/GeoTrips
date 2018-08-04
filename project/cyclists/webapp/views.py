@@ -85,10 +85,11 @@ def load_reference_routes(request,sid):
 
 
 def load_routes_of_station(request,year,sid):
+    # only specific routes of a year
     routes_of_sid = models.Routes.objects.filter(start_date__gte = f'{year}-01-01 00:00').filter(station_pairs_id__start_station_id=sid)
-    routes = dict([(route.rental_id, {'start_date': route.start_date,'end_date':route.end_date,'duration':route.duration,'bike_id': route.bike_id.bike_id}) for route in routes_of_sid])
+    routes = [{'start_date': route.start_date,'end_date':route.end_date,'duration':route.duration,'bike_id': route.bike_id.bike_id} for route in routes_of_sid]
 
-    return JsonResponse(routes, safe=True)
+    return JsonResponse(routes, safe=False)
 
 def stations_info(request):
     # Load the boroughs and stations

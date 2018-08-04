@@ -36,10 +36,31 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cyclists/webapp/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="338">
+              <caret line="91" column="41" selection-start-line="91" selection-start-column="41" selection-end-line="91" selection-end-column="41" />
+              <folding>
+                <element signature="e#0#35#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cyclists/webapp/urls.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="182">
+              <caret line="8" column="61" selection-start-line="8" selection-start-column="61" selection-end-line="8" selection-end-column="61" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cyclists/webapp/templates/webapp/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="260">
+            <state relative-caret-position="-33">
               <caret line="100" column="17" selection-start-line="100" selection-start-column="17" selection-end-line="100" selection-end-column="17" />
             </state>
           </provider>
@@ -48,14 +69,23 @@
       <file leaf-file-name="main.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/js/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="494">
-              <caret line="872" column="8" selection-start-line="872" selection-start-column="8" selection-end-line="872" selection-end-column="8" />
+            <state relative-caret-position="52">
+              <caret line="404" column="84" selection-start-line="404" selection-start-column="84" selection-end-line="404" selection-end-column="84" />
               <folding>
                 <element signature="n#style#0;n#i#0;n#!!top" expanded="true" />
                 <element signature="e#1#8#0" expanded="true" />
                 <element signature="n#style#0;n#i#0;n#!!top" expanded="true" />
                 <element signature="e#1#8#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cyclists/webapp/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="581">
+              <caret line="54" column="29" selection-start-line="54" selection-start-column="29" selection-end-line="54" selection-end-column="29" />
             </state>
           </provider>
         </entry>
@@ -138,9 +168,9 @@
         <option value="$PROJECT_DIR$/cyclists/webapp/kmeans.py" />
         <option value="$PROJECT_DIR$/cyclists/webapp/k.py" />
         <option value="$PROJECT_DIR$/cyclists/webapp/templates/webapp/index.html" />
+        <option value="$PROJECT_DIR$/cyclists/webapp/static/css/main.css" />
         <option value="$PROJECT_DIR$/cyclists/webapp/urls.py" />
         <option value="$PROJECT_DIR$/cyclists/webapp/views.py" />
-        <option value="$PROJECT_DIR$/cyclists/webapp/static/css/main.css" />
         <option value="$PROJECT_DIR$/cyclists/webapp/static/js/main.js" />
       </list>
     </option>
@@ -570,13 +600,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cyclists/webapp/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1352">
-          <caret line="54" column="29" selection-start-line="54" selection-start-column="29" selection-end-line="54" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cyclists/webapp/k.py" />
     <entry file="file://$USER_HOME$/Applications/anaconda3/envs/geodjango/lib/python3.6/site-packages/django/apps/registry.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -592,30 +615,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cyclists/webapp/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="468">
-          <caret line="19" column="54" selection-start-line="19" selection-start-column="54" selection-end-line="19" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cyclists/webapp/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="41" column="8" selection-start-line="41" selection-start-column="8" selection-end-line="41" selection-end-column="8" />
-          <folding>
-            <element signature="e#0#35#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cyclists/webapp/templates/webapp/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="100" column="17" selection-start-line="100" selection-start-column="17" selection-end-line="100" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/css/main.css">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="338">
@@ -623,10 +622,41 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/cyclists/webapp/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="581">
+          <caret line="54" column="29" selection-start-line="54" selection-start-column="29" selection-end-line="54" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cyclists/webapp/templates/webapp/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-33">
+          <caret line="100" column="17" selection-start-line="100" selection-start-column="17" selection-end-line="100" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cyclists/webapp/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="182">
+          <caret line="8" column="61" selection-start-line="8" selection-start-column="61" selection-end-line="8" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cyclists/webapp/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="338">
+          <caret line="91" column="41" selection-start-line="91" selection-start-column="41" selection-end-line="91" selection-end-column="41" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/js/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="494">
-          <caret line="872" column="8" selection-start-line="872" selection-start-column="8" selection-end-line="872" selection-end-column="8" />
+        <state relative-caret-position="52">
+          <caret line="404" column="84" selection-start-line="404" selection-start-column="84" selection-end-line="404" selection-end-column="84" />
           <folding>
             <element signature="n#style#0;n#i#0;n#!!top" expanded="true" />
             <element signature="e#1#8#0" expanded="true" />

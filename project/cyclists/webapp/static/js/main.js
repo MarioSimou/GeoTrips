@@ -15,7 +15,7 @@ var graphLayout = {
           color: '#7f7f7f'
       	},
 		yaxis: '',
-		xaxis: {range: [0,20]},
+		xaxis: '',
 		showlegend:true,
 		legend: {
    			 x: 0.5,
@@ -398,19 +398,25 @@ const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
 			});
 };
 const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
-	var refDistances = refRoutes.toGeoJSON().features.map((f)=>{return f.properties.balanced_ref_dist/1000}); // expressed in km
-	var cusDistances = new Array();
-	Object.keys(cusRoutes).map((key)=>{cusDistances.push(cusRoutes[key].duration*velocity)});
+	// baseline distances
+	console.log('Append Distribution Gra[h');
+	var refRoutesArr = refRoutes.toGeoJSON().features;
+	//var sumRefDistances = refRoutesArr.reduce((a,b)=> a+b.properties.balanced_ref_dist,0);
+	var refDistances = refRoutesArr.map((f)=>{ return (f.properties.balanced_ref_dist/1000)}); // expressed in km
 
-	$(`<div class="col-12"></div>`).appendTo(disGraphContainer);
-	$(`<div class="col-11" id="distribution-container"></div>`).appendTo(disGraphContainer.find('div'));
+	// custom distances
+	//var sumCustomDistances = cusRoutes.reduce((a,b)=> a + b.duration,0)*velocity;
+	var cusDistances = cusRoutes.map((f)=>{return (f.duration*velocity)});
+	// create a div that will contains the graph
+	$(`<div class="col-11" id="distribution-container"></div>`).appendTo(disGraphContainer);
+	// distances options
 	var refHist = {x : refDistances,name: 'Reference',type: 'histogram',histfunc : 'count',histnorm:'probability density',autobinx:true,opacity:0.5, marker: {color: 'red'} };
-	var cusHist = {x : cusDistances,name: 'Predicted', type: 'histogram',histfunc : 'count',histnorm:'probability density',autobinx:true,opacity: 0.5, marker: {color: 'green'}};
-	var data = [refHist,cusHist];
+	var cusHist = {x : cusDistances,name: 'Predicted', type: 'histogram',histfunc : 'count',histnorm:'probability density', autobinx:true,opacity: 0.5, marker: {color: 'green'}};
 
-	graphLayout.yaxis = {'title' : 'P( X = d )'}, graphLayout.xaxis['title'] = 'd (km)', graphLayout['barmode'] = "overlay";
+	// modifies the axis values
+	graphLayout.yaxis = {'title' : 'P( X = d )'}, graphLayout.xaxis = {'title':'d (km)', 'range':[0,20]}, graphLayout['barmode'] = "overlay";
 
-	Plotly.newPlot('distribution-container',data, graphLayout, {staticPlot: true, displayModeBar: true});
+	Plotly.newPlot('distribution-container',[refHist,cusHist], graphLayout, {staticPlot: false, displayModeBar: false});
 };
 const appendTemporalGraph = (sid,graphContainer) => {
 	// adjust the routes layer
@@ -524,9 +530,9 @@ const infoStatsUpdate = (el) =>{
             html = html.concat(`<option value="${station.properties.pk}">${station.properties.station_name}</option>`.toString());
         }
         html = html.concat(`</select></div></div>
-								<div id="main-container">	
-									<div id="ref-routes-slider-container"></div>
-									<div id="distances-distribution-graph-container" class="row"></div>
+								<div class="row" id="main-container">	
+									<div class="col-12" id="ref-routes-slider-container"></div>	
+									<div id="distances-distribution-graph-container" class="col-12"></div>
 									<div id="temp-graph-container"></div>
 								</div>
 							</div>`);
