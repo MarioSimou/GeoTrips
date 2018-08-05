@@ -84,21 +84,27 @@ def load_reference_routes(request,year,sid):
     start = time()
     try:
         # selects routes of a certain year and sid
-        l = set([route.station_pairs_id.id for route in models.Routes.objects.filter(start_date__gte=f'{year}-01-01 00:00').select_related().filter(station_pairs_id__start_station_id=sid)])
-        ref_routes = serialize('geojson', models.Stations_Pairs_Routes.objects.filter(id__in = l))
+        l = set(models.Routes.objects.filter(start_date__gte=f'{year}-01-01 00:00').select_related().filter(station_pairs_id__start_station_id=sid).values_list('station_pairs_id',flat=True).distinct())
+        # gets the reference routes that have been covered this on the specified year
+        ref_routes = serialize('geojson', get_list_or_404(models.Stations_Pairs_Routes, id__in = l))
     except:
         raise Http404('Reference Routes could not be loaded...')
     stop = time()
-    print(stop-start)
+    print(f'{stop-start} to load Station_Pairs_ROutes model...')
     return HttpResponse(ref_routes, content_type='json')
 
 
 def load_routes_of_station(request,year,sid):
-
+    start = time()
     # only specific routes of a year
-    routes_of_sid = models.Routes.objects.filter(start_date__gte = f'{year}-01-01 00:00').filter(station_pairs_id__start_station_id=sid)
-    routes = [{'start_date': route.start_date,'end_date':route.end_date,'duration':route.duration,'bike_id': route.bike_id.bike_id, 'id': route.station_pairs_id.id} for route in routes_of_sid]
-    return JsonResponse(routes, safe=False)
+    # gets a list of the filtered routes
+    routes_of_sid = get_list_or_404(models.Routes, start_date__gte = f'{year}-01-01 00:00', station_pairs_id__start_station_id=sid)
+    # serialize the results to a json format
+    r = serialize('json',routes_of_sid,fields = ('start_date','end_date','duration','bike_id', 'station_pairs_id'))
+    stop = time()
+    print(f'{stop-start} to load Routes model')
+    # loads the json
+    return HttpResponse(r,content_type='json')
 
 def stations_info(request):
     # Load the boroughs and stations
@@ -126,7 +132,7 @@ def station_info(request,pk):
 
     return render(request, 'webapp/station-info.html', {'station' : station, 'routes' : routes})
 
-def load_heatmap_data(request, name):
+def load_heatmap_data(request, name, id = all):
     # Gets the station data
     l_model = None
     if name == 'stations':
@@ -137,4 +143,3 @@ def load_heatmap_data(request, name):
         l_model = [{'lat': borough.geom.centroid.coords[1], 'lng': borough.geom.centroid.coords[0], 'freq': borough.freq } for borough in boroughs if borough.geom is not None]
 
     return JsonResponse(l_model, safe = False)
-

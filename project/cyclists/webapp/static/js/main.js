@@ -141,10 +141,10 @@ const nClasses = 6;
 // makimarkers token
 L.MakiMarkers.accessToken = "pk.eyJ1IjoibWFyaW9zc2ltb3UiLCJhIjoiY2pqOTlyMzYzMnFuZjNrbW5maW13MXIydCJ9.a7dn8rjCN9DQ65ly7NVgQw";
 // link that refers on the routes
-const refRoutesUrl =  $('#ref-routes').attr('href');// Assignment
-const boroughsUrl = $('#boroughs').attr('href');
-const stationsUrl = $('#stations').attr('href');
-const stationsPairsRoutesUrl = $('#stations-pairs-routes').attr('href');
+const refRoutesUrl =  $('#ref-routes').attr('href');// webapp_stations_pairs_routes
+const boroughsUrl = $('#boroughs').attr('href'); // webapp_boroughs
+const stationsUrl = $('#stations').attr('href'); // webapp_stations
+const stationsPairsRoutesUrl = $('#stations-pairs-routes').attr('href'); // webapp_routes
 const kMeansUrl = $('#kmeans').attr('href');
 
 // Panels
@@ -367,10 +367,14 @@ const refRoutesPanel = (e)=>{
 	var feature = e.target.feature.properties;
 
 	// finds the average duration of the routes
-	var filteredCusRoutes = cusRoutes.filter((f)=> {return f.id == feature.pk});
+	// from all routes, only the routes that are selected by the mouse are loaded
+	var filteredCusRoutes = cusRoutes.filter((f)=> {return f.fields.station_pairs_id == feature.pk}); // f.id is the pair id
+	// times that the selected pair is covered
+	var annualFrequency = filteredCusRoutes.length;
 	// average predicted distance of the routes
-	var avgCusRoutes = filteredCusRoutes.reduce((a,b)=>a+parseInt(b.duration),0)/filteredCusRoutes.length;
+	var avgCusRoutesTime = filteredCusRoutes.reduce((a,b)=>a+parseInt(b.fields.duration),0)/annualFrequency;
 
+	// set style on the route that is selected
 	e.target.bringToFront();
 	e.target.setStyle({
 		weight: 5,
@@ -378,15 +382,18 @@ const refRoutesPanel = (e)=>{
 		dashArray: '',
 		fillOpacity: 0.7,
 	});
-	// creates a div (panel) if it does not exists
+
+	// creates a div (panel)
 	var leafletControlContainer = $('#map div.leaflet-control-container');
 	leafletControlContainer.append('<div class="info ref-routes-panel"></div>');
+	// variable of the created div
 	var refRoutesPanel = leafletControlContainer.find('div.ref-routes-panel');
+	// set its location on the map
 	refRoutesPanel.css({
 		'top': e.containerPoint.y,
 		'left': e.containerPoint.x,
 	});
-
+	// fil the content of the div
 	refRoutesPanel.html(`<div>
 							<h4>Routes of ${hashStations[feature.start_station_id].station_name}</h4>
 						 	<hr>
@@ -394,9 +401,10 @@ const refRoutesPanel = (e)=>{
 						 		<li><span>Start Station Name:</span>  ${hashStations[feature.start_station_id].station_name}</li>
 						 		<li><span>End Station Name:</span>  ${hashStations[feature.end_station_id].station_name}</li>		
 								<li><span>Baseline Time:</span> ${feature.balanced_ref_time} s</li>	
-								<li><span>Avg Predicted Time:</span> ${avgCusRoutes.toFixed(2)} s</li>
+								<li><span>Avg Predicted Time:</span> ${avgCusRoutesTime.toFixed(2)} s</li>
 								<li><span>Baseline Dist:</span> ${feature.balanced_ref_dist} m</li>
-								<li><span>Avg Predicted Distance:</span> ${(avgCusRoutes*velocity*1000).toFixed(2)} m</li>
+								<li><span>Avg Predicted Distance:</span> ${(avgCusRoutesTime*velocity*1000).toFixed(2)} m</li>
+								<li><span>Annual Frequency:</span> ${annualFrequency}</li>
 								<li><span>Global Frequency:</span> ${feature.freq} </li>
 							</ul>
 						 </div>`);
@@ -420,14 +428,14 @@ const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
 		refRoutesFreqUrl = getAdjustedUrl(freqUrl,sid);
 		// adjust the stations-pairs-routes layer
         refRoutesUrl = getAdjustedUrl(refRoutesUrl,sid);
-		// finds the corresponded equal interval ranges - global
+        // finds the corresponded equal interval ranges - global
 		eqIntRefRoutesGlo = equalIntervals(7,refRoutesFreqUrl,'refRoutes');
 		// updates the staRoutes layer
 
         refRoutes = new L.GeoJSON.AJAX(refRoutesUrl ,{
         	style : setRefRoutesStyle,
 			onEachFeature: refRoutesOnEachFeature,
-        });
+        });  // webapp_stations_pairs_routes model
 
         // loads a POI of the station location
 		var uniqStaUrl = getAdjustedUrl( $('#unique-station').attr('href') ,sid);
@@ -452,7 +460,7 @@ const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
 	//var sumRefDistances = refRoutesArr.reduce((a,b)=> a+b.properties.balanced_ref_dist,0);
 	var refDistances = refRoutesArr.map((f)=>{ return (f.properties.balanced_ref_dist/1000)}); // expressed in km
 
-	var cusDistances = cusRoutes.map((f)=>{return (f.duration*velocity)});
+	var cusDistances = cusRoutes.map((f)=>{return (f.fields.duration*velocity)});
 	// create a div that will contains the graph
 	$(`<div class="col-11" id="distribution-container"></div>`).appendTo(disGraphContainer);
 	// distances options
@@ -463,8 +471,8 @@ const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
 	graphLayout.yaxis = {'title' : 'P( X = d )'}, graphLayout.xaxis = {'title':'d (km)', 'range':[0,20]}, graphLayout['barmode'] = "overlay";
 
 	Plotly.newPlot('distribution-container',[refHist,cusHist], graphLayout, {staticPlot: false, displayModeBar: false});
-	console.timeEnd('t');
 };
+
 const appendTemporalGraph = (sid,graphContainer) => {
 	// adjust the routes layer
 	/*
@@ -540,7 +548,7 @@ const updateStaRoutesList = (map,refRoutesUrl,e, freqUrl)=> {
         var cusRoutesUrl = getAdjustedUrl(stationsPairsRoutesUrl,sid);
 		// request the layer
 		$.ajax({url: cusRoutesUrl, async: false}).done((response)=>{
-			cusRoutes=response;
+			cusRoutes=response; // loaded routes of 2017
 		});
 
         // adds the spatial structure
@@ -794,8 +802,6 @@ $(window).on("map:init", function(event) {
 			});
 
     		// adds the 3d scatter plot on the legend panel
-			//stationsArr = stations.toGeoJSON().features;
-
 			append3dScatterPlotPoint('3d-scatter-stations',scatterLayout,getAdjustedUrl(kMeansUrl.replace(new RegExp('none'),'stations'),5), colors);
 
     		// updates the info stats all
@@ -1028,8 +1034,6 @@ $(window).on('load', ()=>
 	});
 
 });
-
-
 
 // While the document is prepared, the events of the commands, buttons are added
 $(document).ready(() => {
