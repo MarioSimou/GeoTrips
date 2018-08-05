@@ -80,15 +80,21 @@ def load_boroughs(request):
     return HttpResponse(boroughs, content_type= 'json')
 
 # baseline routes GeoJSON load
-def load_reference_routes(request,sid):
+def load_reference_routes(request,year,sid):
+    start = time()
     try:
-        ref_routes = serialize('geojson', models.Stations_Pairs_Routes.objects.filter(start_station_id=sid))
+        # selects routes of a certain year and sid
+        l = set([route.station_pairs_id.id for route in models.Routes.objects.filter(start_date__gte=f'{year}-01-01 00:00').select_related().filter(station_pairs_id__start_station_id=sid)])
+        ref_routes = serialize('geojson', models.Stations_Pairs_Routes.objects.filter(id__in = l))
     except:
         raise Http404('Reference Routes could not be loaded...')
+    stop = time()
+    print(stop-start)
     return HttpResponse(ref_routes, content_type='json')
 
 
 def load_routes_of_station(request,year,sid):
+
     # only specific routes of a year
     routes_of_sid = models.Routes.objects.filter(start_date__gte = f'{year}-01-01 00:00').filter(station_pairs_id__start_station_id=sid)
     routes = [{'start_date': route.start_date,'end_date':route.end_date,'duration':route.duration,'bike_id': route.bike_id.bike_id, 'id': route.station_pairs_id.id} for route in routes_of_sid]
