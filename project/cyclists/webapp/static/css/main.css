@@ -373,15 +373,25 @@ div.leaflet-control-defaultextent.leaflet-control{
 .right-legend-panel{
     padding-left: 0px;
 }
+/* style of reference routes layer */
 .ref-routes-panel {
-    background: white;
     z-index: 900;
     position: relative;
     min-width: 200px;
     max-width: 300px;
     line-height: 1;
 }
-.ref-routes-panel p, .ref-routes-panel hr {
-    margin-bottom: 0;
+.ref-routes-panel hr {
+    margin-bottom: 4px;
     margin-top: 0;
+}
+.ref-routes-panel ul {
+    list-style: none;
+    margin-left: -40px;
+}
+.ref-routes-panel ul span{
+    font-weight: bold;
+}
+.ref-routes-panel h4 {
+    font-size: 16px;
 }

@@ -1,7 +1,7 @@
 // Variables Declaration
 var loader = $('#loader');
-var basemaps,colors,nStations,refRoutesFreqUrl,eqIntBoroughs,eqIntStations,eqIntRefRoutesGlo,latestSelectedBorough, latestSelectedStation,heatmapStationsLayer,heatmapBoroughsLayer,sortedFreqArr = [], paneTop,paneIntermediate,paneBottom,groupLayer;
-var map, stations,stationsArr, boroughs, boroughsArr, routes;
+var basemaps,colors,nStations,hashStations = {}  ,refRoutesFreqUrl,eqIntBoroughs,eqIntStations,eqIntRefRoutesGlo,latestSelectedBorough, latestSelectedStation,heatmapStationsLayer,heatmapBoroughsLayer,sortedFreqArr = [], paneTop,paneIntermediate,paneBottom,groupLayer;
+var map, stations,refRoutes,boroughs,routes;
 const days = ['Monday', 'Tuesday', 'Wednesday','Thursday','Friday','Saturday','Sunday'];
 var colRampGlo = {
 	'stations' : 'YlGnBu',
@@ -365,6 +365,7 @@ const getAdjustedUrl = (url,id) =>{
 };
 const refRoutesPanel = (e)=>{
 	var feature = e.target.feature.properties;
+	e.target.bringToFront();
 	e.target.setStyle({
 		weight: 5,
 		color: '#666',
@@ -379,20 +380,17 @@ const refRoutesPanel = (e)=>{
 		'top': e.containerPoint.y,
 		'left': e.containerPoint.x,
 	});
-	console.log(feature);
+
 	refRoutesPanel.html(`<div>
-							<h4>Heading</h4>
+							<h4>Routes of ${hashStations[feature.start_station_id].station_name}</h4>
 						 	<hr>
-						 	<p><b>Start Station Id:</b> ${feature.start_station_id}</p>
-						 	<p><b>End Station Id:</b> ${feature.end_station_id}</p>
-						 	<p><b>Reference Dist:</b> ${feature.balanced_ref_dist} m</p>
-						 	<p><b>Reference Time:</b> ${feature.balanced_ref_time} s</p>
-						 	<p><b>Starting Station Frequency:</b> ${feature.freq}</p>
-						 </div>
-`);
-
-
-	console.log('end of works');
+						 	<ul>
+						 		<li><span>Start Station Id:</span>  ${hashStations[feature.start_station_id].station_name}</li>
+						 		<li><span>End Station Id:</span>  ${hashStations[feature.end_station_id].station_name}</li>	
+								<li><span>Reference Dist:</span> ${feature.balanced_ref_dist} m</li>
+								<li><span>Reference Time:</span> ${feature.balanced_ref_time} s</li>
+							</ul>
+						 </div>`);
 };
 const resetHighlightRefRoutes = (e)=>{
 	refRoutes.resetStyle(e.target);
@@ -405,7 +403,6 @@ const refRoutesOnEachFeature = (feature,layer) =>{
 	})  ;
 };
 
-var refRoutes;
 const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
 		// if the map has staRoutes layer removes it
 		(map.hasLayer(groupLayer) ? map.removeLayer(groupLayer.clearLayers()) : false);
@@ -507,6 +504,7 @@ const appendSpatialDataFilter = (sliderContainer,refRoutes,groupLayer,refRoutesU
 
 			refRoutes = new L.GeoJSON.AJAX(refRoutesUrl,{
 				style: setRefRoutesStyle,
+				onEachFeature: refRoutesOnEachFeature,
 				filter: (feature)=>{return (feature.properties.freq > sorrefRoutesArr[sliderVal].properties.freq ? true : false)},
 			}).addTo(groupLayer);
 
@@ -549,14 +547,7 @@ const updateStaRoutesList = (map,refRoutesUrl,e, freqUrl)=> {
 statsInfo.onAdd = function(map) {return createDivElement(this,'info info-stats');};
 statsInfo.update  = function(targetedStationProps) {};
 
-const infoStatsDate = (el) => {
-	var d = new Date();
-	var dateTime = `${days[d.getDay()]} ${d.getDay()}/${d.getDate()}/${d.getFullYear()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
-	el.find('h4 em').text(dateTime.toString());
-};
-
 const infoStatsUpdate = (el) =>{
-	el.html('<h4><em></em></h4>'); // date
 	html = el.html().toString(); // get the context
 	try {
 		html = html.concat(`<div class="container-fluid">
@@ -564,7 +555,7 @@ const infoStatsUpdate = (el) =>{
 									<div class="btn-group-toggle col-4" data-toggle="buttons">
 										<button class="mybtn active">Active</button>
 									</div>
-									<div class="col-8 form-group">
+									<div class="col-8">
 										<select id="station-routes" class="custom-select">
 											<option value="">Select a Station Route</option>`
 		);
@@ -784,11 +775,18 @@ $(window).on("map:init", function(event) {
     // equal-intervals of stations
 	eqIntStations = equalIntervals(nClasses,freqUrl,'stations');
 
+	// create a hash map of the stations, so it can accessed easily
 	stations.on('data:loaded', function(){
     		console.log('stations are loaded..');
+		    stations.toGeoJSON().features.map((f)=>{
+		    	hashStations[f.properties.pk] =  {
+		    		'station_name' : f.properties.station_name,
+					'fre': f.properties.freq,
+				};
+			});
 
     		// adds the 3d scatter plot on the legend panel
-			stationsArr = stations.toGeoJSON().features;
+			//stationsArr = stations.toGeoJSON().features;
 
 			append3dScatterPlotPoint('3d-scatter-stations',scatterLayout,getAdjustedUrl(kMeansUrl.replace(new RegExp('none'),'stations'),5), colors);
 
@@ -890,8 +888,6 @@ $(window).on('load', ()=>
 
 	// adds the info stats label
 	statsInfo.addTo(map);
-	// updates the info stats label every second (date)
-	setInterval(()=>{infoStatsDate($('.info-stats'))},1000);
 
 	// adds a scale control on the map
 	L.control.scale({maxWidth : 500, metric: true, imperial: true}).addTo(map);

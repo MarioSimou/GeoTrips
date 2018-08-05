@@ -48,8 +48,8 @@
       <file leaf-file-name="main.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/js/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="286">
-              <caret line="375" column="79" selection-start-line="375" selection-start-column="79" selection-end-line="375" selection-end-column="79" />
+            <state relative-caret-position="234">
+              <caret line="890" selection-start-line="890" selection-end-line="890" />
               <folding>
                 <element signature="n#style#0;n#i#0;n#!!top" expanded="true" />
                 <element signature="e#1#8#0" expanded="true" />
@@ -72,8 +72,8 @@
       <file leaf-file-name="main.css" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/css/main.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="553">
-              <caret line="383" column="41" selection-start-line="383" selection-start-column="41" selection-end-line="383" selection-end-column="41" />
+            <state relative-caret-position="269">
+              <caret line="375" column="34" selection-start-line="375" selection-start-column="34" selection-end-line="375" selection-end-column="34" />
             </state>
           </provider>
         </entry>
@@ -409,8 +409,8 @@
       <window_info anchor="bottom" id="Run" order="2" weight="0.29575598" />
       <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Python Console" order="10" sideWeight="0.4996651" weight="0.32934928" />
-      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.49832553" weight="0.2387268" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27266622" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" sideWeight="0.49832553" visible="true" weight="0.2387268" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.27266622" />
       <window_info anchor="right" id="R Packages" order="3" />
       <window_info anchor="bottom" id="Docker" order="12" show_stripe_button="false" />
       <window_info anchor="right" id="R Graphics" order="3" weight="0.32975152" />
@@ -601,13 +601,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/css/main.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="553">
-          <caret line="383" column="41" selection-start-line="383" selection-start-column="41" selection-end-line="383" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cyclists/webapp/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="338">
@@ -632,10 +625,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/css/main.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="269">
+          <caret line="375" column="34" selection-start-line="375" selection-start-column="34" selection-end-line="375" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/js/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="375" column="79" selection-start-line="375" selection-start-column="79" selection-end-line="375" selection-end-column="79" />
+        <state relative-caret-position="234">
+          <caret line="890" selection-start-line="890" selection-end-line="890" />
           <folding>
             <element signature="n#style#0;n#i#0;n#!!top" expanded="true" />
             <element signature="e#1#8#0" expanded="true" />
