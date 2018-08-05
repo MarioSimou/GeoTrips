@@ -24,7 +24,7 @@ from tqdm import tqdm
 def index(request):
     stations = get_list_or_404(models.Stations)
     return render(request, 'webapp/index.html', {'stations' : stations })
-
+# request a unique station based on pk
 def load_unique_station(request,pk):
     try:
         station_pk = serialize('geojson',models.Stations.objects.filter(station_id = pk))
@@ -32,6 +32,7 @@ def load_unique_station(request,pk):
         raise Http404('Unknown station')
     return HttpResponse(station_pk,content_type='json')
 
+# stations GeoJSON load
 def load_stations(request):
     try:
         stations = serialize('geojson', models.Stations.objects.all())
@@ -69,6 +70,7 @@ def load_frequencies(request,sid):
 
     return JsonResponse({'boroughs': boroughs_freq, 'stations': stations_freq, 'refRoutes': ref_routes},safe = True)
 
+# boroughs GeoJSON load
 def load_boroughs(request):
     try:
         boroughs = serialize('geojson', models.Boroughs.objects.all())
@@ -76,6 +78,8 @@ def load_boroughs(request):
         raise Http404('Boroughs could not be loaded..')
 
     return HttpResponse(boroughs, content_type= 'json')
+
+# baseline routes GeoJSON load
 def load_reference_routes(request,sid):
     try:
         ref_routes = serialize('geojson', models.Stations_Pairs_Routes.objects.filter(start_station_id=sid))
@@ -87,8 +91,7 @@ def load_reference_routes(request,sid):
 def load_routes_of_station(request,year,sid):
     # only specific routes of a year
     routes_of_sid = models.Routes.objects.filter(start_date__gte = f'{year}-01-01 00:00').filter(station_pairs_id__start_station_id=sid)
-    routes = [{'start_date': route.start_date,'end_date':route.end_date,'duration':route.duration,'bike_id': route.bike_id.bike_id} for route in routes_of_sid]
-
+    routes = [{'start_date': route.start_date,'end_date':route.end_date,'duration':route.duration,'bike_id': route.bike_id.bike_id, 'id': route.station_pairs_id.id} for route in routes_of_sid]
     return JsonResponse(routes, safe=False)
 
 def stations_info(request):

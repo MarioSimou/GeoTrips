@@ -7,7 +7,7 @@ urlpatterns = [
     # /home/
     re_path(r'^$', views.index, name = 'index'),
     # /home/stations_pairs_routes -> returns a list of objects
-    re_path(r'^stations-pairs-routes/(?P<year>\d+)/(?P<sid>\d+)$', views.load_routes_of_station, name= 'stations_pairs_routes'),
+    re_path(r'^stations-pairs-routes/(?P<year>\d+)/(?P<sid>\d+)$', views.load_routes_of_station, name='stations_pairs_routes'),
     # /home/ref-routes/
     re_path(r'^ref-routes/(?P<sid>\d+)$', views.load_reference_routes, name = 'ref-routes'),
     # home/frequencies

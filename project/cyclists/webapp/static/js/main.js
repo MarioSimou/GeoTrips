@@ -365,6 +365,12 @@ const getAdjustedUrl = (url,id) =>{
 };
 const refRoutesPanel = (e)=>{
 	var feature = e.target.feature.properties;
+
+	// finds the average duration of the routes
+	var filteredCusRoutes = cusRoutes.filter((f)=> {return f.id == feature.pk});
+	// average predicted distance of the routes
+	var avgCusRoutes = filteredCusRoutes.reduce((a,b)=>a+parseInt(b.duration),0)/filteredCusRoutes.length;
+
 	e.target.bringToFront();
 	e.target.setStyle({
 		weight: 5,
@@ -385,10 +391,13 @@ const refRoutesPanel = (e)=>{
 							<h4>Routes of ${hashStations[feature.start_station_id].station_name}</h4>
 						 	<hr>
 						 	<ul>
-						 		<li><span>Start Station Id:</span>  ${hashStations[feature.start_station_id].station_name}</li>
-						 		<li><span>End Station Id:</span>  ${hashStations[feature.end_station_id].station_name}</li>	
-								<li><span>Reference Dist:</span> ${feature.balanced_ref_dist} m</li>
-								<li><span>Reference Time:</span> ${feature.balanced_ref_time} s</li>
+						 		<li><span>Start Station Name:</span>  ${hashStations[feature.start_station_id].station_name}</li>
+						 		<li><span>End Station Name:</span>  ${hashStations[feature.end_station_id].station_name}</li>		
+								<li><span>Baseline Time:</span> ${feature.balanced_ref_time} s</li>	
+								<li><span>Avg Predicted Time:</span> ${avgCusRoutes.toFixed(2)} s</li>
+								<li><span>Baseline Dist:</span> ${feature.balanced_ref_dist} m</li>
+								<li><span>Avg Predicted Distance:</span> ${(avgCusRoutes*velocity*1000).toFixed(2)} m</li>
+								<li><span>Global Frequency:</span> ${feature.freq} </li>
 							</ul>
 						 </div>`);
 };
@@ -439,13 +448,10 @@ const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
 };
 const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
 	// baseline distances
-	console.log('Append Distribution Gra[h');
 	var refRoutesArr = refRoutes.toGeoJSON().features;
 	//var sumRefDistances = refRoutesArr.reduce((a,b)=> a+b.properties.balanced_ref_dist,0);
 	var refDistances = refRoutesArr.map((f)=>{ return (f.properties.balanced_ref_dist/1000)}); // expressed in km
 
-	// custom distances
-	//var sumCustomDistances = cusRoutes.reduce((a,b)=> a + b.duration,0)*velocity;
 	var cusDistances = cusRoutes.map((f)=>{return (f.duration*velocity)});
 	// create a div that will contains the graph
 	$(`<div class="col-11" id="distribution-container"></div>`).appendTo(disGraphContainer);
@@ -457,6 +463,7 @@ const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
 	graphLayout.yaxis = {'title' : 'P( X = d )'}, graphLayout.xaxis = {'title':'d (km)', 'range':[0,20]}, graphLayout['barmode'] = "overlay";
 
 	Plotly.newPlot('distribution-container',[refHist,cusHist], graphLayout, {staticPlot: false, displayModeBar: false});
+	console.timeEnd('t');
 };
 const appendTemporalGraph = (sid,graphContainer) => {
 	// adjust the routes layer
@@ -520,6 +527,8 @@ const ajaxStopLoader = (spatialStructure)=>{
 const ajaxStartLoader = ()=>{
 	loader.show();
 };
+
+var cusRoutes;
 const updateStaRoutesList = (map,refRoutesUrl,e, freqUrl)=> {
 	// shows a loader
 	ajaxStartLoader();
@@ -530,7 +539,6 @@ const updateStaRoutesList = (map,refRoutesUrl,e, freqUrl)=> {
         // Request the routes of the selected station(sid)
         var cusRoutesUrl = getAdjustedUrl(stationsPairsRoutesUrl,sid);
 		// request the layer
-		var cusRoutes;
 		$.ajax({url: cusRoutesUrl, async: false}).done((response)=>{
 			cusRoutes=response;
 		});

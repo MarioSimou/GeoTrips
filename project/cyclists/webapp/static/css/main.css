@@ -388,6 +388,7 @@ div.leaflet-control-defaultextent.leaflet-control{
 .ref-routes-panel ul {
     list-style: none;
     margin-left: -40px;
+    padding-bottom: 2px;
 }
 .ref-routes-panel ul span{
     font-weight: bold;
