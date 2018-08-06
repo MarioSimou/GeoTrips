@@ -400,7 +400,7 @@ const refRoutesPanel = (e)=>{
 	});
 	// fil the content of the div
 	refRoutesPanel.html(`<div>
-							<h4>Routes of ${hashStations[feature.start_station_id].station_name}</h4>
+							<h4><b>Routes of ${hashStations[feature.start_station_id].station_name}</b></h4>
 						 	<hr>
 						 	<ul>
 						 		<li><span>Start Station Name:</span>  ${hashStations[feature.start_station_id].station_name}</li>
@@ -455,9 +455,8 @@ const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
 		refRoutes.on('data:loaded', ()=>
 			{
         		appendSpatialDataFilter($('#ref-routes-slider-container'), refRoutes, groupLayer, refRoutesUrl);
+        		appendRefRoutesLegend($('#legend-graph-container'),eqIntRefRoutes, refRoutesFreqUrl);
         		appendDistributionGraph($('#distances-distribution-graph-container'),cusRoutes);
-        		console.log(eqIntRefRoutes);
-        		appendRefRoutesLegend($('#temp-graph-container'),eqIntRefRoutes, refRoutesFreqUrl);
 
         		loader.hide();
 			});
@@ -489,11 +488,9 @@ const appendRefRoutesLegend = (graphContainer,eqIntRefRoutes,refRoutesFreqUrl) =
 	console.log(2);
 	console.log(cRefRoutes);
 	console.log(eqIntRefRoutes);
-	for(var i=0; i < cRefRoutes.length-1;i++)
-	{
-		console.log(getColor(cRefRoutes[i],colRampGlo.routes, eqIntRefRoutes, nClasses));
-		$(`<i class="refRoutes" style="background: ${getColor(cRefRoutes[i],colRampGlo.routes, eqIntRefRoutes, nClasses)}"></i> ${cRefRoutes[i].toFixed(2) + (cRefRoutes[i+1] ? ' &ndash; ' + cRefRoutes[i+1].toFixed(2) + '<br>' : '')}`).appendTo(graphContainer.find('div'));
-	};
+
+	populateLegend('refRoutes',cRefRoutes,colRampGlo.routes,eqIntRefRoutes,nClasses,graphContainer.find('div'));
+
 	console.log(3);
 	// dropdown list
 	$(`<select id='color-ramp-refroutes' class="color-ramp">
@@ -595,8 +592,8 @@ const infoStatsUpdate = (el) =>{
         html = html.concat(`</select></div></div>
 								<div class="row" id="main-container">	
 									<div class="col-12" id="ref-routes-slider-container"></div>	
+									<div id="legend-graph-container" class="col-12"></div>	
 									<div id="distances-distribution-graph-container" class="col-12"></div>
-									<div id="temp-graph-container" class="col-12"></div>
 								</div>
 							</div>`);
     }catch (e) {

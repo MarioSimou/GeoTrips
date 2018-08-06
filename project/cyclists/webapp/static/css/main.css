@@ -389,10 +389,10 @@ div.leaflet-control-defaultextent.leaflet-control{
 .ref-routes-panel h4 {
     font-size: 16px;
 }
-.stations-slider div.row div:nth-of-type(2){
+.stations-slider div.row div:nth-of-type(2), #ref-routes-slider-content div:nth-of-type(2){
     text-align: center;
 }
-.stations-slider div.row div:last-of-type{
+.stations-slider div.row div:last-of-type, #ref-routes-slider-content div:last-of-type{
     text-align: right;
 }
 .stations-slider div.row{
