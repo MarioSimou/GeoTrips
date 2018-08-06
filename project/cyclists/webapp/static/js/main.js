@@ -1,13 +1,13 @@
 // Variables Declaration
 var loader = $('#loader');
-var basemaps,colors,nStations,hashStations = {}  ,refRoutesFreqUrl,eqIntBoroughs,eqIntStations,eqIntRefRoutesGlo,latestSelectedBorough, latestSelectedStation,heatmapStationsLayer,heatmapBoroughsLayer,sortedFreqArr = [], paneTop,paneIntermediate,paneBottom,groupLayer;
+var basemaps,colors,nStations,hashStations = {}  ,refRoutesFreqUrl,eqIntBoroughs,eqIntStations,eqIntRefRoutes,latestSelectedBorough, latestSelectedStation,heatmapStationsLayer,heatmapBoroughsLayer,sortedFreqArr = [], paneTop,paneIntermediate,paneBottom,groupLayer;
 var map, stations,refRoutes,boroughs,routes;
 const days = ['Monday', 'Tuesday', 'Wednesday','Thursday','Friday','Saturday','Sunday'];
 var colRampGlo = {
 	'stations' : 'YlGnBu',
-	'boroughs' : 'Paired'
+	'boroughs' : 'Paired',
+	'routes' : 'Paired',
 };
-const freqUrl = $('#freq').attr('href');
 var graphLayout = {
 	  	font: {
           family: 'Poppins, sans-serif',
@@ -146,6 +146,7 @@ const boroughsUrl = $('#boroughs').attr('href'); // webapp_boroughs
 const stationsUrl = $('#stations').attr('href'); // webapp_stations
 const stationsPairsRoutesUrl = $('#stations-pairs-routes').attr('href'); // webapp_routes
 const kMeansUrl = $('#kmeans').attr('href');
+const freqUrl = $('#freq').attr('href');
 
 // Panels
 const statsInfo = L.control({position: 'topright'});
@@ -187,13 +188,17 @@ const equalIntervals = (nClasses, url, model) =>
 
 const changeColors = (e,feature, featureFunction, featureClassName, nClasses,eqInt,colRampGlo)=>{
 	var colRamp = $(e.currentTarget).val();
+	console.log(1)
+	console.log(colRamp);
 	// updates the global variable
 	colRampGlo[featureClassName] = colRamp;
-
+	console.log(colRampGlo);
 	// updates the current selected color ramp
 	feature.eachLayer((layer)=>{
 		layer.setStyle({'fillColor' : featureFunction(layer.feature.properties.freq, colRamp, eqInt,nClasses)});
 	});
+	console.log(featureClassName);
+	console.log(nClasses);
 	legend.update(featureClassName, colRamp,nClasses);
 
 	return colRampGlo;
@@ -286,7 +291,7 @@ const onEachFeatureStations = (feature,layer) =>
 // Refroutes layers
 const setRefRoutesStyle = (feature) => {
 	return {
-		color : getColor(feature.properties.freq,'Paired', eqIntRefRoutesGlo ,7)
+		color : getColor(feature.properties.freq, colRampGlo.routes, eqIntRefRoutes ,nClasses)
 	};
 };
 
@@ -429,7 +434,7 @@ const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
 		// adjust the stations-pairs-routes layer
         refRoutesUrl = getAdjustedUrl(refRoutesUrl,sid);
         // finds the corresponded equal interval ranges - global
-		eqIntRefRoutesGlo = equalIntervals(7,refRoutesFreqUrl,'refRoutes');
+		eqIntRefRoutes = equalIntervals(nClasses,refRoutesFreqUrl,'refRoutes');
 		// updates the staRoutes layer
 
         refRoutes = new L.GeoJSON.AJAX(refRoutesUrl ,{
@@ -451,6 +456,9 @@ const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
 			{
         		appendSpatialDataFilter($('#ref-routes-slider-container'), refRoutes, groupLayer, refRoutesUrl);
         		appendDistributionGraph($('#distances-distribution-graph-container'),cusRoutes);
+        		console.log(eqIntRefRoutes);
+        		appendRefRoutesLegend($('#temp-graph-container'),eqIntRefRoutes, refRoutesFreqUrl);
+
         		loader.hide();
 			});
 };
@@ -473,23 +481,30 @@ const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
 	Plotly.newPlot('distribution-container',[refHist,cusHist], graphLayout, {staticPlot: false, displayModeBar: false});
 };
 
-const appendTemporalGraph = (sid,graphContainer) => {
-	// adjust the routes layer
-	/*
-	cusRoutesUrl = getAdjustedUrl(stationsPairsRoutesUrl,sid);
-	// request the layer
-	var routes;
-	$.ajax({url: cusRoutesUrl, async: false}).done((response)=>{
-		routes=response;
-	});*/
+const appendRefRoutesLegend = (graphContainer,eqIntRefRoutes,refRoutesFreqUrl) => {
+	graphContainer.append(`<div></div>`);
+	console.log(1);
+	cRefRoutes =  equalIntervals(nClasses,refRoutesFreqUrl,'refRoutes');
+	cRefRoutes.unshift(0);
+	console.log(2);
+	console.log(cRefRoutes);
+	console.log(eqIntRefRoutes);
+	for(var i=0; i < cRefRoutes.length-1;i++)
+	{
+		console.log(getColor(cRefRoutes[i],colRampGlo.routes, eqIntRefRoutes, nClasses));
+		$(`<i class="refRoutes" style="background: ${getColor(cRefRoutes[i],colRampGlo.routes, eqIntRefRoutes, nClasses)}"></i> ${cRefRoutes[i].toFixed(2) + (cRefRoutes[i+1] ? ' &ndash; ' + cRefRoutes[i+1].toFixed(2) + '<br>' : '')}`).appendTo(graphContainer.find('div'));
+	};
+	console.log(3);
+	// dropdown list
+	$(`<select id='color-ramp-refroutes' class="color-ramp">
+							<option value="YlGnBu">YlGnBu</option>
+							<option value="Reds">Reds</option>
+							<option value="YlGn">YlGn</option>
+							<option value="Paired" selected>Paired</option>
+							<option value="Pastel2">Pastel2</option><option value="Set3">Set3</option>
+							<option value="Accent">Accent</option>
+						</select>`).appendTo(graphContainer);
 
-	graphContainer.html(''); // removes the previous content
-	/*$("<div id='tester'></div>").appendTo(graphContainer);
-	Plotly.plot(document.getElementById('tester'), [{
-	x: [1, 2, 3, 4, 5],
-	y: [1, 2, 4, 8, 16] }], {
-	margin: { t: 0 } } );*/
-	//console.log(Object.keys(routes).length);
 };
 const appendSpatialDataFilter = (sliderContainer,refRoutes,groupLayer,refRoutesUrl)  =>{
 	const refRoutesArr = refRoutes.toGeoJSON().features; // gets an array of the reference routes
@@ -553,8 +568,6 @@ const updateStaRoutesList = (map,refRoutesUrl,e, freqUrl)=> {
 
         // adds the spatial structure
         callSpatialData(map, refRoutesUrl, sid,freqUrl, cusRoutes);
-        // analyse the routes and returns a temporal graph
-        appendTemporalGraph(sid,$('#temp-graph-container'));
     }
 };
 
@@ -583,7 +596,7 @@ const infoStatsUpdate = (el) =>{
 								<div class="row" id="main-container">	
 									<div class="col-12" id="ref-routes-slider-container"></div>	
 									<div id="distances-distribution-graph-container" class="col-12"></div>
-									<div id="temp-graph-container"></div>
+									<div id="temp-graph-container" class="col-12"></div>
 								</div>
 							</div>`);
     }catch (e) {
@@ -619,6 +632,13 @@ basicInfoTab.update = function(props,coords){
 			'sfreq' : props.sfreq,
 		}
 	}catch(e){};
+};
+
+const populateLegend = (className,cModel,colRampGloOpt,eqIntModel,nClasses,el)=>{
+	for(var i=0; i < cModel.length-1;i++)
+	{
+		$(`<i class="${className}" style="background: ${getColor(cModel[i], colRampGloOpt, eqIntModel, nClasses)}"></i> ${cModel[i].toFixed(2) + (cModel[i+1] ? ' &ndash; ' + cModel[i+1].toFixed(2) + '<br>' : '')}`).appendTo(el);
+	};
 };
 
 legend.onAdd = function(map)
@@ -667,10 +687,8 @@ legend.onAdd = function(map)
 					</div>
 				</div>`);
 	// legend
-	for(var i=0; i < cBoroughs.length-1;i++)
-	{
-		$(`<i class="boroughs" style="background: ${getColor(cBoroughs[i],colRampGlo.boroughs, eqIntBoroughs, nClasses)}"></i> ${cBoroughs[i].toFixed(2) + (cBoroughs[i+1] ? ' &ndash; ' + cBoroughs[i+1].toFixed(2) + '<br>' : '')}`).appendTo($(div).find('.left-legend-panel').eq(0).find('div'));
-	};
+	populateLegend('boroughs',cBoroughs,colRampGlo.boroughs,eqIntBoroughs,nClasses,$(div).find('.left-legend-panel').eq(0).find('div'));
+
 	// dropdown list
 	$(`<select id='color-ramp-boroughs' class="color-ramp">
 							<option value="YlGnBu">YlGnBu</option>
@@ -682,11 +700,7 @@ legend.onAdd = function(map)
 						</select>`).appendTo($(div).find('.left-legend-panel').eq(0));
 
 	// content of STATIONS
-	for(var i=0; i < cStations.length-1; i++)
-	{
-		$(`<i class="stations" style="background: ${getColor(cStations[i],colRampGlo.stations, eqIntStations, nClasses)}"></i> ${cStations[i].toFixed(0) + (cStations[i+1] ? ' &ndash; ' + cStations[i+1].toFixed(0) + '<br>' : '')}`).appendTo($(div).find('.left-legend-panel').eq(1).find('div'));
-	};
-	// color-ramp of stations
+	populateLegend('stations',cStations,colRampGlo.stations,eqIntStations,nClasses,$(div).find('.left-legend-panel').eq(1).find('div'));
 	$(`<select id='color-ramp-stations' class="color-ramp">
 						<option value="YlGnBu" selected>YlGnBu</option>
 						<option value="Reds">Reds</option>
@@ -832,8 +846,9 @@ $(window).on("map:init", function(event) {
 			nStations = stations.toGeoJSON().features.length;
 
 			// adds a slider bar in the legend
-			$('#legend-container div.row').eq(1).append( `
+			/*$('#legend-container div.row').eq(1).append( `
 					<div class="col-12">
+						<br>
 						<br>
 						<br>
 						<table id="table-sFilterSlider">
@@ -844,7 +859,22 @@ $(window).on("map:init", function(event) {
 							</tr>
 						</table>
 						<input type="range" class="slider" value="${nStations}" min="1" max="${nStations}" id="sFilterSlider">
-					</div>`);
+					</div>`);*/
+			
+			$('#legend-container div.row').eq(1).append(`
+			   <div class="col-12 stations-slider">
+			   		<div class="row">
+			  			<div class="col-2"><strong>1</strong></div> 
+			  			<div class="col-8"><b><em>Top N stations</em></b></div>
+			  			<div class="col-2"><strong>${nStations}</strong></div>
+			  		</div>
+			  		<div class="row">
+			  			<div class="col-12">
+			  		    	<input type="range" class="slider" value="${nStations}" min="1" max="${nStations}" id="sFilterSlider">
+						</div>
+					</div>
+			  </div>
+			`);
 
 			// add onfocus and on mouseLeave events on the sFilterSlider;
 			freezeMap($('#sFilterSlider'));

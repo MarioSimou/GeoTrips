@@ -278,15 +278,6 @@ div.info.legend.active{
     margin-bottom: 6px;
 }
 
-#table-sFilterSlider tr th:first-of-type, #ref-routes-slider-content div:first-of-type {
-    text-align: left;
-}
-#table-sFilterSlider tr th:nth-of-type(2), #ref-routes-slider-content div:nth-of-type(2){
-    text-align: center;
-}
-#table-sFilterSlider tr th:last-of-type, #ref-routes-slider-content div:last-of-type {
-    text-align: right;
-}
 div.leaflet-control-defaultextent.leaflet-control{
     position: absolute !important;
     top: 73px !important;
@@ -397,4 +388,16 @@ div.leaflet-control-defaultextent.leaflet-control{
 }
 .ref-routes-panel h4 {
     font-size: 16px;
+}
+.stations-slider div.row div:nth-of-type(2){
+    text-align: center;
+}
+.stations-slider div.row div:last-of-type{
+    text-align: right;
+}
+.stations-slider div.row{
+    margin: 4px 0;
+}
+.stations-slider{
+    margin-top: 25px;
 }
