@@ -311,9 +311,9 @@ div.leaflet-control-defaultextent.leaflet-control{
 }
 /* Center the loader */
 #loader {
-  position: absolute;
+  position: fixed;
     display:none;
-  left: 50%;
+  left: 60%;
   top: 50%;
   z-index: 1;
   width: 100px;
@@ -404,4 +404,36 @@ div.leaflet-control-defaultextent.leaflet-control{
 #legend-graph-container div div, #color-ramp-refroutes{
     position: relative;
     left: 15%;
+}
+svg.svg-inline--fa.fa-question.fa-w-12{
+    width: 17.5px;
+    height: 20px;
+    margin-left: 7.5px;
+}
+.tooltip .tooltip-inner {
+    background: rgba(255,255,255,0.3);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    max-width: 500px;
+    border-radius: 5px;
+    text-align: left;
+}
+.tooltip h4{
+    font-size: 18px;
+    font-weight: bold;
+    color: red;
+    padding: 2px 0px;
+    margin: 0;
+}
+
+.tooltip p {
+    font: 14px/16px Poppins,sans-serif, sans-serif;
+    line-height: 1.14;
+    color: #777777;
+}
+.tooltip hr{
+    padding: 2px 0;
+    margin: 0;
+}
+.tooltip .arrow::before {
+  border-left-color: rgba(255,255,255,0.3);
 }

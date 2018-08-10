@@ -588,6 +588,12 @@ const updateStaRoutesList = (map,refRoutesUrl,e, freqUrl)=> {
         callSpatialData(map, refRoutesUrl, sid,freqUrl, cusRoutes);
     }
 };
+appendQuestionBtn = (el,name,position,content)=>{
+
+	$(`<a href="#" id="${name}-question-btn" data-toggle="tooltip" data-placement="${position}" data-html="true" title="" data-original-title="${content}" class="question-btn"><i class="fas fa-question"></i></a>`).appendTo(el);
+	$(`	#${name}-question-btn`).tooltip();
+	//$(`<button id="${name}-question-btn" type="button" class="btn btn-secondary question-btn" data-toggle="tooltip" data-placement="top" title="${content}" disabled><i class="fas fa-question"></i></button>`).appendTo(el);
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 // Panels
@@ -675,7 +681,7 @@ legend.onAdd = function(map)
 							<div class="col-11" id="legend-container">
 								<div class="row">
 									<div class="col-6 left-legend-panel">
-										<h4>Boroughs Color</h4>
+										<h4>Boroughs </h4>
 										<p>**the color corresponds to the number of stations within a borough</p>
 										<div></div>
 									</div>
@@ -686,7 +692,7 @@ legend.onAdd = function(map)
 								<hr>
 								<div class="row">
 									<div class="col-6 left-legend-panel">
-										<h4>Stations Color</h4>
+										<h4>Stations </h4>
 										<p>**the color corresponds to the number of routes that either they have started or ended in a station</p>							
 										<div></div>
 									</div>		
@@ -962,6 +968,10 @@ $(window).on('load', ()=>
 	menuCommand.addTo(map);
 	// adds a legend on the map
 	legend.addTo(map);
+	// appends the tooltip buttons
+	appendQuestionBtn($('#legend-container div.row div.col-6.left-legend-panel h4').eq(0),'boroughs','right','<h4>Color</h4><hr><p>The color of each borough corresponds on the number of stations that are contained within it. Boroughs that preserve the same color present similar properties in terms of the contained stations.</p><h4>Plot</h4><hr><p>The displayed graph clusters the boroughs based on the variables of <b>longitude</b>, <b>latitude</b>, and <b>number of stations within a borough</b>. The optimal number of clusters is <b>three</b>.');
+	appendQuestionBtn($('#legend-container div.row div.col-6.left-legend-panel h4').eq(1),'stations','right','<h4>Color</h4><hr><p>The color of each station corresponds on the number of routes that either started or ended on a station. This means that station which have similar color demonstrate similar properties.</p></p><h4>Plot</h4><hr><p>The displayed graph classifies the stations based on the variables of <b>longitude</b>, <b>latitude</b>, and <b>number of routes that either started or ended on a stations</b>.The optimal number of clusters is <b>5</b>.</p>');
+	//$('.question-btn').tooltip();
 
 	// freeze the the map whenever the legend panel is enabled
 	freezeMap($('div.info.legend.leaflet-control'));
