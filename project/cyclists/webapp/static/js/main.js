@@ -188,17 +188,12 @@ const equalIntervals = (nClasses, url, model) =>
 
 const changeColors = (e,feature, featureFunction, featureClassName, nClasses,eqInt,colRampGlo)=>{
 	var colRamp = $(e.currentTarget).val();
-	console.log(1)
-	console.log(colRamp);
 	// updates the global variable
 	colRampGlo[featureClassName] = colRamp;
-	console.log(colRampGlo);
 	// updates the current selected color ramp
 	feature.eachLayer((layer)=>{
 		layer.setStyle({'fillColor' : featureFunction(layer.feature.properties.freq, colRamp, eqInt,nClasses)});
 	});
-	console.log(featureClassName);
-	console.log(nClasses);
 	legend.update(featureClassName, colRamp,nClasses);
 
 	return colRampGlo;
@@ -425,6 +420,7 @@ const refRoutesOnEachFeature = (feature,layer) =>{
 	})  ;
 };
 
+var counter =0;
 const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
 		// if the map has staRoutes layer removes it
 		(map.hasLayer(groupLayer) ? map.removeLayer(groupLayer.clearLayers()) : false);
@@ -441,6 +437,7 @@ const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
         	style : setRefRoutesStyle,
 			onEachFeature: refRoutesOnEachFeature,
         });  // webapp_stations_pairs_routes model
+		if(counter != 0){changeColorsRefRoute(refRoutes);}
 
         // loads a POI of the station location
 		var uniqStaUrl = getAdjustedUrl( $('#unique-station').attr('href') ,sid);
@@ -455,7 +452,10 @@ const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
 		refRoutes.on('data:loaded', ()=>
 			{
         		appendSpatialDataFilter($('#ref-routes-slider-container'), refRoutes, groupLayer, refRoutesUrl);
-        		appendRefRoutesLegend($('#legend-graph-container'),eqIntRefRoutes, refRoutesFreqUrl);
+
+        		if (counter === 0) {
+                    appendRefRoutesLegend($('#legend-graph-container'), eqIntRefRoutes, refRoutesFreqUrl);
+                }
         		appendDistributionGraph($('#distances-distribution-graph-container'),cusRoutes);
 
         		loader.hide();
@@ -481,16 +481,18 @@ const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
 };
 
 const appendRefRoutesLegend = (graphContainer,eqIntRefRoutes,refRoutesFreqUrl) => {
-	graphContainer.append(`<div></div>`);
+	counter++; // execute the function only once
+	graphContainer.append(`<div>
+							<h4>Routes Color</h4>
+							<p>**the color corresponds on the number of routes that has been performed (flow)</p>
+							<div></div>
+						  </div>`);
 	console.log(1);
 	cRefRoutes =  equalIntervals(nClasses,refRoutesFreqUrl,'refRoutes');
 	cRefRoutes.unshift(0);
 	console.log(2);
-	console.log(cRefRoutes);
-	console.log(eqIntRefRoutes);
 
-	populateLegend('refRoutes',cRefRoutes,colRampGlo.routes,eqIntRefRoutes,nClasses,graphContainer.find('div'));
-
+	populateLegend('refRoutes',cRefRoutes,colRampGlo.routes,eqIntRefRoutes,nClasses,graphContainer.find('div').find('div'));
 	console.log(3);
 	// dropdown list
 	$(`<select id='color-ramp-refroutes' class="color-ramp">
@@ -500,9 +502,27 @@ const appendRefRoutesLegend = (graphContainer,eqIntRefRoutes,refRoutesFreqUrl) =
 							<option value="Paired" selected>Paired</option>
 							<option value="Pastel2">Pastel2</option><option value="Set3">Set3</option>
 							<option value="Accent">Accent</option>
-						</select>`).appendTo(graphContainer);
+						</select>`).appendTo(graphContainer.find('div').find('div').eq(0));
+
+		changeColorsRefRoute(refRoutes);
 
 };
+const changeColorsRefRoute = (refRoutes)=>{
+	$('#color-ramp-refroutes').on('change',(e)=> {
+
+		var colRamp = $(e.currentTarget).val();
+        colRampGlo['routes'] = colRamp;
+        refRoutes.eachLayer((layer) => {
+            layer.setStyle({'color': getColor(layer.feature.properties.freq, colRamp, eqIntRefRoutes, nClasses)});
+        });
+
+        let ies = $('i.refRoutes');
+		for(var i=0; i < ies.length; i++){
+        	ies.eq(i).css('background',colors[colRamp][nClasses][i]);
+		}
+    });
+};
+
 const appendSpatialDataFilter = (sliderContainer,refRoutes,groupLayer,refRoutesUrl)  =>{
 	const refRoutesArr = refRoutes.toGeoJSON().features; // gets an array of the reference routes
 	const nRefRoutes = refRoutesArr.length; // length
@@ -535,6 +555,7 @@ const appendSpatialDataFilter = (sliderContainer,refRoutes,groupLayer,refRoutesU
 				filter: (feature)=>{return (feature.properties.freq > sorrefRoutesArr[sliderVal].properties.freq ? true : false)},
 			}).addTo(groupLayer);
 
+			changeColorsRefRoute(refRoutes); // updates the changecolor ramp events
 			ajaxStopLoader(refRoutes); // ends loading
 		}
 	});
@@ -592,7 +613,7 @@ const infoStatsUpdate = (el) =>{
         html = html.concat(`</select></div></div>
 								<div class="row" id="main-container">	
 									<div class="col-12" id="ref-routes-slider-container"></div>	
-									<div id="legend-graph-container" class="col-12"></div>	
+									<div id="legend-graph-container" class="col-12 legend"></div>	
 									<div id="distances-distribution-graph-container" class="col-12"></div>
 								</div>
 							</div>`);
@@ -634,7 +655,7 @@ basicInfoTab.update = function(props,coords){
 const populateLegend = (className,cModel,colRampGloOpt,eqIntModel,nClasses,el)=>{
 	for(var i=0; i < cModel.length-1;i++)
 	{
-		$(`<i class="${className}" style="background: ${getColor(cModel[i], colRampGloOpt, eqIntModel, nClasses)}"></i> ${cModel[i].toFixed(2) + (cModel[i+1] ? ' &ndash; ' + cModel[i+1].toFixed(2) + '<br>' : '')}`).appendTo(el);
+		$(`<div><i class="${className}" style="background: ${getColor(cModel[i], colRampGloOpt, eqIntModel, nClasses)}"></i> <span>${cModel[i].toFixed(2) + (cModel[i+1] ? ' &ndash; ' + cModel[i+1].toFixed(2) + '</span><br>' : '')}</div>`).appendTo(el);
 	};
 };
 

@@ -401,3 +401,7 @@ div.leaflet-control-defaultextent.leaflet-control{
 .stations-slider{
     margin-top: 25px;
 }
+#legend-graph-container div div, #color-ramp-refroutes{
+    position: relative;
+    left: 15%;
+}

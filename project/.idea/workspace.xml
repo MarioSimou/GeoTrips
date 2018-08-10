@@ -35,21 +35,12 @@
     <select />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cyclists/webapp/templates/webapp/index.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2938">
-              <caret line="113" column="64" selection-start-line="113" selection-start-column="64" selection-end-line="113" selection-end-column="64" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="main.js" pinned="false" current-in-tab="true">
+    <leaf>
+      <file leaf-file-name="main.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/js/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="182">
-              <caret line="489" column="11" selection-start-line="489" selection-start-column="11" selection-end-line="489" selection-end-column="11" />
+            <state relative-caret-position="442">
+              <caret line="503" column="80" selection-start-line="503" selection-start-column="80" selection-end-line="503" selection-end-column="80" />
               <folding>
                 <element signature="n#style#0;n#i#0;n#!!top" expanded="true" />
                 <element signature="e#1#8#0" expanded="true" />
@@ -58,11 +49,20 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.css" pinned="false" current-in-tab="false">
+      <file leaf-file-name="main.css" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/css/main.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="10244">
-              <caret line="394" column="85" selection-start-line="394" selection-start-column="85" selection-end-line="394" selection-end-column="85" />
+            <state relative-caret-position="553">
+              <caret line="403" column="31" selection-start-line="403" selection-start-column="31" selection-end-line="403" selection-end-column="31" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cyclists/webapp/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-759">
+              <caret line="100" column="26" lean-forward="true" selection-start-line="100" selection-start-column="26" selection-end-line="100" selection-end-column="26" />
             </state>
           </provider>
         </entry>
@@ -74,8 +74,8 @@
       <list>
         <option value="HTML File" />
         <option value="CSS File" />
-        <option value="JavaScript File" />
         <option value="Python Script" />
+        <option value="JavaScript File" />
       </list>
     </option>
   </component>
@@ -89,7 +89,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/cyclists/webapp/templates/example.html" />
         <option value="$PROJECT_DIR$/cyclists/webapp/data/boroughs/load.py" />
         <option value="$PROJECT_DIR$/cyclists/load.py" />
         <option value="$PROJECT_DIR$/cyclists/webapp/data/load.py" />
@@ -137,9 +136,10 @@
         <option value="$PROJECT_DIR$/cyclists/webapp/k.py" />
         <option value="$PROJECT_DIR$/cyclists/webapp/urls.py" />
         <option value="$PROJECT_DIR$/cyclists/webapp/templates/webapp/index.html" />
+        <option value="$PROJECT_DIR$/cyclists/webapp/static/js/functions.js" />
         <option value="$PROJECT_DIR$/cyclists/webapp/views.py" />
-        <option value="$PROJECT_DIR$/cyclists/webapp/static/css/main.css" />
         <option value="$PROJECT_DIR$/cyclists/webapp/static/js/main.js" />
+        <option value="$PROJECT_DIR$/cyclists/webapp/static/css/main.css" />
       </list>
     </option>
   </component>
@@ -157,10 +157,10 @@
     </packageJsonPaths>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="54" />
-    <option name="y" value="6" />
-    <option name="width" value="1377" />
-    <option name="height" value="860" />
+    <option name="x" value="67" />
+    <option name="y" value="41" />
+    <option name="width" value="1375" />
+    <option name="height" value="852" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -208,6 +208,21 @@
               <item name="static" type="462c0819:PsiDirectoryNode" />
               <item name="js" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="project" type="b2602c69:ProjectViewProjectNode" />
+              <item name="project" type="462c0819:PsiDirectoryNode" />
+              <item name="cyclists" type="462c0819:PsiDirectoryNode" />
+              <item name="webapp" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="project" type="b2602c69:ProjectViewProjectNode" />
+              <item name="project" type="462c0819:PsiDirectoryNode" />
+              <item name="cyclists" type="462c0819:PsiDirectoryNode" />
+              <item name="webapp" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+              <item name="webapp" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -220,7 +235,7 @@
     <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file:///home/masimou/Desktop/project/cyclists/webapp/urls.py" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="jsx.switch.disabled" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../kmeans" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -389,7 +404,8 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="60" y="-11" width="1541" height="912" extended-state="6" />
+    <frame x="61" y="-4" width="1539" height="904" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="9" weight="0.3275862" />
       <window_info anchor="bottom" id="Event Log" order="6" sideWeight="0.5016745" side_tool="true" weight="0.24078947" />
@@ -397,8 +413,8 @@
       <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Python Console" order="10" sideWeight="0.4996651" weight="0.32934928" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.29575598" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="11" sideWeight="0.49832553" visible="true" weight="0.2387268" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.28542647" />
+      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.49832553" weight="0.2387268" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1927468" />
       <window_info anchor="right" id="R Packages" order="3" />
       <window_info anchor="bottom" id="Docker" order="12" show_stripe_button="false" />
       <window_info anchor="right" id="R Graphics" order="3" weight="0.32975152" />
@@ -417,30 +433,30 @@
       <window_info anchor="bottom" id="Concurrent Activities Diagram" order="13" weight="0.32894737" />
     </layout>
     <layout-to-restore>
+      <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Docker" order="12" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Inspection" order="4" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="3" weight="0.25" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27266622" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.29575598" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.42130518" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="TODO" order="9" weight="0.3275862" />
       <window_info anchor="right" id="R Graphics" order="4" weight="0.32975152" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.29575598" />
       <window_info anchor="right" id="R Packages" order="5" />
-      <window_info anchor="bottom" id="Python Console" order="10" sideWeight="0.4996651" weight="0.32934928" />
+      <window_info anchor="bottom" id="Inspection" order="4" weight="0.4" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32894737" />
       <window_info anchor="bottom" id="Debug" order="5" weight="0.39920425" />
-      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.49832553" visible="true" weight="0.2387268" />
+      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.49832553" visible="true" weight="0.24793388" />
       <window_info anchor="bottom" id="Event Log" order="6" sideWeight="0.5016745" side_tool="true" weight="0.24078947" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Cvs" order="3" weight="0.25" />
       <window_info anchor="right" id="SciView" order="3" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="right" id="Database" order="6" weight="0.32953784" />
       <window_info anchor="bottom" id="Concurrent Activities Diagram" order="13" weight="0.32894737" />
-      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Python Console" order="10" sideWeight="0.4996651" weight="0.32934928" />
     </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -455,7 +471,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/cyclists/webapp/migrations/0007_auto_20180704_1452.py" />
     <entry file="file://$PROJECT_DIR$/cyclists/webapp/migrations/0006_auto_20180704_1447.py" />
     <entry file="file://$PROJECT_DIR$/cyclists/webapp/migrations/0009_stations_freq.py" />
     <entry file="file://$PROJECT_DIR$/cyclists/webapp/migrations/0008_auto_20180712_1444.py" />
@@ -585,16 +600,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cyclists/webapp/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="801">
-          <caret line="91" column="3" lean-forward="true" selection-start-line="91" selection-start-column="3" selection-end-line="91" selection-end-column="3" />
-          <folding>
-            <element signature="e#0#35#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cyclists/webapp/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="919">
@@ -604,26 +609,34 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/cyclists/webapp/templates/webapp/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2938">
-          <caret line="113" column="64" selection-start-line="113" selection-start-column="64" selection-end-line="113" selection-end-column="64" />
+        <state relative-caret-position="361">
+          <caret line="127" selection-start-line="127" selection-end-line="127" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/css/main.css">
+    <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/js/functions.js" />
+    <entry file="file://$PROJECT_DIR$/cyclists/webapp/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="10244">
-          <caret line="394" column="85" selection-start-line="394" selection-start-column="85" selection-end-line="394" selection-end-column="85" />
+        <state relative-caret-position="-759">
+          <caret line="100" column="26" lean-forward="true" selection-start-line="100" selection-start-column="26" selection-end-line="100" selection-end-column="26" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/js/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="182">
-          <caret line="489" column="11" selection-start-line="489" selection-start-column="11" selection-end-line="489" selection-end-column="11" />
+        <state relative-caret-position="442">
+          <caret line="503" column="80" selection-start-line="503" selection-start-column="80" selection-end-line="503" selection-end-column="80" />
           <folding>
             <element signature="n#style#0;n#i#0;n#!!top" expanded="true" />
             <element signature="e#1#8#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/css/main.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="553">
+          <caret line="403" column="31" selection-start-line="403" selection-start-column="31" selection-end-line="403" selection-end-column="31" />
         </state>
       </provider>
     </entry>
