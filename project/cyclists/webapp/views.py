@@ -6,14 +6,8 @@ from django.core.paginator import Paginator
 from . import models
 from sklearn.cluster import KMeans
 import numpy as np
-from matplotlib import pyplot as plt
-from functools import reduce
-from datetime import datetime
-import json
-from requests import get
-from re import findall
 from time import time
-import timeit
+from django.db import connection
 
 import pdb
 from tqdm import tqdm
@@ -106,6 +100,12 @@ def load_routes_of_station(request,year,sid):
     # loads the json
     return HttpResponse(r,content_type='json')
 
+def load_routes_temporal_data(request, year,sid):
+    cursor = connection.cursor()
+    cursor.execute(f"SELECT date_trunc('month',start_date) as date, COUNT(start_date) FROM webapp_routes as a LEFT JOIN webapp_stations_pairs_routes as b ON a.station_pairs_id=b.id WHERE a.start_date > '{year}-01-01 00:00' AND a.start_date < '{int(year)+1}-01-01' AND b.start_station_id = {sid} GROUP BY date_trunc('month', start_date);")
+    monthly_routes = dict([(str(month[0].date()), {'month' : str(month[0].date()), 'count' : month[1]})for month in cursor.fetchall()])
+    return JsonResponse(monthly_routes, safe= True)
+
 def stations_info(request):
     # Load the boroughs and stations
     stations_list = models.Stations.objects.all().order_by('station_id')
@@ -143,3 +143,4 @@ def load_heatmap_data(request, name, id = all):
         l_model = [{'lat': borough.geom.centroid.coords[1], 'lng': borough.geom.centroid.coords[0], 'freq': borough.freq } for borough in boroughs if borough.geom is not None]
 
     return JsonResponse(l_model, safe = False)
+

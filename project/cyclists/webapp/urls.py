@@ -6,6 +6,8 @@ app_name = 'webapp'
 urlpatterns = [
     # /home/
     re_path(r'^$', views.index, name = 'index'),
+    # /home/monthly_routes/year/sid
+    re_path(r'^monthly_routes/(?P<year>\d+)/(?P<sid>\d+)$', views.load_routes_temporal_data, name = 'monthly_routes'),
     # /home/stations_pairs_routes
     re_path(r'^stations-pairs-routes/(?P<year>\d+)/(?P<sid>\d+)$', views.load_routes_of_station, name='stations_pairs_routes'),
     # /home/ref-routes/

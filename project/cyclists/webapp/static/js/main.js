@@ -147,6 +147,7 @@ const stationsUrl = $('#stations').attr('href'); // webapp_stations
 const stationsPairsRoutesUrl = $('#stations-pairs-routes').attr('href'); // webapp_routes
 const kMeansUrl = $('#kmeans').attr('href');
 const freqUrl = $('#freq').attr('href');
+const monthlyRoutesUrl = $('#monthly_routes').attr('href');
 
 // Panels
 const statsInfo = L.control({position: 'topright'});
@@ -404,8 +405,8 @@ const refRoutesPanel = (e)=>{
 								<li><span>Avg Predicted Time:</span> ${avgCusRoutesTime.toFixed(2)} s</li>
 								<li><span>Baseline Dist:</span> ${feature.balanced_ref_dist} m</li>
 								<li><span>Avg Predicted Distance:</span> ${(avgCusRoutesTime*velocity*1000).toFixed(2)} m</li>
-								<li><span>Annual Frequency:</span> ${annualFrequency}</li>
-								<li><span>Global Frequency:</span> ${feature.freq} </li>
+								<li><span>Annual Flow:</span> ${annualFrequency}</li>
+								<li><span>Global Flow:</span> ${feature.freq} </li>
 							</ul>
 						 </div>`);
 };
