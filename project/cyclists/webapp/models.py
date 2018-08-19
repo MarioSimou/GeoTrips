@@ -26,8 +26,8 @@ class Stations(models_gis.Model):
         return f'{self.station_id} -{self.station_name} - {self.location}'
 
 class Stations_Pairs_Routes(models_gis.Model):
-    start_station_id = models_gis.OneToOneField(Stations,on_delete=models_gis.CASCADE,related_name='start_stations',db_column='start_station_id', verbose_name='Start Station Id', null=False)
-    end_station_id = models_gis.OneToOneField(Stations,on_delete=models_gis.CASCADE, related_name='end_stations',db_column='end_station_id', verbose_name='End Station Id', null= False)
+    start_station_id = models_gis.ForeignKey(Stations,on_delete=models_gis.CASCADE,related_name='start_stations',db_column='start_station_id', verbose_name='Start Station Id', null=False)
+    end_station_id = models_gis.ForeignKey(Stations,on_delete=models_gis.CASCADE, related_name='end_stations',db_column='end_station_id', verbose_name='End Station Id', null= False)
     balanced_ref_dist = models_gis.FloatField(verbose_name='Balanced Ref Distance', null = True, blank = True)
     balanced_ref_time = models_gis.PositiveIntegerField(verbose_name='Balanced Ref Time', null = True, blank=True)
     balanced_ref_geom = models_gis.LineStringField(srid=4326, null= True, blank=True)

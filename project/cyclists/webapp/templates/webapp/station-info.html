@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {% load staticfiles %}
-
+{% load index %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -40,10 +40,10 @@
                         <tr>
                             <th scope="row">{{forloop.counter}}</th>
                             <td>{{station.station_name}}</td>
-                            <td>{{route.start_date}}</td>
-                            <td>{{route.end_station_id.station_name}}</td>
-                            <td>{{route.end_date}}</td>
-                            <td>{{route.duration}}</td>
+                            <td>{{route.1}}</td>
+                            <td>{{stations|index:route.0}}</td>
+                            <td>{{route.2}}</td>
+                            <td>{{route.3}}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -74,7 +74,6 @@
             </div>
         </div>
     </div>
-
     <!-- jQuery CDN - Slim version (=without AJAX) -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <!-- Popper.JS -->

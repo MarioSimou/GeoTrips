@@ -23,7 +23,7 @@ urlpatterns = [
     #home/boroughs/
     re_path(r'^boroughs/', views.load_boroughs, name = 'boroughs'),
     # home/stations-info/station_id
-    re_path(r'^stations-info/(?P<pk>\d+)$', views.station_info, name= 'station-info'),
+    re_path(r'^stations-info/(?P<sid>\d+)$', views.station_info, name= 'station-info'),
     # home/stations-info/
     re_path(r'^stations-info/', views.stations_info, name= 'stations-info'),
     # home/heatmap/(?P<name>\w+)$

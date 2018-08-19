@@ -3,6 +3,8 @@ var loader = $('#loader');
 var basemaps,colors,nStations,hashStations = {}  ,refRoutesFreqUrl,eqIntBoroughs,eqIntStations,eqIntRefRoutes,latestSelectedBorough, latestSelectedStation,heatmapStationsLayer,heatmapBoroughsLayer,sortedFreqArr = [], paneTop,paneIntermediate,paneBottom,groupLayer;
 var map, stations,refRoutes,boroughs,routes;
 const days = ['Monday', 'Tuesday', 'Wednesday','Thursday','Friday','Saturday','Sunday'];
+let minWidth = 896; minHeight = 672;
+
 var colRampGlo = {
 	'stations' : 'YlGnBu',
 	'boroughs' : 'Paired',
@@ -810,8 +812,8 @@ menuCommand.update = function()
 								<span></span>
 								<span></span>
 						  </button>`;
-	// if the window size is less than  900, then close the sidebar
-	if($(window).width() < 900){
+	// if the window size is less than the minimum required width, then close the sidebar
+	if($(window).width() < minWidth || $(window).height() < minHeight){
 		$('#sidebar').toggleClass('active');
         $('#sidebarCollapse').toggleClass('active');
 	}
@@ -892,17 +894,6 @@ $(window).on("map:init", function(event) {
 
 			$('div.info.info-stats.leaflet-control button').on('click', (e)=>{
 				statsBtnToggle($(e.currentTarget));
-				/*if($(this).hasClass('active')){
-						(map.hasLayer(groupLayer) ? map.removeLayer(groupLayer) : false);
-						$('#station-routes').attr('disabled',true); // set the button as disable
-                        $(this).text('Hidden'); // change the text to disable
-				}else{
-						$('#station-routes').attr('disabled', false); // se the button as active
-						$(this).text("Active"); // change the text to active
-				}
-				$('#main-container').fadeToggle(500);
-				$(this).toggleClass('active');
-				*/
 			});
 
     		// adds the cluster group on the map, containing a featureGroup
@@ -1178,10 +1169,9 @@ $(document).ready(() => {
 
 	// changes the display of the webapp when its size changes
 	$(window).on('resize',(e)=>{
-		/*adjustContainerHeight(e,$('div.info.info-stats.leaflet-control'), 960);
-		adjustContainerWidth(e,$('div.info.info-stats.leaflet-control'), 740);
-		*/
-		if($(e.currentTarget).width() < 800 || $(e.currentTarget).height() < 740 ){
+
+		thisEl = $(e.currentTarget);
+		if((thisEl.width() < minWidth && thisEl.height() < minHeight ) || (thisEl.width() < minWidth || thisEl.height() < minHeight)){
 			$('div.info.info-stats.leaflet-control').fadeOut(300);
 			$('div.info.legend.leaflet-control').fadeOut(300);
 			statsBtnToggle($('div.info.info-stats.leaflet-control button'));

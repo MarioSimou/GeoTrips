@@ -120,17 +120,21 @@ def stations_info(request):
 
     return render(request, 'webapp/stations-info.html', {'stations' : stations, 'stations_borough' : stations_borough})
 
-def station_info(request,pk):
+def station_info(request,sid):
     # Gets the user selected station
-    station = get_list_or_404(models.Stations.objects.get(station_id=pk))
+    cursor = connection.cursor()
+    cursor.execute(f"SELECT * FROM webapp_stations")
+    stations = dict([(station[0],station[1]) for station in cursor.fetchall()])
+    # call of routes
+    cursor.execute(f"SELECT b.end_station_id,c.start_date, c.end_date, c.duration FROM webapp_stations as a LEFT JOIN webapp_stations_pairs_routes as b ON a.station_id = b.start_station_id LEFT JOIN webapp_routes as c ON b.id = c.station_pairs_id WHERE a.station_id = {sid} ORDER BY c.start_date DESC")
     # Creates a paginator of the routes related to the selected station
-    routes_paginator = Paginator(station.start_stations.all(), 16)
+    routes_paginator = Paginator(cursor.fetchall(), 16)
 
     # Requests the correspond page from the routes_paginator and creates the routes and assigns the routes variable
     page = request.GET.get('page')
     routes = routes_paginator.get_page(page)
 
-    return render(request, 'webapp/station-info.html', {'station' : station, 'routes' : routes})
+    return render(request, 'webapp/station-info.html', {'station' : models.Stations.objects.get(pk=sid), 'routes' : routes, 'stations' : stations })
 
 def load_heatmap_data(request, name, id = all):
     # Gets the station data

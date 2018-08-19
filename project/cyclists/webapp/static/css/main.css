@@ -106,7 +106,6 @@ body {
 }
 
 p {
-    font-family: 'Poppins', sans-serif;
     font-size: 1.1em;
     font-weight: 300;
     line-height: 1.7em;
@@ -143,7 +142,7 @@ a, a:hover, a:focus {
 }
 
 #sidebar ul li a {
-    padding: 10px;
+    padding: 8px 10px;
     font-size: 1.1em;
     display: block;
 }
