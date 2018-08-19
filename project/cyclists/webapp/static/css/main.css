@@ -262,13 +262,6 @@ div.info.legend.active{
     visibility: collapse;
     display: none;
 }
-/*
-#table-sFilterSlider, #sFilterSlider {
-    min-width: 150px;
-    max-width: 150px;
-}
-*/
-
 #table-sFilterSlider {
     min-width: 100%;
     max-width: 100%;
@@ -354,7 +347,7 @@ div.leaflet-control-defaultextent.leaflet-control{
   from{ bottom:-100px; opacity:0 }
   to{ bottom:0; opacity:1 }
 }
-#distribution-container{
+#distribution-container, #monthly-temporal-graph{
     height: 200px;
     width: 400px;
 }
@@ -436,4 +429,7 @@ svg.svg-inline--fa.fa-question.fa-w-12{
 }
 .tooltip .arrow::before {
   border-left-color: rgba(255,255,255,0.3);
+}
+#ref-routes-slider-container {
+    margin: 6px 0;
 }

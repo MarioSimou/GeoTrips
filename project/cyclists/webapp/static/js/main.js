@@ -61,7 +61,7 @@ var graphLayout = {
             }
         },
 		margin : {
-			l:55,
+			l:65,
 			r:20,
 			b:40,
 			t:25,
@@ -453,30 +453,28 @@ const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
 		refRoutes.on('data:loaded', ()=>
 			{
         		appendSpatialDataFilter($('#ref-routes-slider-container'), refRoutes, groupLayer, refRoutesUrl);
-
-        		if (counter === 0) {
-                    appendRefRoutesLegend($('#legend-graph-container'), eqIntRefRoutes, refRoutesFreqUrl);
-                }
+        		(counter === 0 ?  appendRefRoutesLegend($('#legend-graph-container'), eqIntRefRoutes, refRoutesFreqUrl) : false);
         		appendDistributionGraph($('#distances-distribution-graph-container'),cusRoutes);
 
         		loader.hide();
 			});
 };
+
 const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
 	// baseline distances
 	var refRoutesArr = refRoutes.toGeoJSON().features;
 	//var sumRefDistances = refRoutesArr.reduce((a,b)=> a+b.properties.balanced_ref_dist,0);
-	var refDistances = refRoutesArr.map((f)=>{ return (f.properties.balanced_ref_dist/1000)}); // expressed in km
+	var refDistances = refRoutesArr.map((f)=>{ return (f.properties.balanced_ref_time)}); // expressed in km
 
-	var cusDistances = cusRoutes.map((f)=>{return (f.fields.duration*velocity)});
-	// create a div that will contains the graph
-	$(`<div class="col-11" id="distribution-container"></div>`).appendTo(disGraphContainer);
+	var cusDistances = cusRoutes.map((f)=>{return (f.fields.duration)});
+	// create a div that will contains the graph if it does not exist
+	(disGraphContainer.has('#distribution-container').length ? true : $(`<div class="col-11" id="distribution-container"></div>`).appendTo(disGraphContainer));
 	// distances options
-	var refHist = {x : refDistances,name: 'Reference',type: 'histogram',histfunc : 'count',histnorm:'probability density',autobinx:true,opacity:0.5, marker: {color: 'red'} };
-	var cusHist = {x : cusDistances,name: 'Predicted', type: 'histogram',histfunc : 'count',histnorm:'probability density', autobinx:true,opacity: 0.5, marker: {color: 'green'}};
+	var refHist = {x : refDistances,name: 'Baseline',type: 'histogram',histfunc : 'count',histnorm:'probability density',autobinx:true,opacity:0.5, marker: {color: 'red'} };
+	var cusHist = {x : cusDistances,name: 'Cycle Hire data', type: 'histogram',histfunc : 'count',histnorm:'probability density', autobinx:true,opacity: 0.5, marker: {color: 'green'}};
 
 	// modifies the axis values
-	graphLayout.yaxis = {'title' : 'P( X = d )'}, graphLayout.xaxis = {'title':'d (km)', 'range':[0,20]}, graphLayout['barmode'] = "overlay";
+	graphLayout.yaxis = {'title' : 'P( X = duration )'}, graphLayout.xaxis = {'title':'duration (s)', 'range': [0,5000]}, graphLayout['barmode'] = "overlay";
 
 	Plotly.newPlot('distribution-container',[refHist,cusHist], graphLayout, {staticPlot: false, displayModeBar: false});
 };
@@ -530,14 +528,14 @@ const appendSpatialDataFilter = (sliderContainer,refRoutes,groupLayer,refRoutesU
 
 	// append the following content
 	sliderContainer.html('');
-	$(`<hr><div class="row" id="ref-routes-slider-content">
+	$(`<div class="row" id="ref-routes-slider-content">
 					<div class="col-2"><strong>1</strong></div>
 					<div class="col-8"><strong><em>Top N Routes</em></strong></div>
 					<div class="col-2"><strong>${nRefRoutes}</strong></div>
 			   </div>
 			   <div class="row">
 			   		<div class="col-12"><input id="slider-ref-routes" type="range" min="1" max="${nRefRoutes}" value="${nRefRoutes}" class="slider"></div>
-			   </div><hr>`).appendTo(sliderContainer);
+			   </div>`).appendTo(sliderContainer);
 
 	var slider = $('#slider-ref-routes');
 	freezeMap(slider); // freeze the map when the slider is on the focus
@@ -587,7 +585,25 @@ const updateStaRoutesList = (map,refRoutesUrl,e, freqUrl)=> {
 
         // adds the spatial structure
         callSpatialData(map, refRoutesUrl, sid,freqUrl, cusRoutes);
+        appendMonthlyGraph($('#monthly-graph-container'), sid)
     }
+};
+
+const appendMonthlyGraph = (monthlyGraphContainer, sid) =>{
+	    // adds a div if it does not exist
+	    ((monthlyGraphContainer.has($('#monthly-temporal-graph')).length) ? true : monthlyGraphContainer.append('<div id="monthly-temporal-graph" class="col-11"></div>'));
+
+		$.ajax({url : getAdjustedUrl(monthlyRoutesUrl,sid) , async: true}).done((response)=>{
+			let x = []; y = [];
+			Object.keys(response).map((key)=>{
+				x.push(response[key].month);
+				y.push(response[key].count);
+			});
+
+			graphLayout.yaxis = {'title' : 'Flow per month'}, graphLayout.xaxis = {'title':'', 'range': [x[0], x[x.length-1]]}, graphLayout.showlegend = false;
+
+			Plotly.newPlot('monthly-temporal-graph', [{x : x, y : y , type: 'scatter', mode: 'lines'}], graphLayout, {staticPlot: false, displayModeBar: false});
+		});
 };
 appendQuestionBtn = (el,name,position,content)=>{
 
@@ -622,6 +638,7 @@ const infoStatsUpdate = (el) =>{
 									<div class="col-12" id="ref-routes-slider-container"></div>	
 									<div id="legend-graph-container" class="col-12 legend"></div>	
 									<div id="distances-distribution-graph-container" class="col-12"></div>
+									<div id="monthly-graph-container" class="col-12"></div>	
 								</div>
 							</div>`);
     }catch (e) {
@@ -642,7 +659,7 @@ basicInfoTab.update = function(props,coords){
 	// Try-catch block of borough layer
 	try {
 		this.div.innerHTML += (props ? '<br><b>Borough: </b>' +  props.bname: '<br>Hover over the borough');
-        this.div.innerHTML += `<br><b>Value of Borough Color: </b> ${((props.bfreq/nStations)*100).toFixed(2).toString()} %`;
+        this.div.innerHTML += `<br><b>% of Stations within Borough: </b> ${((props.bfreq/nStations)*100).toFixed(2).toString()} %`;
         latestSelectedBorough = {
         	'bname' : props.bname,
         	'bfreq' : props.bfreq,
@@ -651,7 +668,7 @@ basicInfoTab.update = function(props,coords){
 	// Try-catch block of stations layer
     try{
 		this.div.innerHTML += (props ? '<br><b>Station: </b>' + props.sname : '<br>Hover over the station');
-		this.div.innerHTML += '<br><b>Value of Station Color: </b>' + props.sfreq;
+		this.div.innerHTML += '<br><b>Global Station Flow: </b>' + props.sfreq;
 		latestSelectedStation = {
 			'sname' : props.sname,
 			'sfreq' : props.sfreq,
@@ -856,12 +873,12 @@ $(window).on("map:init", function(event) {
 				if($(this).hasClass('active')){
 						(map.hasLayer(groupLayer) ? map.removeLayer(groupLayer) : false);
 						$('#station-routes').attr('disabled',true); // set the button as disable
-                        $(this).text('Disable'); // change the text to disable
-						$('#main-container').html(''); // removes the content of the main-container
+                        $(this).text('Hidden'); // change the text to disable
 				}else{
 						$('#station-routes').attr('disabled', false); // se the button as active
 						$(this).text("Active"); // change the text to active
 				}
+				$('#main-container').fadeToggle(500);
 				$(this).toggleClass('active');
 			});
 

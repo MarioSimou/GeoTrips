@@ -39,8 +39,8 @@
       <file leaf-file-name="main.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/js/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="234">
-              <caret line="407" column="52" selection-start-line="407" selection-start-column="52" selection-end-line="407" selection-end-column="52" />
+            <state relative-caret-position="243">
+              <caret line="876" column="21" selection-start-line="876" selection-start-column="21" selection-end-line="876" selection-end-column="21" />
               <folding>
                 <element signature="n#style#0;n#i#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="e#1#8#0" expanded="true" />
@@ -52,8 +52,8 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cyclists/webapp/templates/webapp/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="139">
-              <caret line="116" column="18" lean-forward="true" selection-start-line="116" selection-start-column="18" selection-end-line="116" selection-end-column="18" />
+            <state relative-caret-position="307">
+              <caret line="96" selection-start-line="96" selection-end-line="96" />
             </state>
           </provider>
         </entry>
@@ -61,8 +61,8 @@
       <file leaf-file-name="main.css" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/css/main.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="26">
-              <caret line="409" column="13" selection-start-line="409" selection-start-column="13" selection-end-line="409" selection-end-column="13" />
+            <state relative-caret-position="347">
+              <caret line="433" column="16" selection-start-line="433" selection-start-column="16" selection-end-line="433" selection-end-column="16" />
             </state>
           </provider>
         </entry>
@@ -153,10 +153,10 @@
         <option value="$PROJECT_DIR$/cyclists/webapp/kmeans.py" />
         <option value="$PROJECT_DIR$/cyclists/webapp/k.py" />
         <option value="$PROJECT_DIR$/cyclists/webapp/static/js/functions.js" />
-        <option value="$PROJECT_DIR$/cyclists/webapp/static/css/main.css" />
         <option value="$PROJECT_DIR$/cyclists/webapp/urls.py" />
-        <option value="$PROJECT_DIR$/cyclists/webapp/templates/webapp/index.html" />
         <option value="$PROJECT_DIR$/cyclists/webapp/views.py" />
+        <option value="$PROJECT_DIR$/cyclists/webapp/static/css/main.css" />
+        <option value="$PROJECT_DIR$/cyclists/webapp/templates/webapp/index.html" />
         <option value="$PROJECT_DIR$/cyclists/webapp/static/js/main.js" />
       </list>
     </option>
@@ -423,7 +423,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="60" y="-11" width="1541" height="912" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="9" weight="0.3275862" />
       <window_info anchor="bottom" id="Event Log" order="6" sideWeight="0.5016745" side_tool="true" weight="0.24078947" />
@@ -626,13 +625,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/css/main.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="26">
-          <caret line="409" column="13" selection-start-line="409" selection-start-column="13" selection-end-line="409" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cyclists/webapp/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="78">
@@ -640,17 +632,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/css/main.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="347">
+          <caret line="433" column="16" selection-start-line="433" selection-start-column="16" selection-end-line="433" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/cyclists/webapp/templates/webapp/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="139">
-          <caret line="116" column="18" lean-forward="true" selection-start-line="116" selection-start-column="18" selection-end-line="116" selection-end-column="18" />
+        <state relative-caret-position="307">
+          <caret line="96" selection-start-line="96" selection-end-line="96" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/js/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="407" column="52" selection-start-line="407" selection-start-column="52" selection-end-line="407" selection-end-column="52" />
+        <state relative-caret-position="243">
+          <caret line="876" column="21" selection-start-line="876" selection-start-column="21" selection-end-line="876" selection-end-column="21" />
           <folding>
             <element signature="n#style#0;n#i#0;n#div#0;n#!!top" expanded="true" />
             <element signature="e#1#8#0" expanded="true" />
