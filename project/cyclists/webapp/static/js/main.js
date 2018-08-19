@@ -1028,7 +1028,7 @@ $(window).on('load', ()=>
 	$('#layersSubMenu li:first-of-type a').on('click', function() {
 		activateEl(cluster,$(this));
 	});
-	$('#layersSubMenu li:last-of-type a').on('click', function(){
+	$('#layersSubMenu li:nth-of-type(2) a').on('click', function(){
 		activateEl(boroughs, $(this));
 	});
 	$('#heatmaps li:first-of-type a').on('click', function () {
