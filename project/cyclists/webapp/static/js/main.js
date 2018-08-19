@@ -420,8 +420,6 @@ const refRoutesOnEachFeature = (feature,layer) =>{
 		 'mouseout': resetHighlightRefRoutes,
 	})  ;
 };
-
-var counter =0;
 const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
 		// if the map has staRoutes layer removes it
 		(map.hasLayer(groupLayer) ? map.removeLayer(groupLayer.clearLayers()) : false);
@@ -438,7 +436,7 @@ const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
         	style : setRefRoutesStyle,
 			onEachFeature: refRoutesOnEachFeature,
         });  // webapp_stations_pairs_routes model
-		if(counter != 0){changeColorsRefRoute(refRoutes);}
+		//if(counter != 0){changeColorsRefRoute(refRoutes);}
 
         // loads a POI of the station location
 		var uniqStaUrl = getAdjustedUrl( $('#unique-station').attr('href') ,sid);
@@ -453,7 +451,9 @@ const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
 		refRoutes.on('data:loaded', ()=>
 			{
         		appendSpatialDataFilter($('#ref-routes-slider-container'), refRoutes, groupLayer, refRoutesUrl);
-        		(counter === 0 ?  appendRefRoutesLegend($('#legend-graph-container'), eqIntRefRoutes, refRoutesFreqUrl) : false);
+        		appendRefRoutesLegend($('#legend-graph-container'), eqIntRefRoutes, refRoutesFreqUrl);
+
+        		//(counter === 0 ?  appendRefRoutesLegend($('#legend-graph-container'), eqIntRefRoutes, refRoutesFreqUrl) : false);
         		appendDistributionGraph($('#distances-distribution-graph-container'),cusRoutes);
 
         		loader.hide();
@@ -480,21 +480,18 @@ const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
 };
 
 const appendRefRoutesLegend = (graphContainer,eqIntRefRoutes,refRoutesFreqUrl) => {
-	counter++; // execute the function only once
-	graphContainer.append(`<div>
+	if(graphContainer.children().length == 0) {
+        graphContainer.append(`<div>
 							<h4>Routes Color</h4>
 							<p>**the color corresponds on the number of routes that has been performed (flow)</p>
 							<div></div>
 						  </div>`);
-	console.log(1);
-	cRefRoutes =  equalIntervals(nClasses,refRoutesFreqUrl,'refRoutes');
-	cRefRoutes.unshift(0);
-	console.log(2);
+        cRefRoutes = equalIntervals(nClasses, refRoutesFreqUrl, 'refRoutes');
+        cRefRoutes.unshift(0);
 
-	populateLegend('refRoutes',cRefRoutes,colRampGlo.routes,eqIntRefRoutes,nClasses,graphContainer.find('div').find('div'));
-	console.log(3);
-	// dropdown list
-	$(`<select id='color-ramp-refroutes' class="color-ramp">
+        populateLegend('refRoutes', cRefRoutes, colRampGlo.routes, eqIntRefRoutes, nClasses, graphContainer.find('div').find('div'));
+        // dropdown list
+        $(`<select id='color-ramp-refroutes' class="color-ramp">
 							<option value="YlGnBu">YlGnBu</option>
 							<option value="Reds">Reds</option>
 							<option value="YlGn">YlGn</option>
@@ -503,11 +500,11 @@ const appendRefRoutesLegend = (graphContainer,eqIntRefRoutes,refRoutesFreqUrl) =
 							<option value="Accent">Accent</option>
 						</select>`).appendTo(graphContainer.find('div').find('div').eq(0));
 
-		changeColorsRefRoute(refRoutes);
-
+        changeColorsRefRoute(refRoutes);
+    }
 };
 const changeColorsRefRoute = (refRoutes)=>{
-	$('#color-ramp-refroutes').on('change',(e)=> {
+	$('#legend-graph-container').on('change','select', (e)=> {
 
 		var colRamp = $(e.currentTarget).val();
         colRampGlo['routes'] = colRamp;
@@ -807,9 +804,33 @@ boundariesRangeSlider.update  = function()
 menuCommand.onAdd = function(map){return createDivElement(this,'menuCommand');};
 menuCommand.update = function()
 {
-	this.div.innerHTML = '<button type="button" id="sidebarCollapse" class="navbar-btn"><span></span><span></span><span></span></button>';
+	console.log('marios');
+	this.div.innerHTML = `<button type="button" id="sidebarCollapse" class="navbar-btn">
+								<span></span>
+								<span></span>
+								<span></span>
+						  </button>`;
+	// if the window size is less than  900, then close the sidebar
+	if($(window).width() < 900){
+		$('#sidebar').toggleClass('active');
+        $('#sidebarCollapse').toggleClass('active');
+	}
 };
 
+// performs changes on the div.info.info-stats.leaflet-control
+statsBtnToggle = (el)=> {
+	if (el.hasClass('active')) {
+        (map.hasLayer(groupLayer) ? map.removeLayer(groupLayer) : false);
+        $('#station-routes').attr('disabled', true); // set the button as disable
+        el.text('Hidden'); // change the text to disable
+    } else {
+        $('#station-routes').attr('disabled', false); // se the button as active
+        el.text("Active"); // change the text to active
+    }
+    $('#main-container').children().children().remove(); // removes the children of the sub-elements
+    //$('#main-container').fadeToggle(500);
+    el.toggleClass('active');
+};
 //---------------------------------------------------------------------------------------------------------------------
 
 // event that is called when the map is initialised
@@ -869,8 +890,9 @@ $(window).on("map:init", function(event) {
 				updateStaRoutesList(map,refRoutesUrl, e, freqUrl);
 			});
 
-			$('div.info.info-stats.leaflet-control button').on('click', function(){
-				if($(this).hasClass('active')){
+			$('div.info.info-stats.leaflet-control button').on('click', (e)=>{
+				statsBtnToggle($(e.currentTarget));
+				/*if($(this).hasClass('active')){
 						(map.hasLayer(groupLayer) ? map.removeLayer(groupLayer) : false);
 						$('#station-routes').attr('disabled',true); // set the button as disable
                         $(this).text('Hidden'); // change the text to disable
@@ -880,6 +902,7 @@ $(window).on("map:init", function(event) {
 				}
 				$('#main-container').fadeToggle(500);
 				$(this).toggleClass('active');
+				*/
 			});
 
     		// adds the cluster group on the map, containing a featureGroup
@@ -887,22 +910,6 @@ $(window).on("map:init", function(event) {
 			// number of stations
 			nStations = stations.toGeoJSON().features.length;
 
-			// adds a slider bar in the legend
-			/*$('#legend-container div.row').eq(1).append( `
-					<div class="col-12">
-						<br>
-						<br>
-						<br>
-						<table id="table-sFilterSlider">
-							<tr>
-								<th>1</th>
-								<th><em>Top N stations</em></th>
-								<th>${nStations}</th>
-							</tr>
-						</table>
-						<input type="range" class="slider" value="${nStations}" min="1" max="${nStations}" id="sFilterSlider">
-					</div>`);*/
-			
 			$('#legend-container div.row').eq(1).append(`
 			   <div class="col-12 stations-slider">
 			   		<div class="row">
@@ -1169,6 +1176,21 @@ $(document).ready(() => {
 		colors = response;
 	});
 
-});
+	// changes the display of the webapp when its size changes
+	$(window).on('resize',(e)=>{
+		/*adjustContainerHeight(e,$('div.info.info-stats.leaflet-control'), 960);
+		adjustContainerWidth(e,$('div.info.info-stats.leaflet-control'), 740);
+		*/
+		if($(e.currentTarget).width() < 800 || $(e.currentTarget).height() < 740 ){
+			$('div.info.info-stats.leaflet-control').fadeOut(300);
+			$('div.info.legend.leaflet-control').fadeOut(300);
+			statsBtnToggle($('div.info.info-stats.leaflet-control button'));
+		}else{
+			$('div.info.info-stats.leaflet-control').fadeIn(300);
+			$('div.info.legend.leaflet-control').fadeIn(300);
 
+		}
+	});
+
+});
 
