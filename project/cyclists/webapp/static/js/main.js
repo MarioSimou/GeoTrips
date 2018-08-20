@@ -66,7 +66,7 @@ var graphLayout = {
 			l:65,
 			r:20,
 			b:40,
-			t:25,
+			t:40,
 			pad:4
 		},
 		autosize: true,
@@ -477,7 +477,8 @@ const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
 
 	// modifies the axis values
 	graphLayout.yaxis = {'title' : 'P( X = duration )'}, graphLayout.xaxis = {'title':'duration (s)', 'range': [0,5000]}, graphLayout['barmode'] = "overlay";
-
+	//graphLayout.title = 'Baseline vs Cycle Hire Data Distribution';
+	graphLayout.legend = true;
 	Plotly.newPlot('distribution-container',[refHist,cusHist], graphLayout, {staticPlot: false, displayModeBar: false});
 };
 
@@ -603,6 +604,7 @@ const appendMonthlyGraph = (monthlyGraphContainer, sid) =>{
 			});
 
 			graphLayout.yaxis = {'title' : 'Flow per month'}, graphLayout.xaxis = {'title':'', 'range': [x[0], x[x.length-1]]}, graphLayout.showlegend = false;
+			//graphLayout.title = 'Temporal Graph of Flow per Month';
 
 			Plotly.newPlot('monthly-temporal-graph', [{x : x, y : y , type: 'scatter', mode: 'lines'}], graphLayout, {staticPlot: false, displayModeBar: false});
 		});
