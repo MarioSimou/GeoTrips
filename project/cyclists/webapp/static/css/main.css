@@ -434,3 +434,7 @@ svg.svg-inline--fa.fa-info-circle.fa-w-16{
     margin: 10px 0;
     padding-left: 30%;
 }
+
+#graphs-container div{
+    padding-left: 2px;
+}

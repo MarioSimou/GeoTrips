@@ -437,7 +437,8 @@ const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
         	style : setRefRoutesStyle,
 			onEachFeature: refRoutesOnEachFeature,
         });  // webapp_stations_pairs_routes model
-		//if(counter != 0){changeColorsRefRoute(refRoutes);}
+
+		if($('#ref-routes-slider-container').has($('#slider-ref-routes')).length) changeColorsRefRoute(refRoutes);
 
         // loads a POI of the station location
 		var uniqStaUrl = getAdjustedUrl( $('#unique-station').attr('href') ,sid);
@@ -469,7 +470,7 @@ const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
 
 	var cusDistances = cusRoutes.map((f)=>{return (f.fields.duration)});
 	// create a div that will contains the graph if it does not exist
-	(disGraphContainer.has('#distribution-container').length ? true : $(`<div class="col-11" id="distribution-container"></div>`).appendTo(disGraphContainer));
+	(disGraphContainer.has('#distribution-container').length ? true : $(`<div class="col-12" id="distribution-container"></div>`).appendTo(disGraphContainer));
 	// distances options
 	var refHist = {x : refDistances,name: 'Baseline',type: 'histogram',histfunc : 'count',histnorm:'probability density',autobinx:true,opacity:0.5, marker: {color: 'red'} };
 	var cusHist = {x : cusDistances,name: 'Cycle Hire data', type: 'histogram',histfunc : 'count',histnorm:'probability density', autobinx:true,opacity: 0.5, marker: {color: 'green'}};
@@ -592,7 +593,7 @@ const updateStaRoutesList = (map,refRoutesUrl,e, freqUrl)=> {
 
 const appendMonthlyGraph = (monthlyGraphContainer, sid) =>{
 	    // adds a div if it does not exist
-	    ((monthlyGraphContainer.has($('#monthly-temporal-graph')).length) ? true : monthlyGraphContainer.append('<div id="monthly-temporal-graph" class="col-11"></div>'));
+	    ((monthlyGraphContainer.has($('#monthly-temporal-graph')).length) ? true : monthlyGraphContainer.append('<div id="monthly-temporal-graph" class="col-12"></div>'));
 
 		$.ajax({url : getAdjustedUrl(monthlyRoutesUrl,sid) , async: true}).done((response)=>{
 			let x = []; y = [];
@@ -636,23 +637,27 @@ const infoStatsUpdate = (el) =>{
         }
         html = html.concat(`</select></div></div>
 								<ul class="nav nav-tabs" id="myTab" role="tablist">
-  <li class="nav-item">
-    <a class="nav-link active" id="main-container-tab" data-toggle="tab" href="#main-container" role="tab" aria-controls="main-container" aria-selected="true">Home</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
-  </li>
-</ul>
-<div class="tab-content" id="myTabContent">
-	<div class="tab-pane fade show active row" id="main-container" role="tabpanel" aria-labelledby="main-container-tab">	
-		<div class="col-12" id="ref-routes-slider-container"></div>	
-		<div id="legend-graph-container" class="col-12 legend"></div>	
-		<div id="distances-distribution-graph-container" class="col-12"></div>
-		<div id="monthly-graph-container" class="col-12"></div>	
-	</div>
-  <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">Stefanos</div>
-</div>
-
+ 									<li class="nav-item">
+    									<a class="nav-link active" id="descriptive-tab" data-toggle="tab" href="#descriptive-container" role="tab" aria-selected="true">Descriptive</a>
+  									</li>
+  									<li class="nav-item">
+    									<a class="nav-link" id="graphs-tab" data-toggle="tab" href="#graphs-container" role="tab" aria-selected="true">Graphs</a>
+  									</li>	
+								</ul>
+								<div class="tab-content" id="myTabContent">
+									<div class="tab-pane fade show active" id="descriptive-container" role="tabpanel">
+										<div class="row">
+											<div class="col-12" id="ref-routes-slider-container"></div>	
+											<div id="legend-graph-container" class="col-12 legend"></div>		
+										</div>
+									</div>
+									<div class="tab-pane fade" id="graphs-container" role="tabpanel">		
+										<div class="row">
+											<div id="distances-distribution-graph-container" class="col-12"></div>
+											<div id="monthly-graph-container" class="col-12"></div>	
+										</div>
+									</div>
+								</div>
 							</div>`);
     }catch (e) {
 		console.log(e)
@@ -841,7 +846,7 @@ statsBtnToggle = (el)=> {
         $('#station-routes').attr('disabled', false); // se the button as active
         el.text("Active"); // change the text to active
     }
-    $('#main-container').children().children().remove(); // removes the children of the sub-elements
+    $('#graphs-container').children().children().remove(); // removes the children of the sub-elements
     //$('#main-container').fadeToggle(500);
     el.toggleClass('active');
 };
