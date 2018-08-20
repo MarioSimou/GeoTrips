@@ -29,10 +29,9 @@
                         <h3>Sharemap DashBoard</h3>
                 </div>
                 <ul class="list-unstyled components">
-                    <p>Dummy Heading</p>
                     <li>
                         <a href="#tablesSubMenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Data</a>
-                        <ul class="collapse list-unstyled" id="tablesSubMenu">
+                        <ul class="collapse list-unstyled header" id="tablesSubMenu">
                             <li>
                                 <a href="{% url 'webapp:stations-info' %}">Stations Info</a>
                             </li>
@@ -40,7 +39,7 @@
                     </li>
                     <li>
                         <a href="#layersSubMenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Layers</a>
-                        <ul class="collapse list-unstyled" id="layersSubMenu">
+                        <ul class="collapse list-unstyled header" id="layersSubMenu">
                             <li>
                                 <a href="#" class="activate-layer">Stations Layer - (ON)</a>
                             </li>
@@ -58,7 +57,7 @@
                     </li>
                     <li>
                         <a href="#basemapsSubMenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Basemaps</a>
-                        <ul class="collapse list-unstyled" id="basemapsSubMenu">
+                        <ul class="collapse list-unstyled header" id="basemapsSubMenu">
                             <a href="#cartoDB" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">CartoDB</a>
                             <ul class="collapse list-unstyled" id="cartoDB">
                                 <li>

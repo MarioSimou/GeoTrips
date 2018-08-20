@@ -81,15 +81,15 @@ var scatterLayout = {
 			l:0,
 			r:0,
 			b:0,
-			t:20,
-			pad:10
+			t:0,
+			pad: 10
 		},
 		paper_bgcolor: 'rgba(0,0,0,0)',
 		plot_bgcolor: 'rgba(0,0,0,0)',
 		showlegend: false,
 		autosize: false,
-		width: 220,
-		height: 200,
+		width: 180,
+		height: 180,
 		scene: {
             aspectratio: {
                 x: 1,
@@ -484,12 +484,15 @@ const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
 const appendRefRoutesLegend = (graphContainer,eqIntRefRoutes,refRoutesFreqUrl) => {
 	if(graphContainer.children().length == 0) {
         graphContainer.append(`<div>
-							<h4>Routes Color</h4>
-							<p>**the color corresponds on the number of routes that has been performed (flow)</p>
+							<h4>Routes</h4>
 							<div></div>
 						  </div>`);
         cRefRoutes = equalIntervals(nClasses, refRoutesFreqUrl, 'refRoutes');
         cRefRoutes.unshift(0);
+
+        // append question mark
+		appendQuestionBtn(graphContainer.find('h4'),'ref-routes','left','marios simou');
+
 
         populateLegend('refRoutes', cRefRoutes, colRampGlo.routes, eqIntRefRoutes, nClasses, graphContainer.find('div').find('div'));
         // dropdown list
@@ -606,7 +609,7 @@ const appendMonthlyGraph = (monthlyGraphContainer, sid) =>{
 };
 appendQuestionBtn = (el,name,position,content)=>{
 
-	$(`<a href="#" id="${name}-question-btn" data-toggle="tooltip" data-placement="${position}" data-html="true" title="" data-original-title="${content}" class="question-btn"><i class="fas fa-question"></i></a>`).appendTo(el);
+	$(`<a href="#" id="${name}-question-btn" data-toggle="tooltip" data-placement="${position}" data-html="true" title="" data-original-title="${content}" class="question-btn"><i class="fas fa-info-circle"></i></a>`).appendTo(el);
 	$(`	#${name}-question-btn`).tooltip();
 	//$(`<button id="${name}-question-btn" type="button" class="btn btn-secondary question-btn" data-toggle="tooltip" data-placement="top" title="${content}" disabled><i class="fas fa-question"></i></button>`).appendTo(el);
 };
@@ -667,7 +670,7 @@ basicInfoTab.update = function(props,coords){
 	// Try-catch block of stations layer
     try{
 		this.div.innerHTML += (props ? '<br><b>Station: </b>' + props.sname : '<br>Hover over the station');
-		this.div.innerHTML += '<br><b>Global Station Flow: </b>' + props.sfreq;
+		this.div.innerHTML += '<br><b>Station Global Flow: </b>' + props.sfreq;
 		latestSelectedStation = {
 			'sname' : props.sname,
 			'sfreq' : props.sfreq,
@@ -699,10 +702,9 @@ legend.onAdd = function(map)
 								<div class="row">
 									<div class="col-6 left-legend-panel">
 										<h4>Boroughs </h4>
-										<p>**the color corresponds to the number of stations within a borough</p>
 										<div></div>
 									</div>
-									<div class="col-5 right-legend-panel">
+									<div class="col-6 right-legend-panel">
 										<div id="3d-scatter-boroughs"></div>
 									</div>	
 								</div>
@@ -710,10 +712,9 @@ legend.onAdd = function(map)
 								<div class="row">
 									<div class="col-6 left-legend-panel">
 										<h4>Stations </h4>
-										<p>**the color corresponds to the number of routes that either they have started or ended in a station</p>							
 										<div></div>
 									</div>		
-									<div class="col-5 right-legend-panel">
+									<div class="col-6 right-legend-panel">
 										<div id="3d-scatter-stations"></div>
 									</div>
 								</div>
@@ -905,7 +906,7 @@ $(window).on("map:init", function(event) {
 			   <div class="col-12 stations-slider">
 			   		<div class="row">
 			  			<div class="col-2"><strong>1</strong></div> 
-			  			<div class="col-8"><b><em>Top N stations</em></b></div>
+			  			<div class="col-8"><b><em>N stations</em></b></div>
 			  			<div class="col-2"><strong>${nStations}</strong></div>
 			  		</div>
 			  		<div class="row">
@@ -1025,17 +1026,17 @@ $(window).on('load', ()=>
 
 	// adds a slider bar in the legend
 
-	$('#layersSubMenu li:first-of-type a').on('click', function() {
-		activateEl(cluster,$(this));
+	$('#layersSubMenu li:first-of-type a').on('click', (e)=> {
+		activateEl(cluster,$(e.currentTarget));
 	});
-	$('#layersSubMenu li:nth-of-type(2) a').on('click', function(){
-		activateEl(boroughs, $(this));
+	$('#layersSubMenu li:nth-of-type(2) a').on('click', (e)=>{
+		activateEl(boroughs, $(e.currentTarget));
 	});
-	$('#heatmaps li:first-of-type a').on('click', function () {
-		activateEl(heatmapStationsLayer, $(this));
+	$('#heatmaps li:first-of-type a').on('click', (e)=> {
+		activateEl(heatmapStationsLayer, $(e.currentTarget));
     });
-	$('#heatmaps li:last-of-type a').on('click', function(){
-		activateEl(heatmapBoroughsLayer, $(this));
+	$('#heatmaps li:last-of-type a').on('click', (e)=>{
+		activateEl(heatmapBoroughsLayer, $(e.currentTarget));
 	});
 
 	// adds the functionality of the basemap labels
