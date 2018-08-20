@@ -635,12 +635,24 @@ const infoStatsUpdate = (el) =>{
             html = html.concat(`<option value="${station.properties.pk}">${station.properties.station_name}</option>`.toString());
         }
         html = html.concat(`</select></div></div>
-								<div class="row" id="main-container">	
-									<div class="col-12" id="ref-routes-slider-container"></div>	
-									<div id="legend-graph-container" class="col-12 legend"></div>	
-									<div id="distances-distribution-graph-container" class="col-12"></div>
-									<div id="monthly-graph-container" class="col-12"></div>	
-								</div>
+								<ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="main-container-tab" data-toggle="tab" href="#main-container" role="tab" aria-controls="main-container" aria-selected="true">Home</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
+  </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+	<div class="tab-pane fade show active row" id="main-container" role="tabpanel" aria-labelledby="main-container-tab">	
+		<div class="col-12" id="ref-routes-slider-container"></div>	
+		<div id="legend-graph-container" class="col-12 legend"></div>	
+		<div id="distances-distribution-graph-container" class="col-12"></div>
+		<div id="monthly-graph-container" class="col-12"></div>	
+	</div>
+  <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">Stefanos</div>
+</div>
+
 							</div>`);
     }catch (e) {
 		console.log(e)
