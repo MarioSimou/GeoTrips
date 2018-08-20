@@ -78,7 +78,7 @@ def load_reference_routes(request,year,sid):
     start = time()
     try:
         # selects routes of a certain year and sid
-        l = set(models.Routes.objects.filter(start_date__gte=f'{year}-01-01 00:00').select_related().filter(station_pairs_id__start_station_id=sid).values_list('station_pairs_id',flat=True).distinct())
+        l = set(models.Routes.objects.filter(start_date__gte=f'{year}-01-01 00:00').filter(end_date__lt=f'{int(year)+1}-01-01 00:00').select_related().filter(station_pairs_id__start_station_id=sid).values_list('station_pairs_id',flat=True).distinct())
         # gets the reference routes that have been covered this on the specified year
         ref_routes = serialize('geojson', get_list_or_404(models.Stations_Pairs_Routes, id__in = l))
     except:
@@ -92,7 +92,7 @@ def load_routes_of_station(request,year,sid):
     start = time()
     # only specific routes of a year
     # gets a list of the filtered routes
-    routes_of_sid = get_list_or_404(models.Routes, start_date__gte = f'{year}-01-01 00:00', station_pairs_id__start_station_id=sid)
+    routes_of_sid = get_list_or_404(models.Routes, start_date__gte = f'{year}-01-01 00:00', end_date__lt = f'{int(year)+1}-01-01 00:00',station_pairs_id__start_station_id=sid)
     # serialize the results to a json format
     r = serialize('json',routes_of_sid,fields = ('start_date','end_date','duration','bike_id', 'station_pairs_id'))
     stop = time()

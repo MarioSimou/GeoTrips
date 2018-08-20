@@ -427,19 +427,23 @@ const appendDescriptiveStats = (obj)=>{
 
 const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
 	// baseline distances
-	let refRoutesArr = refRoutes.toGeoJSON().features;
-	let data = {'baseline': {}, 'cycleHire': {}};
-
-	data.baseline.refTime = refRoutesArr.map((f)=> f.properties.balanced_ref_time);
-	data.cycleHire.cusTime = cusRoutes.map((f)=> f.fields.duration);
+	let data = {'baseline': {'refTime' : []}, 'cycleHire': {'cusTime': []}};
+	let refRoutesHash = {};
+	// create a hash map of the baseline routes
+	refRoutes.toGeoJSON().features.map((route,index,arr)=>{
+		refRoutesHash[route.properties.pk] = route.properties.balanced_ref_time;
+	});
+	// generate the matrixes of the baseline and cycle hire data
+	for(f of cusRoutes){
+		data.baseline.refTime.push(refRoutesHash[f.fields.station_pairs_id]);
+		data.cycleHire.cusTime.push(f.fields.duration);
+	};
 
 	// fill he empty values
 	data.baseline.median = median(data.baseline.refTime); // median time
-	data.baseline.n = data.baseline.refTime.length;
 	data.baseline.descriptive = descriptiveStats(data.baseline.refTime);
 
 	data.cycleHire.median = median(data.cycleHire.cusTime);
-	data.cycleHire.n = data.cycleHire.cusTime.length;
 	data.cycleHire.descriptive = descriptiveStats(data.cycleHire.cusTime);
 	appendDescriptiveStats(data);
 
