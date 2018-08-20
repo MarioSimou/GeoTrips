@@ -100,11 +100,16 @@ def load_routes_of_station(request,year,sid):
     # loads the json
     return HttpResponse(r,content_type='json')
 
-def load_routes_temporal_data(request, year,sid):
+def load_routes_temporal_data(request,lag,year,sid):
     cursor = connection.cursor()
-    cursor.execute(f"SELECT date_trunc('month',start_date) as date, COUNT(start_date) FROM webapp_routes as a LEFT JOIN webapp_stations_pairs_routes as b ON a.station_pairs_id=b.id WHERE a.start_date > '{year}-01-01 00:00' AND a.start_date < '{int(year)+1}-01-01' AND b.start_station_id = {sid} GROUP BY date_trunc('month', start_date);")
-    monthly_routes = dict([(str(month[0].date()), {'month' : str(month[0].date()), 'count' : month[1]})for month in cursor.fetchall()])
-    return JsonResponse(monthly_routes, safe= True)
+    if lag == 'month':
+        cursor.execute(f"SELECT date_trunc('month',start_date) as date, COUNT(start_date) FROM webapp_routes as a LEFT JOIN webapp_stations_pairs_routes as b ON a.station_pairs_id=b.id WHERE a.start_date > '{year}-01-01 00:00' AND a.start_date < '{int(year)+1}-01-01 00:00' AND b.start_station_id = {sid} GROUP BY date_trunc('month', start_date);")
+        routes = dict([(str(month[0].date()), {'month' : str(month[0].date()), 'count' : month[1]})for month in cursor.fetchall()])
+    elif lag == 'day':
+        cursor.execute(f"SELECT to_char(start_date,'YYYY-MM-DD'),COUNT(start_date) FROM webapp_routes as a LEFT JOIN webapp_stations_pairs_routes as b ON a.station_pairs_id=b.id LEFT JOIN webapp_stations as c ON b.start_station_id=c.station_id WHERE a.start_date >= '{year}-01-01 00:00' AND a.end_date < '{int(year)+1}-01-01 00:00' AND c.station_id = {sid} GROUP BY to_char(start_date, 'YYYY-MM-DD')")
+        routes = dict([(day[0],{'day': day[0], 'count': day[1]}) for day in cursor.fetchall()])
+
+    return JsonResponse(routes, safe= True)
 
 def stations_info(request):
     # Load the boroughs and stations

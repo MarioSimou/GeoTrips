@@ -149,7 +149,7 @@ const stationsUrl = $('#stations').attr('href'); // webapp_stations
 const stationsPairsRoutesUrl = $('#stations-pairs-routes').attr('href'); // webapp_routes
 const kMeansUrl = $('#kmeans').attr('href');
 const freqUrl = $('#freq').attr('href');
-const monthlyRoutesUrl = $('#monthly_routes').attr('href');
+const temporalRoutesUrl = $('#temporal_routes').attr('href');
 
 // Panels
 const statsInfo = L.control({position: 'topright'});
@@ -588,15 +588,30 @@ const updateStaRoutesList = (map,refRoutesUrl,e, freqUrl)=> {
 
         // adds the spatial structure
         callSpatialData(map, refRoutesUrl, sid,freqUrl, cusRoutes);
-        appendMonthlyGraph($('#monthly-graph-container'), sid)
+        appendTemporalGraph($('#monthly-graph-container'),$('#daily-graph-container') ,sid)
     }
 };
 
-const appendMonthlyGraph = (monthlyGraphContainer, sid) =>{
+const appendTemporalGraph = (monthlyGraphContainer, dailyGraphContainer,sid) =>{
 	    // adds a div if it does not exist
 	    ((monthlyGraphContainer.has($('#monthly-temporal-graph')).length) ? true : monthlyGraphContainer.append('<div id="monthly-temporal-graph" class="col-12"></div>'));
+	    ((dailyGraphContainer.has($('#daily-temporal-graph')).length) ? true : dailyGraphContainer.append('<div id="daily-temporal-graph" class="col-12"></div>'));
 
-		$.ajax({url : getAdjustedUrl(monthlyRoutesUrl,sid) , async: true}).done((response)=>{
+	    console.log(getAdjustedUrl(temporalRoutesUrl,sid).replace('month','day'));
+	    // daily
+	    $.ajax({url : getAdjustedUrl(temporalRoutesUrl,sid).replace('month','day'), async: true}).done((response)=>{
+	    	let x=[], y=[];
+	    	Object.keys(response).map((key)=>{
+	    		x.push(response[key].day);
+	    		y.push(response[key].count);
+			});
+	    	graphLayout.yaxis = {'title': 'Flow per Day'};
+	    	graphLayout.xaxis = {'title': '', 'range': [x[0],x[x.length-1]]};
+	    	Plotly.newPlot('daily-temporal-graph',[{x: x, y: y, type: 'scatter',mode: 'lines' }],graphLayout,{staticPlot: false, displayModeBar: false});
+			console.log('daily is added');
+	    });
+		// monthly
+		$.ajax({url : getAdjustedUrl(temporalRoutesUrl,sid) , async: true}).done((response)=>{
 			let x = []; y = [];
 			Object.keys(response).map((key)=>{
 				x.push(response[key].month);
@@ -656,6 +671,7 @@ const infoStatsUpdate = (el) =>{
 									<div class="tab-pane fade" id="graphs-container" role="tabpanel">		
 										<div class="row">
 											<div id="distances-distribution-graph-container" class="col-12"></div>
+											<div id="daily-graph-container" class="col-12"></div>
 											<div id="monthly-graph-container" class="col-12"></div>	
 										</div>
 									</div>
@@ -825,7 +841,6 @@ boundariesRangeSlider.update  = function()
 menuCommand.onAdd = function(map){return createDivElement(this,'menuCommand');};
 menuCommand.update = function()
 {
-	console.log('marios');
 	this.div.innerHTML = `<button type="button" id="sidebarCollapse" class="navbar-btn">
 								<span></span>
 								<span></span>

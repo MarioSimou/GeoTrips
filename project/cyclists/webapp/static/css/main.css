@@ -348,7 +348,7 @@ div.leaflet-control-defaultextent.leaflet-control{
   from{ bottom:-100px; opacity:0 }
   to{ bottom:0; opacity:1 }
 }
-#distribution-container, #monthly-temporal-graph{
+#distribution-container, #monthly-temporal-graph, #daily-temporal-graph{
     box-sizing: border-box;
     height: 200px;
     width: 400px;
@@ -437,5 +437,5 @@ svg.svg-inline--fa.fa-info-circle.fa-w-16{
 }
 
 #graphs-container div{
-    padding: 0 0 20px 2px;
+    padding: 0 0 0 2px;
 }
