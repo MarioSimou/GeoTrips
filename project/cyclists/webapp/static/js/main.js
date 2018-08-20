@@ -399,7 +399,6 @@ const refRoutesPanel = (e)=>{
 	// fil the content of the div
 	refRoutesPanel.html(`<div>
 							<h4><b>Routes of ${hashStations[feature.start_station_id].station_name}</b></h4>
-						 	<hr>
 						 	<ul>
 						 		<li><span>Start Station Name:</span>  ${hashStations[feature.start_station_id].station_name}</li>
 						 		<li><span>End Station Name:</span>  ${hashStations[feature.end_station_id].station_name}</li>		
@@ -491,7 +490,7 @@ const appendRefRoutesLegend = (graphContainer,eqIntRefRoutes,refRoutesFreqUrl) =
         cRefRoutes.unshift(0);
 
         // append question mark
-		appendQuestionBtn(graphContainer.find('h4'),'ref-routes','left','marios simou');
+		appendQuestionBtn(graphContainer.find('h4'),'ref-routes','left','<h4>Route Layer Description</h4><p>The color of a road segment demonstrates the cycling flow since 1st January 2015, by which the flow is calculated by the number of times that a road segment had been used by a cyclists. It is expected that the majority of road segments to maintain a similar color, which means low bicycle flow. In contrast, a small portion of road segments with exceptionally high flow are expected to have different color.</p><h4>Color Ramp</h4><p>A color ramp is available so that a user to choose the best combination for its screen.</p>');
 
 
         populateLegend('refRoutes', cRefRoutes, colRampGlo.routes, eqIntRefRoutes, nClasses, graphContainer.find('div').find('div'));
@@ -986,8 +985,8 @@ $(window).on('load', ()=>
 	// adds a legend on the map
 	legend.addTo(map);
 	// appends the tooltip buttons
-	appendQuestionBtn($('#legend-container div.row div.col-6.left-legend-panel h4').eq(0),'boroughs','right','<h4>Color</h4><hr><p>The color of each borough corresponds on the number of stations that are contained within it. Boroughs that preserve the same color present similar properties in terms of the contained stations.</p><h4>Plot</h4><hr><p>The displayed graph clusters the boroughs based on the variables of <b>longitude</b>, <b>latitude</b>, and <b>number of stations within a borough</b>. The optimal number of clusters is <b>three</b>.');
-	appendQuestionBtn($('#legend-container div.row div.col-6.left-legend-panel h4').eq(1),'stations','right','<h4>Color</h4><hr><p>The color of each station corresponds on the number of routes that either started or ended on a station. This means that station which have similar color demonstrate similar properties.</p></p><h4>Plot</h4><hr><p>The displayed graph classifies the stations based on the variables of <b>longitude</b>, <b>latitude</b>, and <b>number of routes that either started or ended on a stations</b>.The optimal number of clusters is <b>5</b>.</p>');
+	appendQuestionBtn($('#legend-container div.row div.col-6.left-legend-panel h4').eq(0),'boroughs','right','<h4>Boroughs Layer Description</h4><p>The color of each borough corresponds on the number of stations that are contained within it. Boroughs that preserve the same color present similar properties in terms of the contained stations.</p> <h4>Color Ramp</h4><p>A color ramp is available so that a user to choose the best combination for its screen</p><h4>Plot</h4><p>The displayed graph clusters the boroughs based on the variables of <b>longitude</b>, <b>latitude</b>, and <b>number of stations within a borough</b>. The optimal number of clusters is <b>three</b>.');
+	appendQuestionBtn($('#legend-container div.row div.col-6.left-legend-panel h4').eq(1),'stations','right','<h4>Stations Layer Description</h4><p>The color of each station corresponds on the number of routes that either started or ended on a station (undirected network). This means that station which have similar color demonstrate similar properties.</p><h4>Color Ramp</h4><p>A color ramp is available so that a user to choose the best combination for its screen.</p><h4>Plot</h4><p>The displayed graph classifies the stations based on the variables of <b>longitude</b>, <b>latitude</b>, and <b>number of routes that either started or ended on a stations</b>.The optimal number of clusters is <b>5</b>.</p><h4>Filtering</h4><p>A <b>filtering</b> option is available below so that only a certain portion of stations is shown. The stations are ranked based on their flow, and only the <b>N</b> selected stations with the highest flow are displayed.</p>');
 	//$('.question-btn').tooltip();
 
 	// freeze the the map whenever the legend panel is enabled
