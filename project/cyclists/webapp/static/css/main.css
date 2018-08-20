@@ -105,11 +105,10 @@ body {
     background: #fafafa;
 }
 
-p {
-    font-size: 1.1em;
-    font-weight: 300;
-    line-height: 1.7em;
-    color: #999;
+p, div.info.info-stats.leaflet-control {
+    font: 14px/16px Poppins,sans-serif, sans-serif;
+    line-height: 1.3em;
+    color: #777;
 }
 
 a, a:hover, a:focus {
@@ -185,12 +184,9 @@ div.info.legend.active{
     min-width: 200px;
     max-width: 400px;
     line-height: 18px;
-    color: #555;
+    color: #777;
 }
-.legend p {
-    font-size: 10px;
-    line-height: 1;
-}
+
 .legend i {
     width: 18px;
     height: 18px;
@@ -348,10 +344,14 @@ div.leaflet-control-defaultextent.leaflet-control{
   from{ bottom:-100px; opacity:0 }
   to{ bottom:0; opacity:1 }
 }
-#distribution-container, #monthly-temporal-graph, #daily-temporal-graph{
+#distribution-container, #monthly-temporal-graph, #daily-temporal-graph, .boxplot-container{
     box-sizing: border-box;
     height: 200px;
     width: 400px;
+}
+#baseline-boxplot, #cycle-hire-boxplot{
+    height: 200px;
+    width: 200px;
 }
 .left-legend-panel{
     padding-right: 0px;
@@ -391,6 +391,9 @@ div.leaflet-control-defaultextent.leaflet-control{
 }
 .stations-slider{
     margin-top: 25px;
+}
+#legend-graph-container{
+    padding-bottom: 10px;
 }
 #legend-graph-container div div, #color-ramp-refroutes{
     position: relative;
@@ -438,4 +441,33 @@ svg.svg-inline--fa.fa-info-circle.fa-w-16{
 
 #graphs-container div{
     padding: 0 0 0 2px;
+}
+#descriptive-statistics-container ul {
+    list-style: none;
+    padding: 0 4px;
+}
+#descriptive-statistics-container div{
+    padding: 0;
+}
+#descriptive-statistics-container div:first-of-type{
+    text-align: right;
+    padding: 0 10px 0 0;
+}
+#descriptive-statistics-container div:last-of-type{
+    text-align: left;
+    padding: 0 0 0 10px;
+}
+#descriptive-statistics-container > div > div:nth-child(1) > h4 {
+    text-align: right;
+}
+#descriptive-statistics-container > div > div:nth-child(2) > h4{
+    text-align: left;
+}
+#descriptive-statistics-container div ul li span{
+    font-weight: bold;
+    padding-right: 4px;
+}
+
+.boxplot-container, .js-plotly-plot{
+    padding:0px;
 }

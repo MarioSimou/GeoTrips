@@ -5,139 +5,12 @@ var map, stations,refRoutes,boroughs,routes;
 const days = ['Monday', 'Tuesday', 'Wednesday','Thursday','Friday','Saturday','Sunday'];
 let minWidth = 896; minHeight = 672;
 
-var colRampGlo = {
+let colRampGlo = {
 	'stations' : 'YlGnBu',
 	'boroughs' : 'Paired',
 	'routes' : 'Paired',
 };
-var graphLayout = {
-	  	font: {
-          family: 'Poppins, sans-serif',
-          size: 14,
-          color: '#7f7f7f'
-      	},
-		yaxis: '',
-		xaxis: '',
-		showlegend:true,
-		legend: {
-   			 x: 0.5,
-			 y: 0.5,
-			 "orientation": 'v' ,
-  		},
-		paper_bgcolor: 'rgba(0,0,0,0)',
-		plot_bgcolor: 'rgba(0,0,0,0)',
-		scene: {
-            aspectratio: {
-                x: 1,
-                y: 1,
-                z: 1
-            },
-            camera: {
-                center: {
-                    x: 0,
-                    y: 0,
-                    z: 0
-                },
-                eye: {
-                    x: 1.25,
-                    y: 1.25,
-                    z: 1.25
-                },
-                up: {
-                    x: 0,
-                    y: 0,
-                    z: 1
-                }
-            },
-            xaxis: {
-                type: 'linear',
-                zeroline: false
-            },
-            yaxis: {
-                type: 'linear',
-                zeroline: false
-            },
-            zaxis: {
-                type: 'linear',
-                zeroline: false
-            }
-        },
-		margin : {
-			l:65,
-			r:20,
-			b:40,
-			t:40,
-			pad:4
-		},
-		autosize: true,
-};
-var scatterLayout = {
-		font: {
-          family: 'Poppins, sans-serif',
-          size: 14,
-          color: '#7f7f7f'
-      	},
-		margin : {
-			l:0,
-			r:0,
-			b:0,
-			t:0,
-			pad: 10
-		},
-		paper_bgcolor: 'rgba(0,0,0,0)',
-		plot_bgcolor: 'rgba(0,0,0,0)',
-		showlegend: false,
-		autosize: false,
-		width: 180,
-		height: 180,
-		scene: {
-            aspectratio: {
-                x: 1,
-                y: 1,
-                z: 1
-            },
-            camera: {
-                center: {
-                    x: 0,
-                    y: 0,
-                    z: 0
-                },
-                eye: {
-                    x: 1.25,
-                    y: 1.25,
-                    z: 1.25
-                },
-                up: {
-                    x: 0,
-                    y: 0,
-                    z: 1
-                }
-            },
-            xaxis: {
-                type: 'linear',
-				gridcolor: 'rgb(255, 255, 255)',
-            	zerolinecolor: 'rgb(255, 255, 255)',
-            	showbackground: true,
-            	backgroundcolor: 'rgb(230, 230,230)'
-            },
-            yaxis: {
-                type: 'linear',
-            	gridcolor:'rgb(255, 255, 255)',
-            	zerolinecolor:'rgb(255, 255, 255)',
-            	showbackground:true,
-            	backgroundcolor:'rgb(230, 230,230)'
-            },
-            zaxis: {
-                type: 'linear',
-				gridcolor:'rgb(255, 255, 255)',
-            	zerolinecolor:'rgb(255, 255, 255)',
-            	showbackground:true,
-            	backgroundcolor:'rgb(230, 230,230)'
-            },
-            aspectratio : { x:1, y:1, z:0.7 },
-        	aspectmode : 'manual',
-        }
-};
+
 // number of classes during the classification of the cloropleth maps
 const nClasses = 6;
 // makimarkers token
@@ -461,25 +334,122 @@ const callSpatialData = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
         		loader.hide();
 			});
 };
+const median = (values)=> {
+    values.sort(function (a, b) {
+        return a - b;
+    });
+
+    if (values.length === 0) return 0
+
+    var half = Math.floor(values.length / 2);
+
+    if (values.length % 2)
+        return values[half];
+    else
+        return (values[half - 1] + values[half]) / 2.0;
+}
+
+const descriptiveStats = (values)=>{
+	let sorted = values.sort((a,b)=> a - b);
+	let n = sorted.length;
+	return {
+		'min': sorted[0],
+		'max': sorted[n-1],
+		'range': sorted[n-1] - sorted[0],
+		'lower': sorted[Math.round(0.25*n)],
+		'upper': sorted[Math.round(0.75*n)],
+		'iqr': sorted[Math.round(0.75*n)] - sorted[Math.round(0.25*n)]
+	}
+};
+const appendDescriptiveStats = (obj)=>{
+	let container = $('#descriptive-statistics-container');
+	// remove children elements if they already exist
+	(container.children().length ? container.children().remove() : false );
+	// add statistics
+	container.append(`
+		<div class="row">
+			<div class="col-6" id="baseline-description">
+				<h4>Baseline</h4>
+				<ul>
+					<li><span>Min:</span> ${obj.baseline.descriptive.min}</li>
+					<li><span>Max:</span> ${obj.baseline.descriptive.max}</li>
+					<li><span>Range:</span> ${obj.baseline.descriptive.range}</li>
+					<li><span>Lower Bound:</span> ${obj.baseline.descriptive.lower}</li>
+					<li><span>Median:</span> ${obj.baseline.median}</li>
+					<li><span>Upper Bound:</span> ${obj.baseline.descriptive.upper}</li>
+					<li><span>IQR:</span> ${obj.baseline.descriptive.iqr}</li>
+				</ul>	
+			</div>
+			<div class="col-6" id="cycle-hire-description">
+				<h4>Cycle Hire</h4>
+				<ul>
+					<li><span>Min:</span> ${obj.cycleHire.descriptive.min}</li>
+					<li><span>Max:</span> ${obj.cycleHire.descriptive.max}</li>
+					<li><span>Range:</span> ${obj.cycleHire.descriptive.range}</li>
+					<li><span>Lower Bound:</span> ${obj.cycleHire.descriptive.lower}</li>
+					<li><span>Median:</span> ${obj.cycleHire.median}</li>
+					<li><span>Upper Bound:</span> ${obj.cycleHire.descriptive.upper}</li>
+					<li><span>IQR:</span> ${obj.cycleHire.descriptive.iqr}</li>
+				</ul>	
+			</div>
+			<div class="row boxplot-container">
+				<div class="col-6" id="baseline-boxplot"></div>
+				<div class="col-6" id="cycle-hire-boxplot"></div>
+			</div>
+		</div>
+	`);
+	// adds a tooltip next to the container
+	appendQuestionBtn($('#cycle-hire-description').find('h4'), 'descriptive-stats','left','<h4>Description</h4><p>In the current section, using the <b>duration</b> variable of the baseline cyclists trips and the cycle hire data, some basic descriptive measures are extracted. In a second stage, the results are plotted using a <b>boxplot</b> graph</p>');
+
+	// create boxplot graphs of the results
+	let baseline =  {
+  		y: obj.baseline.refTime,
+  		type: 'box',
+  		name: 'Baseline',
+  		marker: {color: '#0078A8'},
+  		boxmean: 'sd'
+	};
+	let cycleHire = {
+		y: obj.cycleHire.cusTime,		type: 'box',
+		name: 'Cycle Hire',
+		marker: {color: '#0078A8'},
+		boxmean: 'sd'
+	};
+	// baseline data
+	boxplotLayout.margin.l=40;
+	Plotly.newPlot('baseline-boxplot', [baseline], boxplotLayout, {staticPlot: false, displayModeBar: false});
+
+	// cycle hire data
+	boxplotLayout.margin.l=0;
+	boxplotLayout.margin.r = 40 ;
+	Plotly.newPlot('cycle-hire-boxplot', [cycleHire],boxplotLayout,{staticPlot: false, displayModeBar: false} );
+};
 
 const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
 	// baseline distances
-	var refRoutesArr = refRoutes.toGeoJSON().features;
-	//var sumRefDistances = refRoutesArr.reduce((a,b)=> a+b.properties.balanced_ref_dist,0);
-	var refDistances = refRoutesArr.map((f)=>{ return (f.properties.balanced_ref_time)}); // expressed in km
+	let refRoutesArr = refRoutes.toGeoJSON().features;
+	let data = {'baseline': {}, 'cycleHire': {}};
 
-	var cusDistances = cusRoutes.map((f)=>{return (f.fields.duration)});
+	data.baseline.refTime = refRoutesArr.map((f)=> f.properties.balanced_ref_time);
+	data.cycleHire.cusTime = cusRoutes.map((f)=> f.fields.duration);
+
+	// fill he empty values
+	data.baseline.median = median(data.baseline.refTime); // median time
+	data.baseline.n = data.baseline.refTime.length;
+	data.baseline.descriptive = descriptiveStats(data.baseline.refTime);
+
+	data.cycleHire.median = median(data.cycleHire.cusTime);
+	data.cycleHire.n = data.cycleHire.cusTime.length;
+	data.cycleHire.descriptive = descriptiveStats(data.cycleHire.cusTime);
+	appendDescriptiveStats(data);
+
 	// create a div that will contains the graph if it does not exist
 	(disGraphContainer.has('#distribution-container').length ? true : $(`<div class="col-12" id="distribution-container"></div>`).appendTo(disGraphContainer));
 	// distances options
-	var refHist = {x : refDistances,name: 'Baseline',type: 'histogram',histfunc : 'count',histnorm:'probability density',autobinx:true,opacity:0.5, marker: {color: 'red'} };
-	var cusHist = {x : cusDistances,name: 'Cycle Hire data', type: 'histogram',histfunc : 'count',histnorm:'probability density', autobinx:true,opacity: 0.5, marker: {color: 'green'}};
+	let refHist = {x : data.baseline.refTime, name: 'Baseline',type: 'histogram',histfunc : 'count',histnorm:'probability density',autobinx:true,opacity:0.5, marker: {color: 'red'} };
+	let cusHist = {x : data.cycleHire.cusTime, name: 'Cycle Hire data', type: 'histogram',histfunc : 'count',histnorm:'probability density', autobinx:true,opacity: 0.5, marker: {color: 'green'}};
 
-	// modifies the axis values
-	graphLayout.yaxis = {'title' : 'P( X = duration )'}, graphLayout.xaxis = {'title':'duration (s)', 'range': [0,5000]}, graphLayout['barmode'] = "overlay";
-	//graphLayout.title = 'Baseline vs Cycle Hire Data Distribution';
-	graphLayout.legend = true;
-	Plotly.newPlot('distribution-container',[refHist,cusHist], graphLayout, {staticPlot: false, displayModeBar: false});
+	Plotly.newPlot('distribution-container',[refHist,cusHist], distributionLayout, {staticPlot: false, displayModeBar: false});
 };
 
 const appendRefRoutesLegend = (graphContainer,eqIntRefRoutes,refRoutesFreqUrl) => {
@@ -597,7 +567,6 @@ const appendTemporalGraph = (monthlyGraphContainer, dailyGraphContainer,sid) =>{
 	    ((monthlyGraphContainer.has($('#monthly-temporal-graph')).length) ? true : monthlyGraphContainer.append('<div id="monthly-temporal-graph" class="col-12"></div>'));
 	    ((dailyGraphContainer.has($('#daily-temporal-graph')).length) ? true : dailyGraphContainer.append('<div id="daily-temporal-graph" class="col-12"></div>'));
 
-	    console.log(getAdjustedUrl(temporalRoutesUrl,sid).replace('month','day'));
 	    // daily
 	    $.ajax({url : getAdjustedUrl(temporalRoutesUrl,sid).replace('month','day'), async: true}).done((response)=>{
 	    	let x=[], y=[];
@@ -605,10 +574,9 @@ const appendTemporalGraph = (monthlyGraphContainer, dailyGraphContainer,sid) =>{
 	    		x.push(response[key].day);
 	    		y.push(response[key].count);
 			});
-	    	graphLayout.yaxis = {'title': 'Flow per Day'};
-	    	graphLayout.xaxis = {'title': '', 'range': [x[0],x[x.length-1]]};
-	    	Plotly.newPlot('daily-temporal-graph',[{x: x, y: y, type: 'scatter',mode: 'lines' }],graphLayout,{staticPlot: false, displayModeBar: false});
-			console.log('daily is added');
+	    	temporalLayout.yaxis = {'title': 'Flow per Day'};
+	    	temporalLayout.xaxis = {'title': '', 'range': [x[0],x[x.length-1]]};
+	    	Plotly.newPlot('daily-temporal-graph',[{x: x, y: y, type: 'scatter',mode: 'lines' }],temporalLayout,{staticPlot: false, displayModeBar: false});
 	    });
 		// monthly
 		$.ajax({url : getAdjustedUrl(temporalRoutesUrl,sid) , async: true}).done((response)=>{
@@ -618,10 +586,9 @@ const appendTemporalGraph = (monthlyGraphContainer, dailyGraphContainer,sid) =>{
 				y.push(response[key].count);
 			});
 
-			graphLayout.yaxis = {'title' : 'Flow per month'}, graphLayout.xaxis = {'title':'', 'range': [x[0], x[x.length-1]]}, graphLayout.showlegend = false;
-			//graphLayout.title = 'Temporal Graph of Flow per Month';
-
-			Plotly.newPlot('monthly-temporal-graph', [{x : x, y : y , type: 'scatter', mode: 'lines'}], graphLayout, {staticPlot: false, displayModeBar: false});
+			temporalLayout.yaxis = {'title' : 'Flow per month'}
+			temporalLayout.xaxis = {'title':'', 'range': [x[0], x[x.length-1]]};
+			Plotly.newPlot('monthly-temporal-graph', [{x : x, y : y , type: 'scatter', mode: 'lines'}], temporalLayout, {staticPlot: false, displayModeBar: false});
 		});
 };
 appendQuestionBtn = (el,name,position,content)=>{
@@ -642,7 +609,7 @@ const infoStatsUpdate = (el) =>{
 		html = html.concat(`<div class="container-fluid">
 								<div class="row">
 									<div class="btn-group-toggle col-4" data-toggle="buttons">
-										<button class="mybtn active">Active</button>
+										<button class="mybtn active">Hide</button>
 									</div>
 									<div class="col-8">
 										<select id="station-routes" class="custom-select">
@@ -664,8 +631,9 @@ const infoStatsUpdate = (el) =>{
 								<div class="tab-content" id="myTabContent">
 									<div class="tab-pane fade show active" id="descriptive-container" role="tabpanel">
 										<div class="row">
-											<div class="col-12" id="ref-routes-slider-container"></div>	
+											<div class="col-12" id="descriptive-statistics-container"></div>	
 											<div id="legend-graph-container" class="col-12 legend"></div>		
+											<div class="col-12" id="ref-routes-slider-container"></div>	
 										</div>
 									</div>
 									<div class="tab-pane fade" id="graphs-container" role="tabpanel">		
@@ -858,13 +826,14 @@ statsBtnToggle = (el)=> {
 	if (el.hasClass('active')) {
         (map.hasLayer(groupLayer) ? map.removeLayer(groupLayer) : false);
         $('#station-routes').attr('disabled', true); // set the button as disable
-        el.text('Hidden'); // change the text to disable
+        el.text('Activate'); // change the text to disable
     } else {
+		map.addLayer(groupLayer); // add a layer
         $('#station-routes').attr('disabled', false); // se the button as active
-        el.text("Active"); // change the text to active
+        el.text("Hide"); // change the text to active
     }
-    $('#graphs-container').children().children().remove(); // removes the children of the sub-elements
-    //$('#main-container').fadeToggle(500);
+
+    $('#myTabContent').fadeToggle(); // toggles the panel at the right corner
     el.toggleClass('active');
 };
 //---------------------------------------------------------------------------------------------------------------------
@@ -1141,6 +1110,21 @@ $(window).on('load', ()=>
 		colRampGlo = changeColors(e,stations,getColor,'stations',nClasses, eqIntStations, colRampGlo);
 	});
 
+	// The minimum requirement is that the desktop devices to have an 800x600 dimension
+	if($(window).width() < 800 || $(window).height() < 600){
+		$('div.info.info-stats.leaflet-control').hide();
+		$('div.info.legend.leaflet-control').hide();
+	}
+	$(window).on('resize',(e)=>{
+		let display = $(e.currentTarget);
+		if(display.width() < 800 || display.height() < 600){
+			$('div.info.info-stats.leaflet-control').hide();
+			$('div.info.legend.leaflet-control').hide();
+		}else{
+			$('div.info.info-stats.leaflet-control').show();
+			$('div.info.legend.leaflet-control').show();
+		}
+	})
 });
 
 // While the document is prepared, the events of the commands, buttons are added
@@ -1200,21 +1184,5 @@ $(document).ready(() => {
 	$.ajax({url : 'http://colorbrewer2.org/export/colorbrewer.json', async: false}).done((response)=>{
 		colors = response;
 	});
-
-	// changes the display of the webapp when its size changes
-	$(window).on('resize',(e)=>{
-
-		thisEl = $(e.currentTarget);
-		if((thisEl.width() < minWidth && thisEl.height() < minHeight ) || (thisEl.width() < minWidth || thisEl.height() < minHeight)){
-			$('div.info.info-stats.leaflet-control').fadeOut(300);
-			$('div.info.legend.leaflet-control').fadeOut(300);
-			statsBtnToggle($('div.info.info-stats.leaflet-control button'));
-		}else{
-			$('div.info.info-stats.leaflet-control').fadeIn(300);
-			$('div.info.legend.leaflet-control').fadeIn(300);
-
-		}
-	});
-
 });
 
