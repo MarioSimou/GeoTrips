@@ -1089,14 +1089,17 @@ $(window).on('load', ()=>
 	bottomLeftPanel.addTo(map);
 	// adds the menu command on the map
 	menuCommand.addTo(map);
+	// adds a range slider that modifies the boroughs visibility
+	bouroughsSlider.addTo(map);
+	freezeMap($('#borough-vis-slider'));
 
-	// add the defaultExtent command
+	// add the defaultExtent plugin (url: https://github.com/nguyenning/Leaflet.defaultextent)
 	L.control.defaultExtent()
 		.setCenter([51.537366, -0.298690])
 		.setZoom(10)
 		.addTo(map);
 
-	// Panes creation
+	// the panes are used so that the layers to add correctly and do not clush
 	paneBottom = map.createPane('paneBottom').style.zIndex = 250;
 	paneIntermediate = map.createPane('paneIntermediate').style.zIndex = 400;
 	paneTop = map.createPane('paneTop').style.zIndex = 800;
@@ -1105,6 +1108,8 @@ $(window).on('load', ()=>
 	map.addLayer(boroughs); // add boroughs on the map
 	// fly ont the specified coordinates
     map.flyToBounds(L.latLngBounds(L.latLng(51.19548,-0.65654),L.latLng(51.79624,0.09437)));
+	// mousemove event over the map
+	map.on('mousemove',updatetopLeftDescriptionPanel ); // mousemove event
 
     // add a click event listener on the tabs so whenever a user clicks on them to perform a certain functionality.
 	$('#layersSubMenu li:first-of-type a').on('click', (e)=> {
@@ -1122,36 +1127,32 @@ $(window).on('load', ()=>
 
 	// adds the functionality of the basemap labels
 	$('#basemapsSubMenu li a').on('click', function(){
-		var allBasemapLab = $('#basemapsSubMenu li a');
+		let allBasemapLab = $('#basemapsSubMenu li a');
 		for(index in basemaps)
 		{
-			if (map.hasLayer(basemaps[index]))
-			{
+			if (map.hasLayer(basemaps[index])) {
 				map.removeLayer(basemaps[index]);
 				$(allBasemapLab[index]).removeClass('activate-layer');
 			}
 			try {
 				// for CartoDB and Esri Basemap
-				if (basemaps[index]._url.replace('variant', basemaps[index].options.variant) === $(this).attr('href').slice(1))
-				{
+				if (basemaps[index]._url.replace('variant', basemaps[index].options.variant) === $(this).attr('href').slice(1)) {
 					$(this).addClass('activate-layer');
 					map.addLayer(basemaps[index]);
 				}
             }catch (e) {
 				// for OSM basemaps
-                if (basemaps[index]._url === $(this).attr('href').slice(1))
-				{
+                if (basemaps[index]._url === $(this).attr('href').slice(1)) {
 					$(this).addClass('activate-layer');
 					map.addLayer(basemaps[index]);
 				}
             }
 		}
 	});
-	// closes a tab when another it opens
+	// add interaction on the basemap layers so that whenever a layer is clicked, previous opened layers close
 	$('#basemapsSubMenu a.dropdown-toggle').on('click', (e)=>{
 		ul = $('#basemapsSubMenu ul');
-		for(var i=0; i < ul.length; i++)
-		{
+		for(var i=0; i < ul.length; i++) {
 			ul.eq(i).removeClass('show');
 		}
 	});
@@ -1162,19 +1163,13 @@ $(window).on('load', ()=>
         $(e.currentTarget).toggleClass('active');
     });
 
-	// mousemove event over the map
-	map.on('mousemove',updatetopLeftDescriptionPanel ); // mousemove event
-
-	// adds a range slider that modifies the boroughs visibility
-	bouroughsSlider.addTo(map);
-
-	freezeMap($('#borough-vis-slider'));
-	$('#borough-vis-slider').on('change', (e) =>
-	{
+    // add an event listener on the boroughs slider so that whenever the slider changes, the visibility of the layer to also
+	// change
+	$('#borough-vis-slider').on('change', (e) => {
 		// set the default opacity
 		boroughs.setStyle({fillOpacity: 0.7, opacity: 0.7});
 		// gets the user specified value
-		var val = (parseFloat($(e.currentTarget).val()) / 100).toFixed(1);
+		let val = (parseFloat($(e.currentTarget).val()) / 100).toFixed(1);
 		// sets the user opacity
 		boroughs.setStyle({fillOpacity: val, opacity: val});
 	});
