@@ -1,8 +1,8 @@
 
 // ------------------------------------------------- VARIABLES --------------------------------------------------------
 var heatmapStationsLayer, heatmapBoroughsLayer;
-let basemaps,colors,nStations,hashStations = {}  ,refRoutesFreqUrl,eqIntBoroughs,eqIntStations,eqIntRefRoutes,latestSelectedBorough, latestSelectedStation,sortedFreqArr = [], paneTop,paneIntermediate,paneBottom,groupLayer;
-let map,stations,refRoutes,boroughs,routes,cusRoutes, clusterResponse;
+let basemaps,colors,nStations,hashStations = {}  ,refRoutesFreqUrl,eqIntBoroughs,eqIntStations,eqIntRefRoutes,latestSelectedBorough, latestSelectedStation, paneTop,paneIntermediate,paneBottom,groupLayer;
+let map,stations,refRoutes,boroughs,routes,cusRoutes, clusterResponse, stationsArray;
 let colRampGlo = {'stations' : 'YlGnBu','boroughs' : 'Paired','routes' : 'Paired',}; // initial coloramps for each feature layer
 const minWidth = 896; // minimum required width for a desktop device
 const minHeight = 672; // minimum required height for a desktop device
@@ -862,6 +862,7 @@ const menuCommand = L.control({position : 'topleft'}); // creates the control
 menuCommand.onAdd = function(map){return createDivElement(this,'menuCommand');};
 menuCommand.update = function()
 {
+	// set its content
 	this.div.innerHTML = `<button type="button" id="sidebarCollapse" class="navbar-btn">
 								<span></span>
 								<span></span>
@@ -875,73 +876,32 @@ menuCommand.update = function()
 };
 
 
-//---------------------------------------------------------------------------------------------------------------------
-
-// event that is called when the map is initialised
-$(window).on("map:init", function(event) {
-	console.log('window-map--init');
-
-	map = event.detail.map;
-
-	// Call the basemap layers
+// ------------------------------------------- Event Listeners and Related Methods ---------------------------------------------------------
+// this method creates the basemap layers and returns them compacted in a matrix
+const loadBasemapLayers = ()=>{
+	// Plugin url : https://github.com/leaflet-extras/leaflet-providers
+	// using the leaflet.providers plugin gets the basemaps from cartoDB, osm and esri
 	// CartoDB
-	var cartoDBVouagerLabels = L.tileLayer.provider('CartoDB.VoyagerLabelsUnder');
-	var cartoDBPositron = L.tileLayer.provider('CartoDB.Positron');
-	var cartoDBDarkMatter = L.tileLayer.provider('CartoDB.DarkMatter');
+	let cartoDBVouagerLabels = L.tileLayer.provider('CartoDB.VoyagerLabelsUnder');
+	let cartoDBPositron = L.tileLayer.provider('CartoDB.Positron');
+	let cartoDBDarkMatter = L.tileLayer.provider('CartoDB.DarkMatter');
 	// OSM
-	var osmMapnik = L.tileLayer.provider('OpenStreetMap.Mapnik');
-	var osmBlackAndWhite = L.tileLayer.provider('OpenStreetMap.BlackAndWhite');
-	var osmHot = L.tileLayer.provider('OpenStreetMap.HOT');
+	let osmMapnik = L.tileLayer.provider('OpenStreetMap.Mapnik');
+	let osmBlackAndWhite = L.tileLayer.provider('OpenStreetMap.BlackAndWhite');
+	let osmHot = L.tileLayer.provider('OpenStreetMap.HOT');
 	// Esri
-	var worldStreetMap = L.tileLayer.provider('Esri.WorldStreetMap');
-	var worldTopoMap = L.tileLayer.provider('Esri.WorldTopoMap');
-	var worldImagery = L.tileLayer.provider('Esri.WorldImagery');
+	let worldStreetMap = L.tileLayer.provider('Esri.WorldStreetMap');
+	let worldTopoMap = L.tileLayer.provider('Esri.WorldTopoMap');
+	let worldImagery = L.tileLayer.provider('Esri.WorldImagery');
 
-	// Adds the cartoDBVouagerLabels layer on the initial map
-	map.addLayer(cartoDBVouagerLabels);
-	// basemaps array - GLOBAL variable
-	basemaps = [cartoDBVouagerLabels, cartoDBPositron, cartoDBDarkMatter, osmMapnik,osmBlackAndWhite,osmHot,worldStreetMap,worldTopoMap,worldImagery];
+	// array of basemap layers
+	return [cartoDBVouagerLabels, cartoDBPositron, cartoDBDarkMatter, osmMapnik,osmBlackAndWhite,osmHot,worldStreetMap,worldTopoMap,worldImagery];
 
-	stations = new L.GeoJSON.AJAX(stationsUrl,
-		{
-			style : setStationsStyle,
-			pointToLayer : pointToLayerStations,
-			onEachFeature: onEachFeatureStations,
-		});
-
-    // equal-intervals of stations
-	eqIntStations = equalIntervals(nClasses,freqUrl,'stations');
-
-	// create a hash map of the stations, so it can accessed easily
-	stations.on('data:loaded', function(){
-    		console.log('stations are loaded..');
-		    stations.toGeoJSON().features.map((f)=>{
-		    	hashStations[f.properties.pk] =  {
-		    		'station_name' : f.properties.station_name,
-					'fre': f.properties.freq,
-				};
-			});
-
-    		// adds the 3d scatter plot on the legend panel
-			append3dScatterPlotPoint('3d-scatter-stations',scatterLayout,getAdjustedUrl(kMeansUrl.replace(new RegExp('none'),'stations'),5), colors);
-
-			populatetopRightDescriptivePanel($('.info-stats')); // loads the panel on the top-right corner
-			freezeMap($('.info-stats')); // freeze the map whenever the panel is used
-
-			// adds an event on the dropdown list of .info-stats
-			$('#station-routes').on('change', (e) =>{
-				updateContentDescriptivePanel(map,refRoutesUrl, e, freqUrl);
-			});
-
-			$('div.info.info-stats.leaflet-control button').on('click', (e)=>{
-				statsBtnToggle($(e.currentTarget));
-			});
-
-    		// adds the cluster group on the map, containing a featureGroup
-            cluster.addLayer(stations);
-			// number of stations
-			nStations = stations.toGeoJSON().features.length;
-
+};
+// this method adds a filtering bar on the bottom-left descriptive panel so that the stations can be filtered.
+// Some other functionalities are also appended.
+const appendSliderBarBottomLeftDescriptivePanel = ()=>{
+			// updates the content of the bottomLeftDescriptive panel by adding a slider bar (filtering)
 			$('#legend-container div.row').eq(1).append(`
 			   <div class="col-12 stations-slider">
 			   		<div class="row">
@@ -956,24 +916,23 @@ $(window).on("map:init", function(event) {
 					</div>
 			  </div>
 			`);
-
-			// add onfocus and on mouseLeave events on the sFilterSlider;
+			// adds some event listeners on the slide bar of the bottomLeftDescriptive Panel
 			freezeMap($('#sFilterSlider'));
-			// populate the sortedFreqArr with the frequencies of each station
-			for(feature of stations.toGeoJSON().features){sortedFreqArr.push(feature.properties.freq);};
-			// sort frequencies
-			sortedFreqArr.sort(function(a,b){return b-a;});
 
+			// populate the sortedFreqArr with the frequencies of each station
+			let sortedFreqArr = stationsArray.map((f)=> f.properties.freq).sort((a,b)=> b-a);
+
+			// add en on-change event listener on the slider bar
 			$('#sFilterSlider').on('change', (e)=>{
+				// method that is used to filter the required N stations
 				dynamicFilterFun = (feature) => {
-					if (sortedFreqArr.indexOf(feature.properties.freq) < sliderVal) {
-						return true;
-					}
+					if (sortedFreqArr.indexOf(feature.properties.freq) < sliderVal) return true;
 				};
 
-				var sliderVal = $(e.currentTarget).val();
-				try{cluster.removeLayer(stations)}catch (e) {console.log(e)};
-				// removes the layer from the marker cluster control (var cluster), so it can update
+				let sliderVal = $(e.currentTarget).val(); // selected N value of stations
+				try{cluster.removeLayer(stations)}catch (e) {console.log(e)}; // removes the cluster layer if it exists
+
+				// request the geojson stations layer from the database, and add some functionalities
 				stations = new L.GeoJSON.AJAX(stationsUrl,
 					{
 						style : setStationsStyle,
@@ -982,85 +941,166 @@ $(window).on("map:init", function(event) {
 						filter : dynamicFilterFun,
 						pane: paneIntermediate,
 					});
-				// wait for 0.5 sec, and then adds the stations
+				// wait for 0.5 sec, and then adds the stations cluster
 				setTimeout(()=>{cluster.addLayer(stations);},500);
 			});
+};
 
-			// deactivate the loader
-			loader.hide();
-    }.bind(this)); // is called when the data are downloaded
+// this method append the stations layer, as well as some other functionalities that make use of stations layer
+const appendStationsLayer = () => {
+    // load the stations layer
+    stations = new L.GeoJSON.AJAX(stationsUrl, {
+        style: setStationsStyle,
+        pointToLayer: pointToLayerStations,
+        onEachFeature: onEachFeatureStations,
+    });
 
-	boroughs = new L.GeoJSON.AJAX(boroughsUrl,
-		{
-			style: setBoroughStyle,
-			onEachFeature: onEachFeatureBoroughs,
-			pane : 'paneBottom'
+    // equal-intervals of stations
+    eqIntStations = equalIntervals(nClasses, freqUrl, 'stations');
+
+    // create a hash map of the stations, so it can accessed easily
+    stations.on('data:loaded', function () {
+        console.log('stations are loaded..');
+        stationsArray = stations.toGeoJSON().features; // global variable of stations array
+        // adds the cluster group on the map, containing a featureGroup
+        cluster.addLayer(stations);
+        // number of stations
+        nStations = stationsArray.length;
+
+
+        // create a hash map of stations in the form of {stations_name : frequency of stations}
+        stationsArray.map((f) => {
+            hashStations[f.properties.pk] = {
+                'station_name': f.properties.station_name,
+                'fre': f.properties.freq,
+            };
+        });
+													// BOTTOM LEFT PANEL
+
+        // appends the bottom left panel on the map
+        bottomLeftPanel.addTo(map);
+        // adds a 3d scatter plot of the stations on the bottomLeftDescriptive Panel
+        append3dScatterPlotPoint('3d-scatter-stations', scatterLayout, getAdjustedUrl(kMeansUrl.replace(new RegExp('none'), 'stations'), 5), colors);
+        // adds a slider bar on the bottom-left panel
+        appendSliderBarBottomLeftDescriptivePanel();
+
+        // set an event on the boroughs color ramp so whenever a user clicks on it to update the fill color
+		$('#color-ramp-boroughs').on('change',(e)=>	{
+			changeColors(e,boroughs,getColor,'boroughs',nClasses, eqIntBoroughs, colRampGlo);
+		});
+		// set an event on the stations's color ramp so whenever a user clicks on it to update the fill color
+		$('#color-ramp-stations').on('change',(e)=> {
+			changeColors(e,stations,getColor,'stations',nClasses, eqIntStations, colRampGlo);
 		});
 
-	boroughs.on('data:loaded',function(){
-		// adds the 3d scatter plot on the legend panel
-		append3dScatterPlotPoint('3d-scatter-boroughs',scatterLayout,getAdjustedUrl(kMeansUrl.replace('none','boroughs'),3),colors);
-	}.bind(this));
+		// appends the tooltip buttons
+		appendQuestionBtn($('#legend-container div.row div.col-6.left-legend-panel h4').eq(0),'boroughs','right','<h4>Boroughs Layer Description</h4><p>The color of each borough corresponds on the number of stations that are contained within it. Boroughs that preserve the same color present similar properties in terms of the contained stations.</p> <h4>Color Ramp</h4><p>A color ramp is available so that a user to choose the best combination for its screen</p><h4>Plot</h4><p>The displayed graph clusters the boroughs based on the variables of <b>longitude</b>, <b>latitude</b>, and <b>number of stations within a borough</b>. The optimal number of clusters is <b>three</b>.');
+		appendQuestionBtn($('#legend-container div.row div.col-6.left-legend-panel h4').eq(1),'stations','right','<h4>Stations Layer Description</h4><p>The color of each station corresponds on the number of routes that either started or ended on a station (undirected network). This means that station which have similar color demonstrate similar properties.</p><h4>Color Ramp</h4><p>A color ramp is available so that a user to choose the best combination for its screen.</p><h4>Plot</h4><p>The displayed graph classifies the stations based on the variables of <b>longitude</b>, <b>latitude</b>, and <b>number of routes that either started or ended on a stations</b>.The optimal number of clusters is <b>5</b>.</p><h4>Filtering</h4><p>A <b>filtering</b> option is available below so that only a certain portion of stations is shown. The stations are ranked based on their flow, and only the <b>N</b> selected stations with the highest flow are displayed.</p>');
 
-	// equal-intervals of boroughs
-	eqIntBoroughs = equalIntervals(nClasses,freqUrl, 'boroughs');
+		// freeze the the map whenever the legend panel is enabled
+		freezeMap($('div.info.legend.leaflet-control'));
+		// adds interaction on the legend button
+	 	$('#animation-btn').on('click',(e)=>{
+	 		let rightPanel = $('div.right-legend-panel');
+			// fades the right panels of the legend
+	 		rightPanel.fadeToggle(800);
+	 		// sets the button to active
+        	$(e.currentTarget).toggleClass('active');
+        	// determines the delay-time of the following process execution
+			let time = ($(e.currentTarget).hasClass('active') ? 800 : 0);
+			setTimeout(()=> {
+           		 $('div.info.legend').toggleClass('active'); // set legend to active
+            		$('div.left-legend-panel').toggleClass('col-12');  // changes the width of the left panels
+        		},time);
+	 	});
+
+												// TOP RIGHT DESCRIPTIVE PANEL
+
+		// adds the top Right descriptive panel on the map
+		topRightDescriptivePanel.addTo(map);
+        // creates the panel at the topRightDescriptive Panel (descriptive and graphs panel)
+        populatetopRightDescriptivePanel($('.info-stats')); // loads the panel on the top-right corner
+        // freeze the map whenever the topRight Descriptive panel is used
+        freezeMap($('.info-stats'));
+
+
+        // add an on-click event listener on the topRightDescriptive panel. Whenever a user chooses a station
+        // the corresponded content is loaded
+        $('#station-routes').on('change', (e) => {
+            updateContentDescriptivePanel(map, refRoutesUrl, e, freqUrl);
+        });
+
+        // adds an event listener on the contained button (Hide - Activate) of the topRightDescriptive Panel
+        $('div.info.info-stats.leaflet-control button').on('click', (e) => {
+            statsBtnToggle($(e.currentTarget));
+        });
+
+        loader.hide(); // hide the loader
+
+    }.bind(this)); // end of data:loaded event of stations
+};
+
+// this method loads the boroughs layer and some functionalities that use the boroughs layer
+const appendBoroughsLayer = ()=> {
+// equal-intervals of boroughs
+    eqIntBoroughs = equalIntervals(nClasses, freqUrl, 'boroughs');
+    boroughs = new L.GeoJSON.AJAX(boroughsUrl,
+        {
+            style: setBoroughStyle,
+            onEachFeature: onEachFeatureBoroughs,
+            pane: 'paneBottom'
+        });
+
+    boroughs.on('data:loaded', function () {
+        // adds the 3d scatter plot on the legend panel
+        append3dScatterPlotPoint('3d-scatter-boroughs', scatterLayout, getAdjustedUrl(kMeansUrl.replace('none', 'boroughs'), 3), colors);
+    }.bind(this));
+};
+
+// EVENTS
+
+// event that is called when the map is initialised
+$(window).on("map:init", function(event) {
+	console.log('window-map--init'); // show a message in the console
+
+	map = event.detail.map; // ges the map element
+	// Call the basemap layer
+ 	basemaps = loadBasemapLayers(); // global
+ 	map.addLayer(basemaps[0]); // load the carotDBVouagerLabels layer on the map
+
+	// appends the stations layer with the required functionalities
+	appendStationsLayer();
+	// appends the boroughs layer with the required functionalities
+	appendBoroughsLayer();
 });
 
 // While the window is loaded, all commands, buttons and labels are added
 $(window).on('load', ()=>
 {
 	console.log('window-load');
-
-	// adds the info stats label
-	topRightDescriptivePanel.addTo(map);
-
+	// adds the topLeftDescriptive panel on the map
+	topLeftDescriptionPanel.addTo(map); // adds the control scale
 	// adds a scale control on the map
 	L.control.scale({maxWidth : 500, metric: true, imperial: true}).addTo(map);
-	// Remove Attribution
+	// Removes Attribution
 	$('.leaflet-control-attribution').hide();
-	// adds a label that shows the geographical coordinates of the map
-	topLeftDescriptionPanel.addTo(map); // adds the control scale
-
 	// adds the menu command on the map
 	menuCommand.addTo(map);
-	// adds a legend on the map
-	bottomLeftPanel.addTo(map);
-	// appends the tooltip buttons
-	appendQuestionBtn($('#legend-container div.row div.col-6.left-legend-panel h4').eq(0),'boroughs','right','<h4>Boroughs Layer Description</h4><p>The color of each borough corresponds on the number of stations that are contained within it. Boroughs that preserve the same color present similar properties in terms of the contained stations.</p> <h4>Color Ramp</h4><p>A color ramp is available so that a user to choose the best combination for its screen</p><h4>Plot</h4><p>The displayed graph clusters the boroughs based on the variables of <b>longitude</b>, <b>latitude</b>, and <b>number of stations within a borough</b>. The optimal number of clusters is <b>three</b>.');
-	appendQuestionBtn($('#legend-container div.row div.col-6.left-legend-panel h4').eq(1),'stations','right','<h4>Stations Layer Description</h4><p>The color of each station corresponds on the number of routes that either started or ended on a station (undirected network). This means that station which have similar color demonstrate similar properties.</p><h4>Color Ramp</h4><p>A color ramp is available so that a user to choose the best combination for its screen.</p><h4>Plot</h4><p>The displayed graph classifies the stations based on the variables of <b>longitude</b>, <b>latitude</b>, and <b>number of routes that either started or ended on a stations</b>.The optimal number of clusters is <b>5</b>.</p><h4>Filtering</h4><p>A <b>filtering</b> option is available below so that only a certain portion of stations is shown. The stations are ranked based on their flow, and only the <b>N</b> selected stations with the highest flow are displayed.</p>');
-	//$('.question-btn').tooltip();
 
-	// freeze the the map whenever the legend panel is enabled
-	freezeMap($('div.info.legend.leaflet-control'));
-	// adds interaction on the legend button
-	 $('#animation-btn').on('click',(e)=>{
-	 	var rightPanel = $('div.right-legend-panel');
-		// fades the right panels of the legend
-	 	rightPanel.fadeToggle(800);
-	 	// sets the button to active
-        $(e.currentTarget).toggleClass('active');
-        // determines the delay-time of the following process execution
-		var time = ($(e.currentTarget).hasClass('active') ? 800 : 0);
-		setTimeout(()=> {
-            $('div.info.legend').toggleClass('active'); // set legend to active
-            $('div.left-legend-panel').toggleClass('col-12');  // changes the width of the left panels
-        },time);
-	 });
 	// add the defaultExtent command
 	L.control.defaultExtent()
 		.setCenter([51.537366, -0.298690])
 		.setZoom(10)
 		.addTo(map);
 
-
 	// Panes creation
 	paneBottom = map.createPane('paneBottom').style.zIndex = 250;
 	paneIntermediate = map.createPane('paneIntermediate').style.zIndex = 400;
 	paneTop = map.createPane('paneTop').style.zIndex = 800;
 
-	map.addLayer(cluster);
-	map.addLayer(boroughs);
-	//
+	map.addLayer(cluster); // add cluster layer that contains the stations
+	map.addLayer(boroughs); // add boroughs on the map
+	// fly ont the specified coordinates
     map.flyToBounds(L.latLngBounds(L.latLng(51.19548,-0.65654),L.latLng(51.79624,0.09437)));
 
     // add a click event listener on the tabs so whenever a user clicks on them to perform a certain functionality.
@@ -1136,14 +1176,6 @@ $(window).on('load', ()=>
 		boroughs.setStyle({fillOpacity: val, opacity: val});
 	});
 
-	// set an event on the boroughs color ramp so whenever a user clicks on it to update the fill color
-	$('#color-ramp-boroughs').on('change',(e)=>	{
-		changeColors(e,boroughs,getColor,'boroughs',nClasses, eqIntBoroughs, colRampGlo);
-	});
-	// set an event on the stations's color ramp so whenever a user clicks on it to update the fill color
-	$('#color-ramp-stations').on('change',(e)=> {
-		changeColors(e,stations,getColor,'stations',nClasses, eqIntStations, colRampGlo);
-	});
 
 	// The minimum requirement is that the desktop devices to have an 800x600 dimension
 	if($(window).width() < 800 || $(window).height() < 600){
