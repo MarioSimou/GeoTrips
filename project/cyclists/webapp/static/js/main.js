@@ -977,8 +977,6 @@ const appendStationsLayer = () => {
         });
 													// BOTTOM LEFT PANEL
 
-        // appends the bottom left panel on the map
-        bottomLeftPanel.addTo(map);
         // adds a 3d scatter plot of the stations on the bottomLeftDescriptive Panel
         append3dScatterPlotPoint('3d-scatter-stations', scatterLayout, getAdjustedUrl(kMeansUrl.replace(new RegExp('none'), 'stations'), 5), colors);
         // adds a slider bar on the bottom-left panel
@@ -1016,8 +1014,6 @@ const appendStationsLayer = () => {
 
 												// TOP RIGHT DESCRIPTIVE PANEL
 
-		// adds the top Right descriptive panel on the map
-		topRightDescriptivePanel.addTo(map);
         // creates the panel at the topRightDescriptive Panel (descriptive and graphs panel)
         populatetopRightDescriptivePanel($('.info-stats')); // loads the panel on the top-right corner
         // freeze the map whenever the topRight Descriptive panel is used
@@ -1053,7 +1049,7 @@ const appendBoroughsLayer = ()=> {
 
     boroughs.on('data:loaded', function () {
         // adds the 3d scatter plot on the legend panel
-        append3dScatterPlotPoint('3d-scatter-boroughs', scatterLayout, getAdjustedUrl(kMeansUrl.replace('none', 'boroughs'), 3), colors);
+		append3dScatterPlotPoint('3d-scatter-boroughs', scatterLayout, getAdjustedUrl(kMeansUrl.replace('none', 'boroughs'), 3), colors);
     }.bind(this));
 };
 
@@ -1072,18 +1068,25 @@ $(window).on("map:init", function(event) {
 	appendStationsLayer();
 	// appends the boroughs layer with the required functionalities
 	appendBoroughsLayer();
+
 });
 
 // While the window is loaded, all commands, buttons and labels are added
 $(window).on('load', ()=>
 {
 	console.log('window-load');
-	// adds the topLeftDescriptive panel on the map
-	topLeftDescriptionPanel.addTo(map); // adds the control scale
+
 	// adds a scale control on the map
 	L.control.scale({maxWidth : 500, metric: true, imperial: true}).addTo(map);
 	// Removes Attribution
 	$('.leaflet-control-attribution').hide();
+
+	// adds the top Right descriptive panel on the map
+	topRightDescriptivePanel.addTo(map);
+	// adds the topLeftDescriptive panel on the map
+	topLeftDescriptionPanel.addTo(map); // adds the control scale
+	// appends the bottom left panel on the map
+	bottomLeftPanel.addTo(map);
 	// adds the menu command on the map
 	menuCommand.addTo(map);
 

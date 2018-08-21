@@ -39,8 +39,8 @@
       <file leaf-file-name="main.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/js/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="139">
-              <caret line="986" column="6" selection-start-line="986" selection-start-column="6" selection-end-line="986" selection-end-column="6" />
+            <state relative-caret-position="78">
+              <caret line="1083" selection-start-line="1083" selection-end-line="1083" />
               <folding>
                 <element signature="n#style#0;n#i#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="e#1#8#0" expanded="true" />
@@ -442,6 +442,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="60" y="-11" width="1541" height="912" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="9" weight="0.3275862" />
       <window_info anchor="bottom" id="Event Log" order="6" sideWeight="0.5016745" side_tool="true" weight="0.24078947" />
@@ -450,7 +451,7 @@
       <window_info anchor="bottom" id="Python Console" order="10" sideWeight="0.4996651" weight="0.32891247" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.29575598" />
       <window_info active="true" anchor="bottom" id="Terminal" order="11" sideWeight="0.49832553" visible="true" weight="0.2387268" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.22431162" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.23102753" />
       <window_info anchor="right" id="R Packages" order="3" />
       <window_info anchor="bottom" id="Docker" order="12" show_stripe_button="false" />
       <window_info anchor="right" id="R Graphics" order="3" weight="0.32975152" />
@@ -690,8 +691,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/js/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="139">
-          <caret line="986" column="6" selection-start-line="986" selection-start-column="6" selection-end-line="986" selection-end-column="6" />
+        <state relative-caret-position="78">
+          <caret line="1083" selection-start-line="1083" selection-end-line="1083" />
           <folding>
             <element signature="n#style#0;n#i#0;n#div#0;n#!!top" expanded="true" />
             <element signature="e#1#8#0" expanded="true" />
