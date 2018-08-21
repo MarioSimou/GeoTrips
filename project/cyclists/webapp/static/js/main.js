@@ -2,7 +2,7 @@
 // ------------------------------------------------- VARIABLES --------------------------------------------------------
 var heatmapStationsLayer, heatmapBoroughsLayer;
 let basemaps,colors,nStations,hashStations = {}  ,refRoutesFreqUrl,eqIntBoroughs,eqIntStations,eqIntRefRoutes,latestSelectedBorough, latestSelectedStation,sortedFreqArr = [], paneTop,paneIntermediate,paneBottom,groupLayer;
-let map,stations,refRoutes,boroughs,routes,cusRoutes;
+let map,stations,refRoutes,boroughs,routes,cusRoutes, clusterResponse;
 let colRampGlo = {'stations' : 'YlGnBu','boroughs' : 'Paired','routes' : 'Paired',}; // initial coloramps for each feature layer
 const minWidth = 896; // minimum required width for a desktop device
 const minHeight = 672; // minimum required height for a desktop device
@@ -18,13 +18,6 @@ const stationsPairsRoutesUrl = $('#stations-pairs-routes').attr('href'); // weba
 const kMeansUrl = $('#kmeans').attr('href');
 const freqUrl = $('#freq').attr('href');
 const temporalRoutesUrl = $('#temporal_routes').attr('href');
-
-// Panels
-const statsInfo = L.control({position: 'topright'});
-const legend = L.control({position : 'bottomleft'});
-const basicInfoTab = L.control({position : 'topleft'});
-const boundariesRangeSlider = L.control({position: 'bottomright'});
-const menuCommand = L.control({position : 'topleft'});
 const cluster = L.markerClusterGroup(
 	{
 		showCoverageOnHover : false, // When you mouse over a cluster it shows the bounds of its markers
@@ -58,8 +51,8 @@ const setBoroughStyle = (feature)=>
 // update the tab
 const highlightBorough = (e) => {
 	props = e.target.feature.properties; // properties of the targeted feature
-	// updates the baseicInfoTab label
-	basicInfoTab.update({'bname': props.name, 'bfreq' : props.freq }, e.latLng);
+	// updates the topLeftDescriptionPanel label
+	topLeftDescriptionPanel.update({'bname': props.name, 'bfreq' : props.freq }, e.latLng);
 };
 
 // this methods adds a mouse event listener on the borough layer
@@ -84,7 +77,7 @@ const setStationsStyle = (feature) => {
 	};
 };
 
-// This method changes the style of a targeted station and, updates the statsInfo and basicInfoTab label as well.
+// This method changes the style of a targeted station and, updates the topRightDescription and topLeftDescriptionPanel label as well.
 const highlightStation = (e) =>
 {
 	layer = e.target; // gets the targeted station
@@ -95,14 +88,14 @@ const highlightStation = (e) =>
 		dashArray: '',
 		fillOpacity: 0.7,
 	});
-	statsInfo.update(layer.feature.properties); // updates the statsInfo label
-    basicInfoTab.update(
+	topRightDescriptivePanel.update(layer.feature.properties); // updates the topLeftDescription label
+    topLeftDescriptionPanel.update(
         {
 			'bname' : latestSelectedBorough.bname,
 			'bfreq' : latestSelectedBorough.bfreq,
 			'sname' : layer.feature.properties.station_name,
 			'sfreq' : layer.feature.properties.freq,
-		},e.latLng);	// updates the basicInfoTab label
+		},e.latLng);	// updates the topLeftDescriptionPanel label
 };
 // this method resets the style of stations layer
 const resetHighlightStation = (e) => {
@@ -182,7 +175,7 @@ const changeColors = (e,feature, featureFunction, featureClassName, nClasses,eqI
 		layer.setStyle({'fillColor' : featureFunction(layer.feature.properties.freq, colRamp, eqInt,nClasses)});
 	});
 	// update the legend panel
-	legend.update(featureClassName, colRamp,nClasses);
+	bottomLeftPanel.update(featureClassName, colRamp,nClasses);
 };
 
 // based on the equal intervals of a layer, this function finds the corresponded color of a vaue
@@ -315,6 +308,63 @@ statsBtnToggle = (el)=> {
     el.toggleClass('active');
 };
 // ----------------------------------------- TABS / PANELS -----------------------------------------------------------
+
+const topRightDescriptivePanel = L.control({position: 'topright'}); // create a control
+// when the control is added on the map, a new div is created
+topRightDescriptivePanel.onAdd = function(map) {return createDivElement(this,'info info-stats');};
+// nothing is performed
+topRightDescriptivePanel.update  = function(targetedStationProps) {};
+
+// this method creates a panel at the top-right corner that will contain the graph and descriptive statistics of
+// the webapp
+const populatetopRightDescriptivePanel = (el) =>{
+	html = el.html().toString(); // get the context
+	try {
+		html = html.concat(`<div class="container-fluid">
+								<div class="row">
+									<div class="btn-group-toggle col-4" data-toggle="buttons">
+										<button class="mybtn active">Hide</button>
+									</div>
+									<div class="col-8">
+										<select id="station-routes" class="custom-select">
+											<option value="">Select a Station Route</option>`
+		);
+
+        for (station of stations.toGeoJSON().features) {
+            html = html.concat(`<option value="${station.properties.pk}">${station.properties.station_name}</option>`.toString());
+        }
+        html = html.concat(`</select></div></div>
+								<ul class="nav nav-tabs" id="myTab" role="tablist">
+ 									<li class="nav-item">
+    									<a class="nav-link active" id="descriptive-tab" data-toggle="tab" href="#descriptive-container" role="tab" aria-selected="true">Descriptive</a>
+  									</li>
+  									<li class="nav-item">
+    									<a class="nav-link" id="graphs-tab" data-toggle="tab" href="#graphs-container" role="tab" aria-selected="true">Graphs</a>
+  									</li>	
+								</ul>
+								<div class="tab-content" id="myTabContent">
+									<div class="tab-pane fade show active" id="descriptive-container" role="tabpanel">
+										<div class="row">
+											<div class="col-12" id="descriptive-statistics-container"></div>	
+											<div id="legend-graph-container" class="col-12 legend"></div>		
+											<div class="col-12" id="ref-routes-slider-container"></div>	
+										</div>
+									</div>
+									<div class="tab-pane fade" id="graphs-container" role="tabpanel">		
+										<div class="row">
+											<div id="distances-distribution-graph-container" class="col-12"></div>
+											<div id="daily-graph-container" class="col-12"></div>
+											<div id="monthly-graph-container" class="col-12"></div>	
+										</div>
+									</div>
+								</div>
+							</div>`);
+    }catch (e) {
+		console.log(e)
+    }
+    // replace the html
+	el.html(html);
+};
 
 // this method updates the content of the descriptive statistics and graphs panels, which are located at the
 // top-right corner. The method is called whenever a user wants to get more information related to a station
@@ -647,65 +697,12 @@ const showContentOfRoutesNetwork = (e)=>{
 };
 
 
-// ----------------------------------------- STATS INFO PANEL ---------------------------------------------------------
-statsInfo.onAdd = function(map) {return createDivElement(this,'info info-stats');};
-statsInfo.update  = function(targetedStationProps) {};
-
-const infoStatsUpdate = (el) =>{
-	html = el.html().toString(); // get the context
-	try {
-		html = html.concat(`<div class="container-fluid">
-								<div class="row">
-									<div class="btn-group-toggle col-4" data-toggle="buttons">
-										<button class="mybtn active">Hide</button>
-									</div>
-									<div class="col-8">
-										<select id="station-routes" class="custom-select">
-											<option value="">Select a Station Route</option>`
-		);
-
-        for (station of stations.toGeoJSON().features) {
-            html = html.concat(`<option value="${station.properties.pk}">${station.properties.station_name}</option>`.toString());
-        }
-        html = html.concat(`</select></div></div>
-								<ul class="nav nav-tabs" id="myTab" role="tablist">
- 									<li class="nav-item">
-    									<a class="nav-link active" id="descriptive-tab" data-toggle="tab" href="#descriptive-container" role="tab" aria-selected="true">Descriptive</a>
-  									</li>
-  									<li class="nav-item">
-    									<a class="nav-link" id="graphs-tab" data-toggle="tab" href="#graphs-container" role="tab" aria-selected="true">Graphs</a>
-  									</li>	
-								</ul>
-								<div class="tab-content" id="myTabContent">
-									<div class="tab-pane fade show active" id="descriptive-container" role="tabpanel">
-										<div class="row">
-											<div class="col-12" id="descriptive-statistics-container"></div>	
-											<div id="legend-graph-container" class="col-12 legend"></div>		
-											<div class="col-12" id="ref-routes-slider-container"></div>	
-										</div>
-									</div>
-									<div class="tab-pane fade" id="graphs-container" role="tabpanel">		
-										<div class="row">
-											<div id="distances-distribution-graph-container" class="col-12"></div>
-											<div id="daily-graph-container" class="col-12"></div>
-											<div id="monthly-graph-container" class="col-12"></div>	
-										</div>
-									</div>
-								</div>
-							</div>`);
-    }catch (e) {
-		console.log(e)
-    }
-    // replace the html
-	el.html(html);
-};
-
-//-------------------------------------------- BASIC INFO TAB ----------------------------------------------------------
-
-// Custom control Button - Creation
-basicInfoTab.onAdd = function(map){return createDivElement(this,'info basic-info-tab');};
+//-------------------------------------------- topLeftDescriptionPanel ----------------------------------------------------------
+const topLeftDescriptionPanel = L.control({position : 'topleft'});
+// create a div element when is added
+topLeftDescriptionPanel.onAdd = function(map){return createDivElement(this,'info basic-info-tab');};
 // method that will use to update the control based on feature properties passed
-basicInfoTab.update = function(props,coords){
+topLeftDescriptionPanel.update = function(props,coords){
 	// if the mouse is over a POI, then its coordinates are gained	`
 	this.div.innerHTML = (coords ? '<b>Latitude: </b>' + coords.lat.toFixed(4)+ '&#176\t<b>Longitude: </b>' + coords.lng.toFixed(4) + '&#176': 'Hover over the map');
 
@@ -729,11 +726,11 @@ basicInfoTab.update = function(props,coords){
 	}catch(e){};
 };
 
-// this methods calls the update method of the basicInfoTab so its content to update.
-const updateBasicInfoTabContent = (e) => {
+// this methods calls the update method of the topLeftDescriptionPanel so its content to update.
+const updatetopLeftDescriptionPanel = (e) => {
 	// updates the label at the top left corner
 	try {
-		basicInfoTab.update({
+		topLeftDescriptionPanel.update({
                 'bname': (latestSelectedBorough.bname ? latestSelectedBorough.bname : '-'),
 				'bfreq': (latestSelectedBorough.bfreq  ? latestSelectedBorough.bfreq : 0 ),
                 'sname': (latestSelectedStation.sname ? latestSelectedStation.sname : '-'),
@@ -742,15 +739,15 @@ const updateBasicInfoTabContent = (e) => {
     }catch (e) {};
 };
 
-
-legend.onAdd = function(map)
+// --------------------------------------- bottomLeftPanel Panel -----------------------------------------------------------
+const bottomLeftPanel = L.control({position : 'bottomleft'});
+bottomLeftPanel.onAdd = function(map)
 {
-	var div = L.DomUtil.create('div', 'info legend');
-	var el = $('div.info.legend');
-	var cBoroughs = equalIntervals(nClasses,freqUrl, 'boroughs');
-	var cStations = equalIntervals(nClasses,freqUrl,'stations');
+	let div = L.DomUtil.create('div', 'info legend');
+	let cBoroughs = equalIntervals(nClasses,freqUrl, 'boroughs'); // boroughs equal intervals
+	let cStations = equalIntervals(nClasses,freqUrl,'stations'); // stations equal intervals
 
-	cBoroughs.unshift(0);
+	cBoroughs.unshift(0); // add zero at the beginning
 	cStations.unshift(0);
 
 	// content of BOROUGHS
@@ -816,17 +813,23 @@ legend.onAdd = function(map)
 
 	return div;
 };
+// set the css styling on the i elements of the bottom left panel
+bottomLeftPanel.update = (option, colorRamp, nClasses)=>{
+	let iLegend = $(`div.info.legend i.${option}`);
+	for(let i=0; i < iLegend.length; i++){
+		iLegend.eq(i).css('background',colors[colorRamp][nClasses][i]);
+	};
+};
 // adds the 3d-scatterplot
-var layer;
 append3dScatterPlotPoint = (elName, scatterLayout,requestUrl,coloRamp = colors)=>{
-	console.log(requestUrl);
-	//var layer;
+	let clusterData = []; // empty array
+	// request the data of the clustering
 	$.ajax({url : requestUrl, async: false}).done((response)=>{
-		layer = response;
+		clusterResponse= response;
 	});
-	var data = [];
-	layer.map((cluster,i)=>{
-		data.push({
+	// create the clusters which will be added on the scatterplot
+	clusterResponse.map((cluster,i)=>{
+		clusterData.push({
             x: cluster[0], y: cluster[1], z: cluster[2],
             mode: 'markers',
             marker: {color: coloRamp.Set1[cluster.length][i], size: 2},
@@ -842,26 +845,20 @@ append3dScatterPlotPoint = (elName, scatterLayout,requestUrl,coloRamp = colors)=
         z: cluster[2],
     	})
     });
-
-	Plotly.newPlot(elName, data,scatterLayout, {displayModeBar: false});
+	// populate the plot
+	Plotly.newPlot(elName, clusterData,scatterLayout, {displayModeBar: false});
 
 };
 
-// triggers whenever a user changes a coloramp
-legend.update = function(option, colorRamp, nClasses){
-	var iElements = $(`div.info.legend i.${option}`);
-	for(var i=0; i < iElements.length; i++)
-	{
-		iElements.eq(i).css('background', colors[colorRamp][nClasses][i]);
-	}
-};
-
-boundariesRangeSlider.onAdd = function(map) {return createDivElement(this,'boundaries-range-slider');};
-boundariesRangeSlider.update  = function()
-{
+// ---------------------------------------     Boroughs Slider                ---------------------------------------
+const bouroughsSlider = L.control({position: 'bottomright'}); // create the command
+bouroughsSlider.onAdd = function(map) {return createDivElement(this,'boundaries-range-slider');}; // returns a div aelement when is added on the map
+bouroughsSlider.update  = function(){
 	this.div.innerHTML = '<div class="borough-vis-container"><i class="fa fa-eye-slash" aria-hidden="true"></i><input type="range" min="1" max="100" value="70" id="borough-vis-slider" class="slider"><i class="fa fa-eye" aria-hidden="true"></i></div>';
-};
+}; // while the element is created, its inner HTML is updated
 
+// ------------------------------------  Menu Command -----------------------------------------------------------------------------
+const menuCommand = L.control({position : 'topleft'}); // creates the control
 menuCommand.onAdd = function(map){return createDivElement(this,'menuCommand');};
 menuCommand.update = function()
 {
@@ -928,9 +925,8 @@ $(window).on("map:init", function(event) {
     		// adds the 3d scatter plot on the legend panel
 			append3dScatterPlotPoint('3d-scatter-stations',scatterLayout,getAdjustedUrl(kMeansUrl.replace(new RegExp('none'),'stations'),5), colors);
 
-    		// updates the info stats all
-			infoStatsUpdate($('.info-stats'));
-			freezeMap($('.info-stats'));
+			populatetopRightDescriptivePanel($('.info-stats')); // loads the panel on the top-right corner
+			freezeMap($('.info-stats')); // freeze the map whenever the panel is used
 
 			// adds an event on the dropdown list of .info-stats
 			$('#station-routes').on('change', (e) =>{
@@ -1016,19 +1012,19 @@ $(window).on('load', ()=>
 	console.log('window-load');
 
 	// adds the info stats label
-	statsInfo.addTo(map);
+	topRightDescriptivePanel.addTo(map);
 
 	// adds a scale control on the map
 	L.control.scale({maxWidth : 500, metric: true, imperial: true}).addTo(map);
 	// Remove Attribution
 	$('.leaflet-control-attribution').hide();
 	// adds a label that shows the geographical coordinates of the map
-	basicInfoTab.addTo(map); // adds the control scale
+	topLeftDescriptionPanel.addTo(map); // adds the control scale
 
 	// adds the menu command on the map
 	menuCommand.addTo(map);
 	// adds a legend on the map
-	legend.addTo(map);
+	bottomLeftPanel.addTo(map);
 	// appends the tooltip buttons
 	appendQuestionBtn($('#legend-container div.row div.col-6.left-legend-panel h4').eq(0),'boroughs','right','<h4>Boroughs Layer Description</h4><p>The color of each borough corresponds on the number of stations that are contained within it. Boroughs that preserve the same color present similar properties in terms of the contained stations.</p> <h4>Color Ramp</h4><p>A color ramp is available so that a user to choose the best combination for its screen</p><h4>Plot</h4><p>The displayed graph clusters the boroughs based on the variables of <b>longitude</b>, <b>latitude</b>, and <b>number of stations within a borough</b>. The optimal number of clusters is <b>three</b>.');
 	appendQuestionBtn($('#legend-container div.row div.col-6.left-legend-panel h4').eq(1),'stations','right','<h4>Stations Layer Description</h4><p>The color of each station corresponds on the number of routes that either started or ended on a station (undirected network). This means that station which have similar color demonstrate similar properties.</p><h4>Color Ramp</h4><p>A color ramp is available so that a user to choose the best combination for its screen.</p><h4>Plot</h4><p>The displayed graph classifies the stations based on the variables of <b>longitude</b>, <b>latitude</b>, and <b>number of routes that either started or ended on a stations</b>.The optimal number of clusters is <b>5</b>.</p><h4>Filtering</h4><p>A <b>filtering</b> option is available below so that only a certain portion of stations is shown. The stations are ranked based on their flow, and only the <b>N</b> selected stations with the highest flow are displayed.</p>');
@@ -1124,10 +1120,10 @@ $(window).on('load', ()=>
     });
 
 	// mousemove event over the map
-	map.on('mousemove',updateBasicInfoTabContent ); // mousemove event
+	map.on('mousemove',updatetopLeftDescriptionPanel ); // mousemove event
 
 	// adds a range slider that modifies the boroughs visibility
-	boundariesRangeSlider.addTo(map);
+	bouroughsSlider.addTo(map);
 
 	freezeMap($('#borough-vis-slider'));
 	$('#borough-vis-slider').on('change', (e) =>
