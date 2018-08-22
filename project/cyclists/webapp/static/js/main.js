@@ -289,7 +289,7 @@ appendQuestionBtn = (el,name,position,content)=>{
 // this method creates a legend of a specified model
 const populateLegend = (className,cModel,colRampGloOpt,eqIntModel,nClasses,el)=>{
 	for(var i=0; i < cModel.length-1;i++) {
-		$(`<div><i class="${className}" style="background: ${getColor(cModel[i], colRampGloOpt, eqIntModel, nClasses)}"></i> <span>${cModel[i].toFixed(2) + (cModel[i+1] ? ' &ndash; ' + cModel[i+1].toFixed(2) + '</span><br>' : '')}</div>`).appendTo(el);
+		$(`<div><i class="${className}" style="background: ${getColor(cModel[i], colRampGloOpt, eqIntModel, nClasses)}"></i> <span>${cModel[i].toFixed(0) + (cModel[i+1] ? ' &ndash; ' + cModel[i+1].toFixed(0) + '</span><br>' : '')}</div>`).appendTo(el);
 	};
 };
 // performs changes on the div.info.info-stats.leaflet-control
@@ -323,10 +323,10 @@ const populatetopRightDescriptivePanel = (el) =>{
 		html = html.concat(`<div class="container-fluid">
 								<div class="row">
 									<div class="btn-group-toggle col-4" data-toggle="buttons">
-										<button class="mybtn active">Hide</button>
+										<button class="mybtn active label">Hide</button>
 									</div>
 									<div class="col-8">
-										<select id="station-routes" class="custom-select">
+										<select id="station-routes" class="custom-select label">
 											<option value="">Select a Station Route</option>`
 		);
 
@@ -336,17 +336,17 @@ const populatetopRightDescriptivePanel = (el) =>{
         html = html.concat(`</select></div></div>
 								<ul class="nav nav-tabs" id="myTab" role="tablist">
  									<li class="nav-item">
-    									<a class="nav-link active" id="descriptive-tab" data-toggle="tab" href="#descriptive-container" role="tab" aria-selected="true">Descriptive</a>
+    									<a class="nav-link active label" id="descriptive-tab" data-toggle="tab" href="#descriptive-container" role="tab" aria-selected="true">Descriptive</a>
   									</li>
   									<li class="nav-item">
-    									<a class="nav-link" id="graphs-tab" data-toggle="tab" href="#graphs-container" role="tab" aria-selected="true">Graphs</a>
+    									<a class="nav-link label" id="graphs-tab" data-toggle="tab" href="#graphs-container" role="tab" aria-selected="true">Graphs</a>
   									</li>	
 								</ul>
 								<div class="tab-content" id="myTabContent">
 									<div class="tab-pane fade show active" id="descriptive-container" role="tabpanel">
 										<div class="row">
 											<div class="col-12" id="descriptive-statistics-container"></div>	
-											<div id="legend-graph-container" class="col-12 legend"></div>		
+											<div id="legend-graph-container" class="legend"></div>		
 											<div class="col-12" id="ref-routes-slider-container"></div>	
 										</div>
 									</div>
@@ -412,7 +412,7 @@ const appendTemporalGraph = (monthlyGraphContainer, dailyGraphContainer,sid) =>{
 
 			temporalLayout.yaxis = {'title' : 'Flow per month'}
 			temporalLayout.xaxis = {'title':'', 'range': [x[0], x[x.length-1]]};
-			Plotly.newPlot('monthly-temporal-graph', [{x : x, y : y , type: 'scatter', mode: 'lines'}], temporalLayout, {staticPlot: false, displayModeBar: false});
+			Plotly.newPlot('monthly-temporal-graph', [{x : x, y : y , type: 'scatter', mode: 'lines',line: {dash: 'solid', width: 4,color: 'red'}, opacity: 0.5}], temporalLayout, {staticPlot: false, displayModeBar: false});
 		});
 };
 // this method populate the content of the panel at the right content, loads the baseline routes and stations
@@ -604,9 +604,11 @@ const appendDescriptiveStats = (obj)=>{
 					<li><span>IQR:</span> ${obj.cycleHire.descriptive.iqr}</li>
 				</ul>	
 			</div>
-			<div class="row boxplot-container">
-				<div class="col-6" id="baseline-boxplot"></div>
-				<div class="col-6" id="cycle-hire-boxplot"></div>
+			<div class="col-12">
+				<div class="row boxplot-container">
+					<div class="col-6" id="baseline-boxplot"></div>
+					<div class="col-6" id="cycle-hire-boxplot"></div>
+				</div>
 			</div>
 		</div>
 	`);
@@ -618,8 +620,9 @@ const appendDescriptiveStats = (obj)=>{
   		y: obj.baseline.refTime,
   		type: 'box',
   		name: 'Baseline',
-  		marker: {color: '#0078A8'},
-  		boxmean: 'sd'
+  		marker: {color: 'red'},
+			opacity: 0.5,
+  		boxmean: 'mean'
 	};
 	boxplotLayout.margin.l=40;
 	Plotly.newPlot('baseline-boxplot', [baseline], boxplotLayout, {staticPlot: false, displayModeBar: false});
@@ -630,7 +633,7 @@ const appendDescriptiveStats = (obj)=>{
 		type: 'box',
 		name: 'Cycle Hire',
 		marker: {color: '#0078A8'},
-		boxmean: 'sd'
+		boxmean: 'mean'
 	};
 
 	boxplotLayout.margin.l=0;
@@ -684,14 +687,14 @@ const showContentOfRoutesNetwork = (e)=>{
 	panel.html(`<div>
 							<h4><b>Routes of ${hashStations[feature.start_station_id].station_name}</b></h4>
 						 	<ul>
-						 		<li><span>Start Station Name:</span>  ${hashStations[feature.start_station_id].station_name}</li>
-						 		<li><span>End Station Name:</span>  ${hashStations[feature.end_station_id].station_name}</li>		
-								<li><span>Baseline Time:</span> ${feature.balanced_ref_time} s</li>	
-								<li><span>Avg Predicted Time:</span> ${avgCusRoutesTime.toFixed(2)} s</li>
-								<li><span>Baseline Dist:</span> ${feature.balanced_ref_dist} m</li>
-								<li><span>Avg Predicted Distance:</span> ${(avgCusRoutesTime*velocity*1000).toFixed(2)} m</li>
-								<li><span>Annual Flow:</span> ${annualFrequency}</li>
-								<li><span>Global Flow:</span> ${feature.freq} </li>
+						 		<li><span>Start Station Name:&nbsp;</span> ${hashStations[feature.start_station_id].station_name}</li>
+						 		<li><span>End Station Name:	&nbsp;</span>  ${hashStations[feature.end_station_id].station_name}</li>		
+								<li><span>Baseline Time:	&nbsp;</span> ${feature.balanced_ref_time} s</li>	
+								<li><span>Avg Predicted Time:	&nbsp;</span> ${avgCusRoutesTime.toFixed(2)} s</li>
+								<li><span>Baseline Dist:	&nbsp;</span> ${feature.balanced_ref_dist} m</li>
+								<li><span>Avg Predicted Distance	&nbsp;:</span> ${(avgCusRoutesTime*velocity*1000).toFixed(2)} m</li>
+								<li><span>Annual Flow:	&nbsp;</span> ${annualFrequency}</li>
+								<li><span>Global Flow:	&nbsp;</span> ${feature.freq} </li>
 							</ul>
 						 </div>`);
 };
@@ -704,12 +707,12 @@ topLeftDescriptionPanel.onAdd = function(map){return createDivElement(this,'info
 // method that will use to update the control based on feature properties passed
 topLeftDescriptionPanel.update = function(props,coords){
 	// if the mouse is over a POI, then its coordinates are gained	`
-	this.div.innerHTML = (coords ? '<b>Latitude: </b>' + coords.lat.toFixed(4)+ '&#176\t<b>Longitude: </b>' + coords.lng.toFixed(4) + '&#176': 'Hover over the map');
+	this.div.innerHTML = (coords ? '<b>Latitude:&nbsp; </b>' + coords.lat.toFixed(4)+ '&#176\t<b>Longitude:&nbsp; </b>' + coords.lng.toFixed(4) + '&#176': 'Hover over the map');
 
 	// Try-catch block of borough layer
 	try {
-		this.div.innerHTML += (props ? '<br><b>Borough: </b>' +  props.bname: '<br>Hover over the borough');
-        this.div.innerHTML += `<br><b>% of Stations within Borough: </b> ${((props.bfreq/nStations)*100).toFixed(2).toString()} %`;
+		this.div.innerHTML += (props ? '<br><b>Borough:&nbsp; </b>' +  props.bname: '<br>Hover over the borough');
+        this.div.innerHTML += `<br><b>% of Stations within Borough:&nbsp; </b> ${((props.bfreq/nStations)*100).toFixed(2).toString()} %`;
         latestSelectedBorough = {
         	'bname' : props.bname,
         	'bfreq' : props.bfreq,
@@ -717,8 +720,9 @@ topLeftDescriptionPanel.update = function(props,coords){
 	}catch (e){};
 	// Try-catch block of stations layer
     try{
-		this.div.innerHTML += (props ? '<br><b>Station: </b>' + props.sname : '<br>Hover over the station');
-		this.div.innerHTML += '<br><b>Station Global Flow: </b>' + props.sfreq;
+		this.div.innerHTML += (props ? '<br><b>Station:&nbsp; </b>' + props.sname : '<br>Hover over the station');
+
+		this.div.innerHTML += '<br><b>Station Global Flow:&nbsp; </b>' + props.sfreq;
 		latestSelectedStation = {
 			'sname' : props.sname,
 			'sfreq' : props.sfreq,
