@@ -45,9 +45,6 @@ body{
     background-color: rgba(255,255,255,0);
     border: none;
 }
-#animation-btn-container{
-    padding: 0px;
-}
 .label{
     background:  cadetblue !important;
     color: white !important;
@@ -197,10 +194,9 @@ div.info.legend.active{
     margin-right: 8px;
     opacity: 0.7;
 }
-div.col-12.stations-slider div:last-of-type {
+div.col-12.stations-slider div:last-of-type,  #animation-btn-container{
     padding: 0;
 }
-
 .info-stats {
     border-radius: 10px;
     max-height: 92.5vh;

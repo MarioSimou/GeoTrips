@@ -294,12 +294,11 @@ const populateLegend = (className,cModel,colRampGloOpt,eqIntModel,nClasses,el)=>
 };
 // performs changes on the div.info.info-stats.leaflet-control
 statsBtnToggle = (el)=> {
+	if (groupLayer != undefined)(map.hasLayer(groupLayer) ? map.removeLayer(groupLayer) : map.addLayer(groupLayer));
 	if (el.hasClass('active')) {
-        (map.hasLayer(groupLayer) ? map.removeLayer(groupLayer) : false);
         $('#station-routes').attr('disabled', true); // set the button as disable
         el.text('Activate'); // change the text to disable
     } else {
-		map.addLayer(groupLayer); // add a layer
         $('#station-routes').attr('disabled', false); // se the button as active
         el.text("Hide"); // change the text to active
     }
