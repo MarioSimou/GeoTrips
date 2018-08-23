@@ -413,7 +413,7 @@ svg.svg-inline--fa.fa-info-circle.fa-w-16{
 }
 #myTab{
     margin: 10px 0;
-    padding-left: 30%;
+    padding-left: 10%;
 }
 #baseline-description, #baseline-description h4, #baseline-description li {
     text-align: right;
@@ -427,14 +427,21 @@ svg.svg-inline--fa.fa-info-circle.fa-w-16{
 #cycle-hire-boxplot{
     padding-right: 0;
 }
-#descriptive-statistics-container span{
+#descriptive-statistics-container span, #network-properties-container span{
     font-weight: bold;
 }
-#descriptive-statistics-container ul {
+#descriptive-statistics-container ul, #network-properties-container ul {
     list-style: none;
     padding: 0 4px;
 }
 #legend-graph-container{
     padding: 0px;
     margin:auto;
+    margin-bottom: 15px;
+}
+#network-properties-container h4{
+    text-align: center;
+}
+#network-properties-container{
+    margin: auto ;
 }

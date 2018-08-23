@@ -339,14 +339,16 @@ const populatetopRightDescriptivePanel = (el) =>{
   									</li>
   									<li class="nav-item">
     									<a class="nav-link label" id="graphs-tab" data-toggle="tab" href="#graphs-container" role="tab" aria-selected="true">Graphs</a>
+  									</li>
+  									<li class="nav-item">
+    									<a class="nav-link label" id="choropleth-tab" data-toggle="tab" href="#choropleth-container" role="tab" aria-selected="true">Choropleth</a>
   									</li>	
 								</ul>
 								<div class="tab-content" id="myTabContent">
 									<div class="tab-pane fade show active" id="descriptive-container" role="tabpanel">
 										<div class="row">
-											<div class="col-12" id="descriptive-statistics-container"></div>	
-											<div id="legend-graph-container" class="legend"></div>		
-											<div class="col-12" id="ref-routes-slider-container"></div>	
+											<div class="col-12" id="descriptive-statistics-container"></div>
+											<div id="network-properties-container"></div>	
 										</div>
 									</div>
 									<div class="tab-pane fade" id="graphs-container" role="tabpanel">		
@@ -354,6 +356,12 @@ const populatetopRightDescriptivePanel = (el) =>{
 											<div id="distances-distribution-graph-container" class="col-12"></div>
 											<div id="daily-graph-container" class="col-12"></div>
 											<div id="monthly-graph-container" class="col-12"></div>	
+										</div>
+									</div>
+									<div class="tab-pane fade" id="choropleth-container" role="tabpanel">		
+										<div class="row">
+											<div id="legend-graph-container" class="legend"></div>		
+											<div class="col-12" id="ref-routes-slider-container"></div>	
 										</div>
 									</div>
 								</div>
@@ -451,7 +459,7 @@ const changePlotsAndDescriptions = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
         		// adds the baseline routes legend
         		appendRefRoutesLegend($('#legend-graph-container'), eqIntRefRoutes, refRoutesFreqUrl);
         		// adds distribution graph that compares the baseline routes and the sample routes
-        		appendDistributionGraph($('#distances-distribution-graph-container'),cusRoutes);
+        		appendDistributionGraph($('#distances-distribution-graph-container'),cusRoutes,sid);
 
         		loader.hide(); // hide the loader when all the processes are done
 			});
@@ -531,9 +539,12 @@ const appendRefRoutesLegend = (graphContainer,eqIntRefRoutes,refRoutesFreqUrl) =
         changeColorsRefRoute(refRoutes);
     }
 };
-const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
+// add a the distribution of cycling trips of a selected stations, with a generated distribution using the baseline
+// routing data. The distributions are compared, and descriptive statistical values are extracted
+const appendDistributionGraph = (disGraphContainer,cusRoutes,sid) => {
 	// baseline distances
 	let data = {'baseline': {'refTime' : []}, 'cycleHire': {'cusTime': []}};
+	//let selectedStationLinks = refRoutes.toGeoJSON().properties.length;
 	let refRoutesHash = {}; // a hahmap data structure
 
 	// populates the hashmap  {key : value}  - > {pair_id : duration}
@@ -548,7 +559,6 @@ const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
 		data.baseline.refTime.push(refRoutesHash[f.fields.station_pairs_id]);
 		data.cycleHire.cusTime.push(f.fields.duration);
 	};
-
 	// get the statistics of the baseline routes sample
 	data.baseline.median = median(data.baseline.refTime); // median time
 	data.baseline.descriptive = descriptiveStats(data.baseline.refTime);
@@ -558,7 +568,7 @@ const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
 	data.cycleHire.descriptive = descriptiveStats(data.cycleHire.cusTime);
 
 	// call the appendDescriptiveStats, which will append the results on the descriptive statistics panel (top-right)
-	appendDescriptiveStats(data);
+	appendDescriptiveStats(data,sid);
 
 	// Append the histograms of the data on the graph panel (top-right)
 	// create a div that will contains the graph if it does not exist
@@ -569,10 +579,37 @@ const appendDistributionGraph = (disGraphContainer,cusRoutes) => {
 
 	Plotly.newPlot('distribution-container',[refHist,cusHist], distributionLayout, {staticPlot: false, displayModeBar: false});
 };
+const appendNetworkProperties = (refRoutes,sid)=>{
+	let container = $('#network-properties-container');
+	if(container.children().length ? container.children().remove() : false);
 
+	let refRoutesArr = refRoutes.toGeoJSON().features; // array of baseline links
+	let nSelectedStations = refRoutesArr.length; // n Links
+	let currentLoc =L.latLng(hashStations[sid].location[0]); // location of selected station
+	// aggregated distance of all links
+	let aggregatedEllispoidDist = refRoutesArr.map((f,index)=> currentLoc.distanceTo(L.latLng(hashStations[f.properties.end_station_id].location[0]))).reduce((a,b)=> a + b);
+	// aggregated flow of all links
+	let aggregatedFlow = refRoutesArr.reduce((a,b)=> a + b.properties.freq ,0);
+	let cont
+	container.append(`
+			<h4>Networks Properties</h4>
+			<ul>
+				<li><span>Number of Links:&nbsp;</span> ${nSelectedStations}</li>
+				<li><span>Station Fullfilment:&nbsp;</span> ${(100*(nSelectedStations/nStations)).toFixed(2)} %</li>
+				<li><span>Aggregated Flow: &nbsp;</span> ${aggregatedFlow}</li>
+				<li><span>Aggregated Ellispoid Distance: &nbsp;</span> ${(aggregatedEllispoidDist/1000).toFixed(2)} km</li>
+				<li><span>Average Flow:&nbsp;</span> ${(aggregatedFlow/nSelectedStations).toFixed(0)}</li>
+				<li><span>Average Ellipsoid Distance: &nbsp;</span> ${(aggregatedEllispoidDist/(nSelectedStations*1000)).toFixed(2)} km</li>
+			</ul>
+	`);
+	// adds a tooltip next to the container
+	appendQuestionBtn(container.find('h4'), 'network-stats','left','<h4>Description</h4><p>In the current section, a network of the docking stations is created, measuring some properties. The network is comprised by nodes, which are the docking stations, and links, which corresponds on the flow between a pair of docking stations.');
+}
 // this method adds some descriptive statistic measurements, as well as two boxplots of the baseline routes and the sample
 // data in the panel at the top-right corner
-const appendDescriptiveStats = (obj)=>{
+const appendDescriptiveStats = (obj,sid)=>{
+	appendNetworkProperties(refRoutes,sid);
+
 	let container = $('#descriptive-statistics-container');
 	// remove children elements if they already exist
 	(container.children().length ? container.children().remove() : false );
@@ -976,6 +1013,7 @@ const appendStationsLayer = () => {
             hashStations[f.properties.pk] = {
                 'station_name': f.properties.station_name,
                 'fre': f.properties.freq,
+				'location': f.geometry.coordinates,
             };
         });
 													// BOTTOM LEFT PANEL
