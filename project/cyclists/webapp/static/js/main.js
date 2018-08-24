@@ -306,6 +306,11 @@ statsBtnToggle = (el)=> {
     $('#myTabContent').fadeToggle(); // toggles the panel at the right corner
     el.toggleClass('active');
 };
+
+// this method calculates the relative entropy between a distribution p and q. Equation: P(P,Q) = Sum(p[i] * Math.log(p[i]/q[i]))
+const relativeEntropy = (p,q)=>{
+	 return (p.length === q.length  ? p.map((v,i)=> v*Math.log(v/q[i])).reduce((a,b)=> a + b) : false);
+};
 // ----------------------------------------- TABS / PANELS -----------------------------------------------------------
 
 const topRightDescriptivePanel = L.control({position: 'topright'}); // create a control
@@ -568,20 +573,31 @@ const appendDistributionGraph = (disGraphContainer,cusRoutes,sid) => {
 	data.cycleHire.descriptive = descriptiveStats(data.cycleHire.cusTime);
 
 	// call the appendDescriptiveStats, which will append the results on the descriptive statistics panel (top-right)
-	appendDescriptiveStats(data,sid);
+	appendDescriptiveStats(data);
+	// this method calculates the value of some properties of the docking stations network
+	appendNetworkProperties(refRoutes,sid);
 
 	// Append the histograms of the data on the graph panel (top-right)
-	// create a div that will contains the graph if it does not exist
-	(disGraphContainer.has('#distribution-container').length ? true : $(`<div class="col-12" id="distribution-container"></div>`).appendTo(disGraphContainer));
+	// create a div that will contains the graph and the relative entropy container, if it does not exist
+	if (disGraphContainer.has('#distribution-container').length ? $('#relative-entropy-container').html('') : $(`<div id="relative-entropy-container"></div><div class="col-12" id="distribution-container"></div>`).appendTo(disGraphContainer));
+
+	// removes the previous content
+	$('#relative-entropy-container').html();
+	// calculates the relative entropy and adds it to the container
+	let aggrBaselineTime = data.baseline.refTime.reduce((a,b)=> a+b);
+	let aggrBicycleShare = data.cycleHire.cusTime.reduce((a,b)=> a+b);
+	$('#relative-entropy-container').append(`<p><span>Relative Entropy: &nbsp;</span> ${relativeEntropy(data.baseline.refTime.map((v)=> v/aggrBaselineTime), data.cycleHire.cusTime.map((v)=> v/aggrBicycleShare)).toFixed(2)} bits</p>`);
+
 	// distances options
 	let refHist = {x : data.baseline.refTime, name: 'Baseline',type: 'histogram',histfunc : 'count',histnorm:'probability density',autobinx:true,opacity:0.5, marker: {color: 'red'} };
 	let cusHist = {x : data.cycleHire.cusTime, name: 'Cycle Hire data', type: 'histogram',histfunc : 'count',histnorm:'probability density', autobinx:true,opacity: 0.5, marker: {color: 'green'}};
 
 	Plotly.newPlot('distribution-container',[refHist,cusHist], distributionLayout, {staticPlot: false, displayModeBar: false});
 };
+
 const appendNetworkProperties = (refRoutes,sid)=>{
-	let container = $('#network-properties-container');
-	if(container.children().length ? container.children().remove() : false);
+	let container = $('#network-properties-container'); // container
+	if(container.children().length ? container.children().remove() : false); // removes any children elements if they exist
 
 	let refRoutesArr = refRoutes.toGeoJSON().features; // array of baseline links
 	let nSelectedStations = refRoutesArr.length; // n Links
@@ -590,7 +606,6 @@ const appendNetworkProperties = (refRoutes,sid)=>{
 	let aggregatedEllispoidDist = refRoutesArr.map((f,index)=> currentLoc.distanceTo(L.latLng(hashStations[f.properties.end_station_id].location[0]))).reduce((a,b)=> a + b);
 	// aggregated flow of all links
 	let aggregatedFlow = refRoutesArr.reduce((a,b)=> a + b.properties.freq ,0);
-	let cont
 	container.append(`
 			<h4>Networks Properties</h4>
 			<ul>
@@ -604,12 +619,11 @@ const appendNetworkProperties = (refRoutes,sid)=>{
 	`);
 	// adds a tooltip next to the container
 	appendQuestionBtn(container.find('h4'), 'network-stats','left','<h4>Description</h4><p>In the current section, a network of the docking stations is created, measuring some properties. The network is comprised by nodes, which are the docking stations, and links, which corresponds on the flow between a pair of docking stations.');
-}
+};
+
 // this method adds some descriptive statistic measurements, as well as two boxplots of the baseline routes and the sample
 // data in the panel at the top-right corner
-const appendDescriptiveStats = (obj,sid)=>{
-	appendNetworkProperties(refRoutes,sid);
-
+const appendDescriptiveStats = (obj)=>{
 	let container = $('#descriptive-statistics-container');
 	// remove children elements if they already exist
 	(container.children().length ? container.children().remove() : false );
@@ -726,9 +740,9 @@ const showContentOfRoutesNetwork = (e)=>{
 						 		<li><span>Start Station Name:&nbsp;</span> ${hashStations[feature.start_station_id].station_name}</li>
 						 		<li><span>End Station Name:	&nbsp;</span>  ${hashStations[feature.end_station_id].station_name}</li>		
 								<li><span>Baseline Time:	&nbsp;</span> ${feature.balanced_ref_time} s</li>	
-								<li><span>Avg Predicted Time:	&nbsp;</span> ${avgCusRoutesTime.toFixed(2)} s</li>
+								<li><span>Sample Time:	&nbsp;</span> ${avgCusRoutesTime.toFixed(2)} s</li>
 								<li><span>Baseline Dist:	&nbsp;</span> ${feature.balanced_ref_dist} m</li>
-								<li><span>Avg Predicted Distance	&nbsp;:</span> ${(avgCusRoutesTime*velocity*1000).toFixed(2)} m</li>
+								<li><span>Sample Distance	&nbsp;:</span> ${(avgCusRoutesTime*velocity*1000).toFixed(2)} m</li>
 								<li><span>Annual Flow:	&nbsp;</span> ${annualFrequency}</li>
 								<li><span>Global Flow:	&nbsp;</span> ${feature.freq} </li>
 							</ul>

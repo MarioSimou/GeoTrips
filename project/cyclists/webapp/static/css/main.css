@@ -354,7 +354,7 @@ hr {
     line-height: 1;
     background: rgba(255,255,255,0.3);
     color: black;
-    box-shadow: 2px 2px grey;
+    box-shadow: 2px 2px 5px 1px grey;
 }
 .ref-routes-panel ul {
     list-style: none;
@@ -427,7 +427,7 @@ svg.svg-inline--fa.fa-info-circle.fa-w-16{
 #cycle-hire-boxplot{
     padding-right: 0;
 }
-#descriptive-statistics-container span, #network-properties-container span{
+#descriptive-statistics-container span, #network-properties-container span, #relative-entropy-container span{
     font-weight: bold;
 }
 #descriptive-statistics-container ul, #network-properties-container ul {
@@ -442,6 +442,11 @@ svg.svg-inline--fa.fa-info-circle.fa-w-16{
 #network-properties-container h4{
     text-align: center;
 }
-#network-properties-container{
+#network-properties-container, .ref-routes-panel ul{
     margin: auto ;
 }
+#relative-entropy-container p {
+    text-align: center;
+    margin: 0;
+}
+

@@ -37,7 +37,7 @@ let distributionLayout = {
 		legend: {x: 0.5, y: 0.5,"orientation": 'v'},
 		paper_bgcolor: 'rgba(0,0,0,0)',
 		plot_bgcolor: 'rgba(0,0,0,0)',
-		margin : {l:65, r:20, b:40, t:40, pad:4}, autosize: true,
+		margin : {l:65, r:20, b:40, t:0, pad:4}, autosize: true,
 		};
 let scatterLayout = {
 			font: {family: 'Poppins, sans-serif', size: 14, color: 'darkslategrey'},
