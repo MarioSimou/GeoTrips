@@ -769,7 +769,7 @@ topLeftDescriptionPanel.update = function(props,coords){
 	// Try-catch block of borough layer
 	try {
 		this.div.innerHTML += (props ? '<br><b>Borough:&nbsp; </b>' +  props.bname: '<br>Hover over the borough');
-        this.div.innerHTML += `<br><b>% of Stations within Borough:&nbsp; </b> ${((props.bfreq/nStations)*100).toFixed(2).toString()} %`;
+        this.div.innerHTML += `<br><b>N Stations within Borough:&nbsp; </b> ${props.bfreq.toFixed(0)}`;
         latestSelectedBorough = {
         	'bname' : props.bname,
         	'bfreq' : props.bfreq,
