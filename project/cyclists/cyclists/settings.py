@@ -188,8 +188,8 @@ LEAFLET_CONFIG = {
         'fontAwesome': {
             'js': ['https://use.fontawesome.com/releases/v5.0.13/js/solid.js','https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js']
         },
-        'my': {
-            'js': ['js/layouts.js','js/main.js']
+        'geostats': {
+            'js': ['plugins/geostats/lib/geostats.min.js']  # Classification plugin url : https://github.com/simogeo/geostats/
         }
     }
 }
