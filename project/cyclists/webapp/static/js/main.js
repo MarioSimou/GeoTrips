@@ -1,7 +1,7 @@
 
 // ------------------------------------------------- VARIABLES --------------------------------------------------------
 var heatmapStationsLayer, heatmapBoroughsLayer;
-let basemaps,colors,nStations,hashStations = {}  ,refRoutesFreqUrl,eqIntBoroughs,eqIntStations,eqIntRefRoutes,latestSelectedBorough, latestSelectedStation, paneTop,paneIntermediate,paneBottom,groupLayer;
+let basemaps,colors,nStations,hashStations = {}  ,refRoutesFreqUrl, jenksIntBoroughs,jenksIntStations,jenksIntRefRoutes,latestSelectedBorough, latestSelectedStation, paneTop,paneIntermediate,paneBottom,groupLayer;
 let map,stations,refRoutes,boroughs,routes,cusRoutes, clusterResponse, stationsArray;
 let colRampGlo = {'stations' : 'YlGnBu','boroughs' : 'Paired','routes' : 'Paired',}; // initial coloramps for each feature layer
 const minWidth = 896; // minimum required width for a desktop device
@@ -39,7 +39,7 @@ L.MakiMarkers.accessToken = "pk.eyJ1IjoibWFyaW9zc2ltb3UiLCJhIjoiY2pqOTlyMzYzMnFu
 const setBoroughStyle = (feature)=>
 {
 	return {
-		    fillColor: getColor(feature.properties.freq,colRampGlo.boroughs,eqIntBoroughs,nClasses),
+		    fillColor: getColor(feature.properties.freq,colRampGlo.boroughs,jenksIntBoroughs,nClasses),
         	weight: 2,
         	opacity: 1,
         	color: 'white',
@@ -71,7 +71,7 @@ pointToLayerStations = (geojson, latlng)=>{
 // individual feature
 const setStationsStyle = (feature) => {
 	return {
-		color : getColor(feature.properties.freq, colRampGlo.stations, eqIntStations,nClasses),
+		color : getColor(feature.properties.freq, colRampGlo.stations, jenksIntStations,nClasses),
 		fillOpacity: 0.7,
 		stroke : false,
 	};
@@ -121,7 +121,7 @@ const onEachFeatureStations = (feature,layer) => {
 // this method sets the style of the baseline routes layer
 const setRefRoutesStyle = (feature) => {
 	return {
-		color : getColor(feature.properties.freq, colRampGlo.routes, eqIntRefRoutes ,nClasses)
+		color : getColor(feature.properties.freq, colRampGlo.routes, jenksIntRefRoutes ,nClasses)
 	};
 };
 // this method remove the route panel that is created whenever a user hovers over the road network and reset the style
@@ -163,16 +163,24 @@ const equalIntervals = (nClasses, url, model) => {
 		});
 	return range;
 };
+// this method calls the jenks classification method an applies it on a spatial feature
+const getJenks = (nClasses,url,model)=>{
+    let variable;
+    $.ajax({url: url , async: false}).done(response =>{
+        variable = new geostats(response[model]);
+    });
+    return variable.getClassJenks(nClasses);
+};
 
 // this method is applied whenever the coloramp of a station or borough changes. It identifies the coloramp of each layer
 // and change the fill color of each feature.
-const changeColors = (e,feature, featureFunction, featureClassName, nClasses,eqInt,colRampGlo)=>{
+const changeColors = (e,feature, featureFunction, featureClassName, nClasses,jenksInt,colRampGlo)=>{
 	let colRamp = $(e.currentTarget).val(); // gets the selected color ramp
 	colRampGlo[featureClassName] = colRamp; // updates the global variable
 
 	// updates the fill color of the features of a layer
 	feature.eachLayer((layer)=>{
-		layer.setStyle({'fillColor' : featureFunction(layer.feature.properties.freq, colRamp, eqInt,nClasses)});
+		layer.setStyle({'fillColor' : featureFunction(layer.feature.properties.freq, colRamp, jenksInt,nClasses)});
 	});
 	// update the legend panel
 	bottomLeftPanel.update(featureClassName, colRamp,nClasses);
@@ -271,7 +279,7 @@ const changeColorsRefRoute = (refRoutes)=>{
 
 		// changes the style of each feature
         refRoutes.eachLayer((layer) => {
-            layer.setStyle({'color': getColor(layer.feature.properties.freq, colRamp, eqIntRefRoutes, nClasses)});
+            layer.setStyle({'color': getColor(layer.feature.properties.freq, colRamp, jenksIntRefRoutes, nClasses)});
         });
 
         // changes the color of the i elements in the legend
@@ -287,9 +295,9 @@ appendQuestionBtn = (el,name,position,content)=>{
 	$(`	#${name}-question-btn`).tooltip();
 };
 // this method creates a legend of a specified model
-const populateLegend = (className,cModel,colRampGloOpt,eqIntModel,nClasses,el)=>{
+const populateLegend = (className,cModel,colRampGloOpt,jenksIntModel,nClasses,el)=>{
 	for(var i=0; i < cModel.length-1;i++) {
-		$(`<div><i class="${className}" style="background: ${getColor(cModel[i], colRampGloOpt, eqIntModel, nClasses)}"></i> <span>${cModel[i].toFixed(0) + (cModel[i+1] ? ' &ndash; ' + cModel[i+1].toFixed(0) + '</span><br>' : '')}</div>`).appendTo(el);
+		$(`<div><i class="${className}" style="background: ${getColor(cModel[i], colRampGloOpt, jenksIntModel, nClasses)}"></i> <span>${cModel[i].toFixed(0) + (cModel[i+1] ? ' &ndash; ' + cModel[i+1].toFixed(0) + '</span><br>' : '')}</div>`).appendTo(el);
 	};
 };
 // performs changes on the div.info.info-stats.leaflet-control
@@ -434,7 +442,7 @@ const changePlotsAndDescriptions = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
 		if (map.hasLayer(groupLayer)) map.removeLayer(groupLayer.clearLayers());
 
 		refRoutesFreqUrl = getAdjustedUrl(freqUrl,sid); // url that calls the frequencies (flow) of all layers, based on a given sid
-		eqIntRefRoutes = equalIntervals(nClasses,refRoutesFreqUrl,'refRoutes'); // finds the equalIntervals of the baseline routes
+		jenksIntRefRoutes = getJenks(nClasses,refRoutesFreqUrl,'refRoutes').slice(1); // finds the equalIntervals of the baseline routes
 
 		// LOADS THE BASELINE ROUTES
         refRoutesUrl = getAdjustedUrl(refRoutesUrl,sid); // url that requests the baseline routes (pairs of start-end stations) related to the given sid
@@ -462,7 +470,7 @@ const changePlotsAndDescriptions = (map,refRoutesUrl,sid,freqUrl,cusRoutes) =>{
 				// adds the baseline routes filter bar
         		appendRefRoutesFilter($('#ref-routes-slider-container'), refRoutes, groupLayer, refRoutesUrl);
         		// adds the baseline routes legend
-        		appendRefRoutesLegend($('#legend-graph-container'), eqIntRefRoutes, refRoutesFreqUrl);
+        		appendRefRoutesLegend($('#legend-graph-container'), jenksIntRefRoutes, refRoutesFreqUrl);
         		// adds distribution graph that compares the baseline routes and the sample routes
         		appendDistributionGraph($('#distances-distribution-graph-container'),cusRoutes,sid);
 
@@ -517,20 +525,19 @@ const appendRefRoutesFilter = (sliderContainer,refRoutes,groupLayer,refRoutesUrl
 };
 // this method creates the required legend for the baseline routes and adds a color ramp with an event listener
 // appended on it
-const appendRefRoutesLegend = (graphContainer,eqIntRefRoutes,refRoutesFreqUrl) => {
+const appendRefRoutesLegend = (graphContainer,jenksIntRefRoutes,refRoutesFreqUrl) => {
 	if(graphContainer.children().length == 0) {
         graphContainer.append(`<div>
 							<h4>Routes</h4>
 							<div></div>
 						  </div>`);
 
-        cRefRoutes = equalIntervals(nClasses, refRoutesFreqUrl, 'refRoutes'); // fins the equal intervals values of the baseliner routes
-        cRefRoutes.unshift(0); // adds zero at the beginning of the array
+        cRefRoutes = getJenks(nClasses, refRoutesFreqUrl, 'refRoutes'); // fins the equal intervals values of the baseliner routes
 
         // append question mark
 		appendQuestionBtn(graphContainer.find('h4'),'ref-routes','left','<h4>Route Layer Description</h4><p>The color of a road segment demonstrates the cycling flow since 1st January 2015, by which the flow is calculated by the number of times that a road segment had been used by a cyclists. It is expected that the majority of road segments to maintain a similar color, which means low bicycle flow. In contrast, a small portion of road segments with exceptionally high flow are expected to have different color.</p><h4>Color Ramp</h4><p>A color ramp is available so that a user to choose the best combination for its screen.</p>');
 
-        populateLegend('refRoutes', cRefRoutes, colRampGlo.routes, eqIntRefRoutes, nClasses, graphContainer.find('div').find('div'));
+        populateLegend('refRoutes', cRefRoutes, colRampGlo.routes, jenksIntRefRoutes, nClasses, graphContainer.find('div').find('div'));
         // dropdown list
         $(`<select id='color-ramp-refroutes' class="color-ramp">
 							<option value="YlGnBu">YlGnBu</option>
@@ -798,11 +805,11 @@ const bottomLeftPanel = L.control({position : 'bottomleft'});
 bottomLeftPanel.onAdd = function(map)
 {
 	let div = L.DomUtil.create('div', 'info legend');
-	let cBoroughs = equalIntervals(nClasses,freqUrl, 'boroughs'); // boroughs equal intervals
-	let cStations = equalIntervals(nClasses,freqUrl,'stations'); // stations equal intervals
+	let cBoroughs = getJenks(nClasses,freqUrl, 'boroughs'); // boroughs equal intervals
+	let cStations = getJenks(nClasses,freqUrl,'stations'); // stations equal intervals
 
-	cBoroughs.unshift(0); // add zero at the beginning
-	cStations.unshift(0);
+	//cBoroughs.unshift(0); // add zero at the beginning
+	//cStations.unshift(0);
 
 	// content of BOROUGHS
 	$(div).append(`<div class="container-fluid">
@@ -838,7 +845,7 @@ bottomLeftPanel.onAdd = function(map)
 					</div>
 				</div>`);
 	// legend
-	populateLegend('boroughs',cBoroughs,colRampGlo.boroughs,eqIntBoroughs,nClasses,$(div).find('.left-legend-panel').eq(0).find('div'));
+	populateLegend('boroughs',cBoroughs,colRampGlo.boroughs,jenksIntBoroughs,nClasses,$(div).find('.left-legend-panel').eq(0).find('div'));
 
 	// dropdown list
 	$(`<select id='color-ramp-boroughs' class="color-ramp">
@@ -851,7 +858,7 @@ bottomLeftPanel.onAdd = function(map)
 						</select>`).appendTo($(div).find('.left-legend-panel').eq(0));
 
 	// content of STATIONS
-	populateLegend('stations',cStations,colRampGlo.stations,eqIntStations,nClasses,$(div).find('.left-legend-panel').eq(1).find('div'));
+	populateLegend('stations',cStations,colRampGlo.stations,jenksIntStations,nClasses,$(div).find('.left-legend-panel').eq(1).find('div'));
 	$(`<select id='color-ramp-stations' class="color-ramp">
 						<option value="YlGnBu" selected>YlGnBu</option>
 						<option value="Reds">Reds</option>
@@ -1010,7 +1017,7 @@ const appendStationsLayer = () => {
     });
 
     // equal-intervals of stations
-    eqIntStations = equalIntervals(nClasses, freqUrl, 'stations');
+    jenksIntStations = getJenks(nClasses, freqUrl, 'stations').slice(1);
 
     // create a hash map of the stations, so it can accessed easily
     stations.on('data:loaded', function () {
@@ -1039,11 +1046,11 @@ const appendStationsLayer = () => {
 
         // set an event on the boroughs color ramp so whenever a user clicks on it to update the fill color
 		$('#color-ramp-boroughs').on('change',(e)=>	{
-			changeColors(e,boroughs,getColor,'boroughs',nClasses, eqIntBoroughs, colRampGlo);
+			changeColors(e,boroughs,getColor,'boroughs',nClasses, jenksIntBoroughs, colRampGlo);
 		});
 		// set an event on the stations's color ramp so whenever a user clicks on it to update the fill color
 		$('#color-ramp-stations').on('change',(e)=> {
-			changeColors(e,stations,getColor,'stations',nClasses, eqIntStations, colRampGlo);
+			changeColors(e,stations,getColor,'stations',nClasses, jenksIntStations, colRampGlo);
 		});
 
 		// appends the tooltip buttons
@@ -1094,7 +1101,7 @@ const appendStationsLayer = () => {
 // this method loads the boroughs layer and some functionalities that use the boroughs layer
 const appendBoroughsLayer = ()=> {
 // equal-intervals of boroughs
-    eqIntBoroughs = equalIntervals(nClasses, freqUrl, 'boroughs');
+    jenksIntBoroughs = getJenks(nClasses, freqUrl, 'boroughs').slice(1);
     boroughs = new L.GeoJSON.AJAX(boroughsUrl,
         {
             style: setBoroughStyle,

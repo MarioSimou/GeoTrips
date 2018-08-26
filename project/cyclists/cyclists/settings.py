@@ -172,6 +172,24 @@ LEAFLET_CONFIG = {
         'heatmap' : {
             'js' : ['plugins/heatmap/leaflet-heatmap/heatmap.js','plugins/heatmap/leaflet-heatmap/leaflet-heatmap.js'],
             'auto-include' : False,
+        },
+        'plotly':{
+            'js': ['https://cdn.plot.ly/plotly-latest.min.js']
+        },
+        'kmeans': {
+            'js': ['plugins/kmeans/kmeans.js']
+        },
+        'jQuery': {
+            'js': ['https://code.jquery.com/jquery-3.3.1.js']
+        },
+        'poppers': {
+            'js': ['https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js']
+        },
+        'fontAwesome': {
+            'js': ['https://use.fontawesome.com/releases/v5.0.13/js/solid.js','https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js']
+        },
+        'my': {
+            'js': ['js/layouts.js','js/main.js']
         }
     }
 }
