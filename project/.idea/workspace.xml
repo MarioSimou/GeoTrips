@@ -16,7 +16,7 @@
     <SUITE FILE_PATH="coverage/project$example.coverage" NAME="example Coverage Results" MODIFIED="1531763637159" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cyclists/cyclists" />
     <SUITE FILE_PATH="coverage/project$k.coverage" NAME="k Coverage Results" MODIFIED="1533083380167" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cyclists/webapp" />
     <SUITE FILE_PATH="coverage/project$refroutes.coverage" NAME="refroutes Coverage Results" MODIFIED="1531771295688" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cyclists/refroutes" />
-    <SUITE FILE_PATH="coverage/project$kmeans_example.coverage" NAME="kmeans.example Coverage Results" MODIFIED="1533083532329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cyclists/webapp" />
+    <SUITE FILE_PATH="coverage/project$kmeans_example.coverage" NAME="kmeans.example Coverage Results" MODIFIED="1535321890380" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cyclists/webapp" />
     <SUITE FILE_PATH="coverage/project$refroutes__1_.coverage" NAME="refroutes (1) Coverage Results" MODIFIED="1531773471127" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cyclists" />
     <SUITE FILE_PATH="coverage/project$referenced_routes.coverage" NAME="referenced_routes Coverage Results" MODIFIED="1531771889879" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cyclists/refroutes" />
   </component>
@@ -45,11 +45,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cyclists/webapp/models.py">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cyclists/webapp/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="780">
-              <caret line="32" column="66" selection-start-line="32" selection-start-column="66" selection-end-line="32" selection-end-column="66" />
+            <state relative-caret-position="884">
+              <caret line="67" column="12" selection-start-line="67" selection-start-column="12" selection-end-line="67" selection-end-column="12" />
             </state>
           </provider>
         </entry>
@@ -57,8 +57,8 @@
       <file leaf-file-name="main.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/js/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="260">
-              <caret line="861" column="19" selection-start-line="861" selection-start-column="19" selection-end-line="861" selection-end-column="19" />
+            <state relative-caret-position="364">
+              <caret line="554" column="67" selection-start-line="554" selection-start-column="67" selection-end-line="554" selection-end-column="67" />
               <folding>
                 <element signature="n#style#0;n#i#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="e#1#8#0" expanded="true" />
@@ -66,28 +66,10 @@
                 <element signature="e#12#18#0" expanded="true" />
                 <element signature="e#43#49#0" expanded="true" />
                 <element signature="e#15#21#0" expanded="true" />
-                <element signature="e#36#42#0" expanded="true" />
+                <element signature="e#33#39#0" expanded="true" />
                 <element signature="e#15#21#0" expanded="true" />
                 <element signature="e#27#33#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cyclists/webapp/templates/webapp/index.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1319">
-              <caret line="110" selection-start-line="110" selection-end-line="110" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cyclists/webapp/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1664">
-              <caret line="76" column="4" selection-start-line="76" selection-start-column="4" selection-end-line="76" selection-end-column="4" />
             </state>
           </provider>
         </entry>
@@ -153,7 +135,6 @@
         <option value="$PROJECT_DIR$/cyclists/webapp/migrations/0001_initial.py" />
         <option value="$PROJECT_DIR$/cyclists/webapp/static/plugins/kmeans/kmeans.js" />
         <option value="$PROJECT_DIR$/cyclists/webapp/kmeans.example.py" />
-        <option value="$PROJECT_DIR$/cyclists/webapp/kmeans.py" />
         <option value="$PROJECT_DIR$/cyclists/webapp/k.py" />
         <option value="$PROJECT_DIR$/cyclists/webapp/static/js/functions.js" />
         <option value="$PROJECT_DIR$/cyclists/webapp/models.py" />
@@ -162,8 +143,9 @@
         <option value="$PROJECT_DIR$/cyclists/webapp/views.py" />
         <option value="$PROJECT_DIR$/cyclists/webapp/static/js/layouts.js" />
         <option value="$PROJECT_DIR$/cyclists/webapp/static/css/main.css" />
-        <option value="$PROJECT_DIR$/cyclists/webapp/templates/webapp/index.html" />
         <option value="$PROJECT_DIR$/cyclists/cyclists/settings.py" />
+        <option value="$PROJECT_DIR$/cyclists/webapp/templates/webapp/index.html" />
+        <option value="$PROJECT_DIR$/cyclists/webapp/kmeans.py" />
         <option value="$PROJECT_DIR$/cyclists/webapp/static/js/main.js" />
       </list>
     </option>
@@ -209,12 +191,6 @@
               <item name="project" type="b2602c69:ProjectViewProjectNode" />
               <item name="project" type="462c0819:PsiDirectoryNode" />
               <item name="cyclists" type="462c0819:PsiDirectoryNode" />
-              <item name="cyclists" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="project" type="b2602c69:ProjectViewProjectNode" />
-              <item name="project" type="462c0819:PsiDirectoryNode" />
-              <item name="cyclists" type="462c0819:PsiDirectoryNode" />
               <item name="webapp" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -223,14 +199,6 @@
               <item name="cyclists" type="462c0819:PsiDirectoryNode" />
               <item name="webapp" type="462c0819:PsiDirectoryNode" />
               <item name="static" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="project" type="b2602c69:ProjectViewProjectNode" />
-              <item name="project" type="462c0819:PsiDirectoryNode" />
-              <item name="cyclists" type="462c0819:PsiDirectoryNode" />
-              <item name="webapp" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
-              <item name="css" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="project" type="b2602c69:ProjectViewProjectNode" />
@@ -458,6 +426,7 @@
       <window_info anchor="bottom" id="Docker" order="12" show_stripe_button="false" />
       <window_info anchor="right" id="R Graphics" order="3" weight="0.32975152" />
       <window_info anchor="right" id="Database" order="3" weight="0.32953784" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32891247" />
       <window_info anchor="right" id="SciView" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
@@ -468,7 +437,6 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="3" weight="0.25" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32894737" />
       <window_info anchor="bottom" id="Concurrent Activities Diagram" order="13" weight="0.32894737" />
     </layout>
     <layout-to-restore>
@@ -611,13 +579,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cyclists/webapp/kmeans.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="22" column="22" selection-start-line="22" selection-start-column="22" selection-end-line="22" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cyclists/manage.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -646,24 +607,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cyclists/webapp/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1664">
-          <caret line="76" column="4" selection-start-line="76" selection-start-column="4" selection-end-line="76" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cyclists/webapp/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="780">
           <caret line="32" column="66" selection-start-line="32" selection-start-column="66" selection-end-line="32" selection-end-column="66" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/css/main.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="321">
-          <caret line="451" selection-start-line="451" selection-end-line="451" />
         </state>
       </provider>
     </entry>
@@ -681,17 +628,41 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/css/main.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="321">
+          <caret line="451" selection-start-line="451" selection-end-line="451" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cyclists/webapp/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="884">
+          <caret line="67" column="12" selection-start-line="67" selection-start-column="12" selection-end-line="67" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/cyclists/webapp/templates/webapp/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1319">
-          <caret line="110" selection-start-line="110" selection-end-line="110" />
+        <state relative-caret-position="167">
+          <caret line="98" column="32" selection-start-line="98" selection-start-column="32" selection-end-line="98" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cyclists/webapp/kmeans.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="416">
+          <caret line="63" column="9" selection-start-line="63" selection-start-column="9" selection-end-line="63" selection-end-column="9" />
+          <folding>
+            <element signature="e#1#35#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cyclists/webapp/static/js/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="861" column="19" selection-start-line="861" selection-start-column="19" selection-end-line="861" selection-end-column="19" />
+        <state relative-caret-position="364">
+          <caret line="554" column="67" selection-start-line="554" selection-start-column="67" selection-end-line="554" selection-end-column="67" />
           <folding>
             <element signature="n#style#0;n#i#0;n#div#0;n#!!top" expanded="true" />
             <element signature="e#1#8#0" expanded="true" />
@@ -699,7 +670,7 @@
             <element signature="e#12#18#0" expanded="true" />
             <element signature="e#43#49#0" expanded="true" />
             <element signature="e#15#21#0" expanded="true" />
-            <element signature="e#36#42#0" expanded="true" />
+            <element signature="e#33#39#0" expanded="true" />
             <element signature="e#15#21#0" expanded="true" />
             <element signature="e#27#33#0" expanded="true" />
           </folding>

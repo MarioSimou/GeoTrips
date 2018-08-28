@@ -526,18 +526,20 @@ const appendRefRoutesFilter = (sliderContainer,refRoutes,groupLayer,refRoutesUrl
 // this method creates the required legend for the baseline routes and adds a color ramp with an event listener
 // appended on it
 const appendRefRoutesLegend = (graphContainer,jenksIntRefRoutes,refRoutesFreqUrl) => {
-	if(graphContainer.children().length == 0) {
-        graphContainer.append(`<div>
+	if(graphContainer.children().length === 0) {
+        console.log(1);
+		graphContainer.append(`<div>
 							<h4>Routes</h4>
-							<div></div>
+							<div class="legend-container"></div>
+							<div class="color-ramp-container"></div>
 						  </div>`);
 
-        cRefRoutes = getJenks(nClasses, refRoutesFreqUrl, 'refRoutes'); // fins the equal intervals values of the baseliner routes
-
+        cRefRoutes = getJenks(nClasses, refRoutesFreqUrl, 'refRoutes'); // fins the equal intervals values of the baseline routes
+		console.log(graphContainer);
         // append question mark
 		appendQuestionBtn(graphContainer.find('h4'),'ref-routes','left','<h4>Route Layer Description</h4><p>The color of a road segment demonstrates the cycling flow since 1st January 2015, by which the flow is calculated by the number of times that a road segment had been used by a cyclists. It is expected that the majority of road segments to maintain a similar color, which means low bicycle flow. In contrast, a small portion of road segments with exceptionally high flow are expected to have different color.</p><h4>Color Ramp</h4><p>A color ramp is available so that a user to choose the best combination for its screen.</p>');
-
-        populateLegend('refRoutes', cRefRoutes, colRampGlo.routes, jenksIntRefRoutes, nClasses, graphContainer.find('div').find('div'));
+		console.log(cRefRoutes);
+        populateLegend('refRoutes', cRefRoutes, colRampGlo.routes, jenksIntRefRoutes, nClasses, graphContainer.find('div.legend-container'));
         // dropdown list
         $(`<select id='color-ramp-refroutes' class="color-ramp">
 							<option value="YlGnBu">YlGnBu</option>
@@ -546,10 +548,15 @@ const appendRefRoutesLegend = (graphContainer,jenksIntRefRoutes,refRoutesFreqUrl
 							<option value="Paired" selected>Paired</option>
 							<option value="Pastel2">Pastel2</option><option value="Set3">Set3</option>
 							<option value="Accent">Accent</option>
-						</select>`).appendTo(graphContainer.find('div').find('div').eq(0));
+						</select>`).appendTo(graphContainer.find('div.color-ramp-container'));
 		// add an event listener on the color ramp
         changeColorsRefRoute(refRoutes);
-    }
+    }else{
+		// updates the legend when a new docking station is selected
+		graphContainer.find('div.legend-container').find('div').remove();
+		cRefRoutes = getJenks(nClasses, refRoutesFreqUrl, 'refRoutes'); // fins the equal intervals values of the baseline routes
+        populateLegend('refRoutes', cRefRoutes, colRampGlo.routes, jenksIntRefRoutes, nClasses, graphContainer.find('div.legend-container'));
+	}
 };
 // add a the distribution of cycling trips of a selected stations, with a generated distribution using the baseline
 // routing data. The distributions are compared, and descriptive statistical values are extracted
@@ -1040,7 +1047,7 @@ const appendStationsLayer = () => {
 													// BOTTOM LEFT PANEL
 
         // adds a 3d scatter plot of the stations on the bottomLeftDescriptive Panel
-        append3dScatterPlotPoint('3d-scatter-stations', scatterLayout, getAdjustedUrl(kMeansUrl.replace(new RegExp('none'), 'stations'), 5), colors);
+        append3dScatterPlotPoint('3d-scatter-stations', scatterLayout, getAdjustedUrl(kMeansUrl.replace(new RegExp('none'), 'stations'), 4), colors);
         // adds a slider bar on the bottom-left panel
         appendSliderBarBottomLeftDescriptivePanel();
 
