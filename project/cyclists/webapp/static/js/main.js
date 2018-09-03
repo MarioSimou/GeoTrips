@@ -317,7 +317,7 @@ statsBtnToggle = (el)=> {
 
 // this method calculates the relative entropy between a distribution p and q. Equation: P(P,Q) = Sum(p[i] * Math.log(p[i]/q[i]))
 const relativeEntropy = (p,q)=>{
-	 return (p.length === q.length  ? p.map((v,i)=> v*Math.log(v/q[i])).reduce((a,b)=> a + b) : false);
+	 return (p.length === q.length  ? p.map((v,i)=> v*Math.log2(v/q[i])).reduce((a,b)=> a + b) : false);
 };
 // ----------------------------------------- TABS / PANELS -----------------------------------------------------------
 
@@ -527,7 +527,6 @@ const appendRefRoutesFilter = (sliderContainer,refRoutes,groupLayer,refRoutesUrl
 // appended on it
 const appendRefRoutesLegend = (graphContainer,jenksIntRefRoutes,refRoutesFreqUrl) => {
 	if(graphContainer.children().length === 0) {
-        console.log(1);
 		graphContainer.append(`<div>
 							<h4>Routes</h4>
 							<div class="legend-container"></div>
@@ -535,10 +534,8 @@ const appendRefRoutesLegend = (graphContainer,jenksIntRefRoutes,refRoutesFreqUrl
 						  </div>`);
 
         cRefRoutes = getJenks(nClasses, refRoutesFreqUrl, 'refRoutes'); // fins the equal intervals values of the baseline routes
-		console.log(graphContainer);
         // append question mark
 		appendQuestionBtn(graphContainer.find('h4'),'ref-routes','left','<h4>Route Layer Description</h4><p>The color of a road segment demonstrates the cycling flow since 1st January 2015, by which the flow is calculated by the number of times that a road segment had been used by a cyclists. It is expected that the majority of road segments to maintain a similar color, which means low bicycle flow. In contrast, a small portion of road segments with exceptionally high flow are expected to have different color.</p><h4>Color Ramp</h4><p>A color ramp is available so that a user to choose the best combination for its screen.</p>');
-		console.log(cRefRoutes);
         populateLegend('refRoutes', cRefRoutes, colRampGlo.routes, jenksIntRefRoutes, nClasses, graphContainer.find('div.legend-container'));
         // dropdown list
         $(`<select id='color-ramp-refroutes' class="color-ramp">
@@ -574,9 +571,14 @@ const appendDistributionGraph = (disGraphContainer,cusRoutes,sid) => {
 	// populate an array that will contain the duration values from the cycle hire data
 	// generate an identical sample, with the same length as the cycle hire data, but it will contain the values (duration)
 	// of the baseline routes
+
+	let d = descriptiveStats(Object.keys(cusRoutes).map((key,values)=> cusRoutes[key].fields.duration));
+	let upperBound = d.upper + 1.5 * d.iqr; // determines outlier values
 	for(f of cusRoutes){
-		data.baseline.refTime.push(refRoutesHash[f.fields.station_pairs_id]);
-		data.cycleHire.cusTime.push(f.fields.duration);
+		if ((f.fields.duration > 0) && (f.fields.duration <= upperBound)) { // filter routes that have a duration of 0
+            data.baseline.refTime.push(refRoutesHash[f.fields.station_pairs_id]);
+            data.cycleHire.cusTime.push(f.fields.duration);
+        }
 	};
 	// get the statistics of the baseline routes sample
 	data.baseline.median = median(data.baseline.refTime); // median time
@@ -604,7 +606,7 @@ const appendDistributionGraph = (disGraphContainer,cusRoutes,sid) => {
 
 	// distances options
 	let refHist = {x : data.baseline.refTime, name: 'Baseline',type: 'histogram',histfunc : 'count',histnorm:'probability density',autobinx:true,opacity:0.5, marker: {color: 'red'} };
-	let cusHist = {x : data.cycleHire.cusTime, name: 'Cycle Hire data', type: 'histogram',histfunc : 'count',histnorm:'probability density', autobinx:true,opacity: 0.5, marker: {color: 'green'}};
+	let cusHist = {x : data.cycleHire.cusTime, name: 'LBSS', type: 'histogram',histfunc : 'count',histnorm:'probability density', autobinx:true,opacity: 0.5, marker: {color: 'green'}};
 
 	Plotly.newPlot('distribution-container',[refHist,cusHist], distributionLayout, {staticPlot: false, displayModeBar: false});
 };
