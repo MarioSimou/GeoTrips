@@ -6,7 +6,7 @@ This project is an implementation of my MSc study at University College London (
 
 **Front-end technologies**
 
--JavaScript (ES6)
+- JavaScript (ES6)
 - HTML5
 - CSS3
 - jQuery
