@@ -9,5 +9,5 @@ This project is an implementation of my MSc study at University College London (
 -JavaScript (ES6)
 - HTML5
 - CSS3
--jQuery
--Bootstrap
+- jQuery
+- Bootstrap
