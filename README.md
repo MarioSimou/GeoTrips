@@ -20,3 +20,6 @@ This project is an implementation of my MSc study at University College London (
 - [CycleStreets](https://www.cyclestreets.net/) 
 - [Data.gov.uk](https://data.gov.uk/)
 
+## Graphical User Interface
+
+![main](https://user-images.githubusercontent.com/32243459/45579657-6d5e7900-b881-11e8-8030-c0e151f565df.png)
