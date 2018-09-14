@@ -13,6 +13,7 @@ This project is an implementation of my MSc study at University College London (
 - [Bootstrap](https://getbootstrap.com/)
 
 ** Back-end technologies **
+
 - [Django](https://www.djangoproject.com/)
 - [Postgres](https://www.postgresql.org/) with [Postgis](https://postgis.net/) extension
 
