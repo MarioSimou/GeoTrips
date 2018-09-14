@@ -21,5 +21,4 @@ This project is an implementation of my MSc study at University College London (
 - [Data.gov.uk](https://data.gov.uk/)
 
 ## Graphical User Interface
-
-![main](https://user-images.githubusercontent.com/32243459/45579657-6d5e7900-b881-11e8-8030-c0e151f565df.png)
+![main_scale](https://user-images.githubusercontent.com/32243459/45579687-b1517e00-b881-11e8-97e3-b65a297ae180.png)
