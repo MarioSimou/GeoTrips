@@ -5,6 +5,7 @@ This project is an implementation of my MSc study at University College London (
 ### Technologies - Resources
 
 **Front-end technologies**
+
 -JavaScript (ES6), HTML5, CSS3
 -jQuery
 -Bootstrap
