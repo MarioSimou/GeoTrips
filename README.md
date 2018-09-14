@@ -9,5 +9,15 @@ This project is an implementation of my MSc study at University College London (
 - JavaScript (ES6)
 - HTML5
 - CSS3
-- jQuery
-- Bootstrap
+- [jQuery](https://jquery.com/) 
+- [Bootstrap](https://getbootstrap.com/)
+
+** Back-end technologies **
+- [Django](https://www.djangoproject.com/)
+- [Postgres](https://www.postgresql.org/) with [Postgis](https://postgis.net/) extension
+
+### Data Resources
+- [TFL](https://tfl.gov.uk/) 
+- [CycleStreets](https://www.cyclestreets.net/) 
+- [Data.gov.uk](https://data.gov.uk/)
+
