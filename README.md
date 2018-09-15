@@ -25,7 +25,7 @@ This project is an implementation of my MSc study at University College London (
 
 ## Visualisations
 
-![choropleth_scale](https://user-images.githubusercontent.com/32243459/45579721-f37abf80-b881-11e8-82f5-63143561fdc0.png)
+![choropleth_scale](https://user-images.githubusercontent.com/32243459/45579721-f37abf80-b881-11e8-82f5-63143561fdc0.png){:height="36px" width="36px"}
 
 **Figure 3:** Visualisation of frequency variable of boroughs and docking stations of LBSS. Each geometry is classified using Jenks natural breaks technique. A filtering functionality is available. 
 
