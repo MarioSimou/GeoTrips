@@ -25,11 +25,11 @@ This project is an implementation of my MSc study at University College London (
 
 ## Visualisations
 
-![choropleth_scale](https://user-images.githubusercontent.com/32243459/45579721-f37abf80-b881-11e8-82f5-63143561fdc0.png=250x250)
+![choropleth_scale](https://user-images.githubusercontent.com/32243459/45579721-f37abf80-b881-11e8-82f5-63143561fdc0.png =250x250)
 
 **Figure 1:** Visualisation of frequency variable of boroughs and docking stations of LBSS. Each geometry is classified using Jenks natural breaks technique. A filtering functionality is available. 
 
-![cycling_network](https://user-images.githubusercontent.com/32243459/45579737-24f38b00-b882-11e8-81e0-9b69c92b01d5.png=250x250)
+![cycling_network](https://user-images.githubusercontent.com/32243459/45579737-24f38b00-b882-11e8-81e0-9b69c92b01d5.png =250x250)
 
 **Figure 2:** Visualisation of flow variable related to King’s Cross cycling paths. We apply a filtering in order to show the top N routes and we measure properties based on the user selection. 
 
