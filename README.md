@@ -38,7 +38,7 @@ This project is an implementation of my MSc study at University College London (
 **Figure 5:** We compare the distribution of flow variable related to King’s Cross cycling paths with a generated baseline variable. We apply descriptive statistics metrics and we visualise each distribution through a boxplot graph.
 At the bottom, we construct a spatial network of King’s Cross cycling routes and we measure properties such as station fulfillment, aggregated flow, aggregated ellipsoid distance etc.
 
-![distribution_poster](https://user-images.githubusercontent.com/32243459/45579758-62581880-b882-11e8-90d5-270606466265.png)
+![kingcross_distribution](https://user-images.githubusercontent.com/32243459/45579805-a3502d00-b882-11e8-972b-4db6b2f3fea8.png)
 
 **Figure 6:** Similarly as Figure 5, we visualise the distribution of flow variable with a generated baseline distribution through PDF, and we measure their divergence through relative entropy.
 At the bottom, we analyse temporally the cycling routes of King’s Cross with a daily and monthly lag. Through time-series graphs, we are able to identify trends, periodic fluctuactions etc.
