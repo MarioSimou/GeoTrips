@@ -32,7 +32,7 @@ This project is an implementation of my MSc study at University College London (
 
 **Figure 2:** Visualisation of flow variable related to King’s Cross cycling paths. We apply a filtering in order to show the top N routes and we measure properties based on the user selection. 
 
-<img src='https://user-images.githubusercontent.com/32243459/45579750-4fdddf00-b882-11e8-83e2-c9866e0e5c6b.png' width='400' height='250'>
+<img src='https://user-images.githubusercontent.com/32243459/45579750-4fdddf00-b882-11e8-83e2-c9866e0e5c6b.png' width='300' height='250'>
 
 **Figure 3:** We compare the distribution of flow variable related to King’s Cross cycling paths with a generated baseline variable. We apply descriptive statistics metrics and we visualise each distribution through a boxplot graph.
 At the bottom, we construct a spatial network of King’s Cross cycling routes and we measure properties such as station fulfillment, aggregated flow, aggregated ellipsoid distance etc.
@@ -42,6 +42,6 @@ At the bottom, we construct a spatial network of King’s Cross cycling routes a
 **Figure 4:** Similarly as Figure 4, we visualise the distribution of flow variable with a generated baseline distribution through PDF, and we measure their divergence through relative entropy.
 At the bottom, we analyse temporally the cycling routes of King’s Cross with a daily and monthly lag. Through time-series graphs, we are able to identify trends, periodic fluctuactions etc.
 
-<img src='https://user-images.githubusercontent.com/32243459/45579785-8287d780-b882-11e8-8125-41173417e908.png' width='400' height='250'>
+<img src='https://user-images.githubusercontent.com/32243459/45579785-8287d780-b882-11e8-8125-41173417e908.png' width='300' height='250'>
 
 **Figure 5**: Visualiasation of the K-Means clustering analysis of boroughs and docking stations of Greate London. The attribute of longitude, latitude, and frequency are used to identify group of objects with similar properites. We determine three and five optimal clusters for the layer of boroughs and docking stations, respectively.
